@@ -28,13 +28,16 @@ namespace engine {
 	};
 	*/
 	struct mat3 {
-		float mat[9];
+		float mat[9] = {};
 
 		//constructor
+		mat3(const float k);
 
 		mat3(const float m11, const  float m12, const  float m13,	// First Row
 			 const float m21, const  float m22, const  float m23,	// Second Row
 			 const float m31, const  float m32, const  float m33);	// Third Row
+		mat3(const mat3& m);
+		mat3(const mat4& m);
 
 	   // transform to diff dimension
 
@@ -73,9 +76,9 @@ namespace engine {
 	struct MatrixFactory {
 
 		// identity
-		static const mat2 createIdentityMatrice2();
-		static const mat3 createIdentityMatrice3();
-		static const mat4 createIdentityMatrice4();
+		static const mat2 createIdentityMatrix2();
+		static const mat3 createIdentityMatrix3();
+		static const mat4 createIdentityMatrix4();
 
 
 		// scale ( x, y, z);
@@ -85,7 +88,7 @@ namespace engine {
 		// rotation ( angle )
 
 		// dual is for cross Product
-		static const mat3 createDualMatrice(const vec3 v);
+		static const mat3 createDualMatrix(const vec3 v);
 
 		//Shear/Sheer?
 	};
