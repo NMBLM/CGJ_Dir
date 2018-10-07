@@ -24,10 +24,13 @@
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
+#include "../vector.h"
+#include "../matrix.h"
 
+/*
 #define CAPTION "Hello Blank World"
 
-int WinX = 1600, WinY = 900;
+int WinX = 50, WinY = 50;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 unsigned int TimerMillis = 1000;
@@ -237,9 +240,47 @@ void init(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+	
 	init(argc, argv);
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
-}
 
+}
+*/
 ///////////////////////////////////////////////////////////////////////
+
+int main(int argc, char* argv[])
+{
+	
+	engine::vec3 v1 = engine::vec3(1.0f, 1.0f, 1.0f);
+	engine::vec3 v2 = engine::vec3(1.0f, 0.0f, 1.0f);
+	engine::vec3 v3 = engine::vec3(1.0f, 0.0f, -1.0f);
+	engine::vec3 x = engine::vec3(1.0f, 0.0f, 0.0f);
+	engine::vec3 y = engine::vec3(0.0f, 1.0f, 0.0f);
+	engine::vec3 z = engine::vec3(0.0f, 0.0f, 1.0f);
+	engine::vec3 zl = engine::vec3(0.0f);
+	std::cout << "v1 =  " << v1 << std::endl;
+	std::cout << "v2 =  " << v2 << std::endl;
+	std::cout << "v3 =  " << v3 << std::endl;
+	std::cout << "v1 * 2 =  " << v1 * 2 << std::endl;
+	std::cout << "2 * v1 =  " << 2 * v1 << std::endl;
+	std::cout << "v2 * v3 =  " << v2.dot(v2, v3) << std::endl;
+	zl = x.cross(x, y);
+	std::cout << "zl =  " << zl << std::endl;
+	std::cout << "z =  " << z << std::endl;
+	if (zl == z) {
+		std::cout << "True"<< std::endl;
+	}
+	else {
+		std::cout << "False" << std::endl;
+	}
+
+
+	engine::mat3 m1 = engine::MatrixFactory::createIdentityMatrix3();
+	std::cout << m1;
+	engine::mat3 m2 = engine::MatrixFactory::createDualMatrix(v1);
+	std::cout << m2;
+
+
+
+}

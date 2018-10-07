@@ -1,10 +1,11 @@
-#include "vector.h";
-#include "matrix.h";
+#include "vector.h"
+#include "matrix.h"
 
 
 const bool fcmp(float a, float b, float epsilon = 0.00005f) {
 	return fabs(a - b) < epsilon;
 }
+
 namespace engine {
 
 		//BEGIN vec3 constructor
@@ -34,24 +35,27 @@ namespace engine {
 		
 		vec3 vec3::operator+=(const vec3 v)
 		{
-			x += v.x;
-			y += v.y;
-			z += v.z;
+			this->x += v.x;
+			this->y += v.y;
+			this->z += v.z;
+			return *this;
+
 		}
 
 		vec3 vec3::operator-=(const vec3 v)
 		{
-			x -= v.x;
-			y -= v.y;
-			z -= v.z;
-
+			this->x -= v.x;
+			this->y -= v.y;
+			this->z -= v.z;
+			return *this;
 		}
 
 		vec3 vec3::operator*=(const float alpha)
 		{
-			x *= alpha;
-			y *= alpha;
-			z *= alpha;
+			this->x *= alpha;
+			this->y *= alpha;
+			this->z *= alpha;
+			return *this;
 
 		}
 
@@ -82,19 +86,26 @@ namespace engine {
 			return vec3(v.x*alpha, v.y*alpha, v.z*alpha);
 		}
 
-		const vec3 vec3::cross(const vec3 & v1, vec3 & v2)
+		const vec3 vec3::cross(const vec3 & v1,const vec3 & v2)
 		{	
 			mat3 dual = MatrixFactory::createDualMatrix(v1);
 			return dual*v2;
 		}
-		const float vec3::dot(const vec3 & v1, vec3 & v2)
+		const float vec3::dot(const vec3 & v1,const vec3 & v2)
 		{
 			return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
 		}
 
 		std::ostream& operator<<(std::ostream & out, const vec3 & v)
 		{
-			// TODO: insert return statement here
+			out << "( " << v.x << " , " << v.y << " , " << v.z << " )";
+			return out;
+		}
+
+		std::istream & operator>>(std::istream & in, vec3 & v)
+		{
+			in >> v.x >> v.y >> v.z;
+			return in;
 		}
 
 }

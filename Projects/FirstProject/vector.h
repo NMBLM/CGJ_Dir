@@ -12,12 +12,8 @@ namespace engine {
 	{
 		float x, y;
 		// Constructor
-		vec2(float x, float y);
-
-		// transform to diff dimension
-
-		// assignment, Comparison
-		void operator=(const vec2& v);
+		vec2(const float x,const float y);
+		vec2(const vec2& v);
 
 		friend const bool operator==(const vec2& v1, const vec2& v2);
 
@@ -65,8 +61,8 @@ namespace engine {
 		friend vec3 operator*(const float alpha, const vec3& v);
 
 		// cross,dot product
-		const vec3 cross(const vec3& v1, vec3& v2);
-		const float dot(const vec3& v1, vec3& v2);
+		const vec3 cross(const vec3& v1, const vec3& v2);
+		const float dot(const vec3& v1, const vec3& v2);
 
 		// input output
 		friend std::ostream& operator<< (std::ostream& out, const vec3& v);
@@ -78,8 +74,8 @@ namespace engine {
 		float x, y, z, w;
 		/*
 		// Constructor
-		vec4(float x, float y, float z, float w);
-
+		vec4(const float x, const float y,const float z,const float w);
+		vec4(const vec3& v ,const float w = 0);
 		// transform to diff dimension
 
 		friend const bool operator==(const vec4& v1, const vec4& v2);
