@@ -293,8 +293,9 @@ int main(int argc, char* argv[])
 	std::cout << m2;
 	std::cout << m2.mat[2] << std::endl;
 	std::cout << m2.data()[2] << std::endl;
-	std::cout << m2 * m2.inverse();
-	std::cout << m2.inverse() * m2;
+	engine::mat3 m3 = engine::mat3(2, 0, 0, 0, 2, 0, 0, 0, 2);
+	std::cout << m3 * m3.inverse();
+	std::cout << m3.inverse() * m3;
 
 
 }

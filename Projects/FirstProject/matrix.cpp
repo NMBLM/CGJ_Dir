@@ -2,9 +2,7 @@
 
 #include "vector.h"
 
-const bool fcmpm(float a, float b, float epsilon = 0.00005f) {
-	return fabs(a - b) < epsilon;
-}
+
 namespace engine {
 	
 	// mat3 constructor
@@ -20,11 +18,7 @@ namespace engine {
 		mat[6] = m31;	mat[7] = m32;	mat[8] = m33;
 	}
 	mat3::mat3(const mat3& m) {
-		// This seems stupid
-		mat[0] = m.mat[0];	mat[1] = m.mat[1];	mat[2] = m.mat[2];
-		mat[3] = m.mat[3];	mat[4] = m.mat[4];	mat[5] = m.mat[5];
-		mat[6] = m.mat[6];	mat[7] = m.mat[7];	mat[8] = m.mat[8];
-
+		memcpy(mat, m.mat, sizeof(m.mat));
 	}
 	mat3::mat3(const mat4& m) {
 
@@ -157,18 +151,18 @@ namespace engine {
 	const mat3 mat3::inverse()
 	{
 		// first det != 0
-		if (fcmpm(0, this->determinant())) {
-			return mat3(2);
+		float det = this->determinant();
+		if (fcmp(0, det)) {
+			throw std::overflow_error("Divide by zero");
 		}
 
 		// second transpose
 		mat3 t = this->transpose();
+		mat3 co_f = mat3(t.mat[4] * t.mat[8] - t.mat[5] * t.mat[7], -(t.mat[3] * t.mat[8] - t.mat[5] * t.mat[6]), t.mat[3] * t.mat[7] - t.mat[4] * t.mat[6]
+			, -(t.mat[1] * t.mat[8] - t.mat[2] * t.mat[7]), t.mat[0] * t.mat[8] - t.mat[2] * t.mat[6], -(t.mat[0] * t.mat[7] - t.mat[1] * t.mat[6])
+			, t.mat[1] * t.mat[5] - t.mat[2] * t.mat[4], -(t.mat[0] * t.mat[5] - t.mat[2] * t.mat[3]), t.mat[0] * t.mat[4] - t.mat[1] * t.mat[3]);
 		// third and fourth , determinant of minor matrices, create co-factor matrix and adjugate
-		mat3 co_f_adj = mat3(t.mat[4] * t.mat[8] - t.mat[5] * t.mat[7],-( t.mat[3] * t.mat[8] - t.mat[5] * t.mat[6]), t.mat[3] * t.mat[7] - t.mat[4] * t.mat[6]
-						, -(t.mat[1] * t.mat[8] - t.mat[2] * t.mat[7]), t.mat[0] * t.mat[8] - t.mat[2] * t.mat[6], -(t.mat[0] * t.mat[7] - t.mat[1] * t.mat[6])
-						,t.mat[1] * t.mat[5] - t.mat[2] * t.mat[4], -(t.mat[0] * t.mat[5] - t.mat[2] * t.mat[3]), t.mat[0] * t.mat[4] - t.mat[1] * t.mat[3]);
-		std::cout << " coF " << std::endl << co_f_adj << std::endl;
-		return co_f_adj;
+		return (1 / det)*co_f;
 	}
 
 	std::ostream & operator<<(std::ostream & out, const mat3 & m)
@@ -201,5 +195,29 @@ namespace engine {
 
 
 
+
+	mat4::mat4(const float k)
+	{
+		mat[0] = k; mat[5] = k; mat[10] = k; mat[15] = k;
+	}
+
+	mat4::mat4(const float m11, const float m12, const float m13, const float m14, 
+		const float m21, const float m22, const float m23, const float m24, 
+		const float m31, const float m32, const float m33, const float m34, 
+		const float m41, const float m42, const float m43, const float m44)
+	{
+		mat[0] =  m11;	mat[1] =  m12;	mat[2] =  m13;	mat[3] =  m14;
+		mat[4] =  m21;	mat[5] =  m22;	mat[6] =  m23;	mat[7] =  m24;
+		mat[8] =  m31;	mat[9] =  m32;	mat[10] = m33;	mat[11] = m34;
+		mat[12] = m41;	mat[13] = m42;	mat[14] = m43;	mat[15] = m44;
+	}
+
+	mat4::mat4(const mat3 & m, const float w)
+	{
+	}
+
+	mat4::mat4(const mat4 & m)
+	{
+	}
 
 }

@@ -11,6 +11,7 @@ namespace engine {
 	struct mat2;
 	struct mat3;
 	struct mat4;
+	struct MatrixFactory;
 	
 	struct mat2 {
 		float mat[4] = {};
@@ -124,31 +125,27 @@ namespace engine {
 	struct MatrixFactory {
 
 		// identity
-		static const mat2 createIdentityMatrix2();
-		static const mat3 createIdentityMatrix3();
-		static const mat4 createIdentityMatrix4();
-
-	
-
-		// scale ( x, y, z);
-		static const mat2 createScaleMatrix2(const float sx, const float sy);
-		static const mat3 createScaleMatrix3(const float sx, const float sy);
-
-
-		// rotation ( angle )
 		static const mat2 createRotationMatrix2(const float angle);
-		static const mat3 createRotationMatrix3Z(const float angle);
-		static const mat3 createRotationMatrix3Y(const float angle);
-		static const mat3 createRotationMatrix3X(const float angle);
-		static const mat3 createRotationMatrix(const float angle, const vec3& v);
+		static const mat2 createIdentityMatrix2();
+		static const mat2 createScaleMatrix2(const float sx, const float sy);
 
+
+		static const mat3 createIdentityMatrix3();
+		static const mat3 createRotationMatrix3(const float angle, const vec3& v);
+		static const mat3 createDualMatrix(const vec3& v);
+		static const mat3 createScaleMatrix3(const float x, const float y, const float z);
+		static const mat3 transformMatrix4to3(const mat4& m);
 		// translation (x,y,z)
+		static const mat4 createIdentityMatrix4();
+		static const mat4 createRotationMatrix4(const float angle, const vec4& v);
 		static const mat4 createTranslationMatrix(const float x, const float y, const float z);
+		static const mat4 createScaleMatrix4(const float x, const float y, const float z);
+		static const mat4 transformMatrix3to4(const mat3& m);
+
 
 		// Transformation of Normals
 		static const mat4 createNormalMatrix(const mat4& m);
 		// dual is for cross Product
-		static const mat3 createDualMatrix(const vec3& v);
 
 		//Shear/Sheer?
 	};
