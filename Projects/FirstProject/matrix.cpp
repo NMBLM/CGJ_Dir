@@ -1,6 +1,10 @@
 #include "matrix.h"
+
 #include "vector.h"
 
+const bool fcmpm(float a, float b, float epsilon = 0.00005f) {
+	return fabs(a - b) < epsilon;
+}
 namespace engine {
 	
 	// mat3 constructor
@@ -29,6 +33,59 @@ namespace engine {
 		mat[6] = m.mat[8];	mat[7] = m.mat[9];	mat[8] = m.mat[10];
 	}
 
+	const float * mat3::data()
+	{
+		float data[9] = { mat[0] ,mat[3] ,mat[6]
+						 ,mat[1] ,mat[4] ,mat[7]
+						 ,mat[2] ,mat[5] ,mat[8]};
+		return data;
+	}
+
+	mat3 mat3::operator+=(const mat3 & m)
+	{
+		
+
+		this->mat[0] += m.mat[0];
+		this->mat[1] += m.mat[1];
+		this->mat[2] += m.mat[2];
+		this->mat[3] += m.mat[3];
+		this->mat[4] += m.mat[4];
+		this->mat[5] += m.mat[5];
+		this->mat[6] += m.mat[6];
+		this->mat[7] += m.mat[7];
+		this->mat[8] += m.mat[8];
+		return *this;
+	}
+
+	mat3 mat3::operator-=(const mat3 & m)
+	{
+		this->mat[0] -= m.mat[0];
+		this->mat[1] -= m.mat[1];
+		this->mat[2] -= m.mat[2];
+		this->mat[3] -= m.mat[3];
+		this->mat[4] -= m.mat[4];
+		this->mat[5] -= m.mat[5];
+		this->mat[6] -= m.mat[6];
+		this->mat[7] -= m.mat[7];
+		this->mat[8] -= m.mat[8];
+		return *this;
+	}
+
+
+
+	mat3 operator+(const mat3 & m1, const mat3 & m2)
+	{
+		return mat3(m1.mat[0] + m2.mat[0], m1.mat[1] + m2.mat[1], m1.mat[2] + m2.mat[2], 
+					m1.mat[3] + m2.mat[3], m1.mat[4] + m2.mat[4], m1.mat[5] + m2.mat[5], 
+					m1.mat[6] + m2.mat[6], m1.mat[7] + m2.mat[7], m1.mat[8] + m2.mat[8]);
+	}
+
+	mat3 operator-(const mat3 & m1, const mat3 & m2)
+	{
+		return mat3(m1.mat[0] - m2.mat[0], m1.mat[1] - m2.mat[1], m1.mat[2] - m2.mat[2],
+					m1.mat[3] - m2.mat[3], m1.mat[4] - m2.mat[4], m1.mat[5] - m2.mat[5],
+					m1.mat[6] - m2.mat[6], m1.mat[7] - m2.mat[7], m1.mat[8] - m2.mat[8]);
+	}
 
 	mat3 operator*(const mat3 & m1, const mat3 & m2)
 	{
@@ -71,6 +128,49 @@ namespace engine {
 		return ret;
 	}
 
+	const mat3 mat3::transpose()
+	{	/*
+		|	0	1	2	|T 		|	0	3	6	|
+		|	3	4	5	|	=	|	1	4	7	|
+		|	6	7	8	|		|	2	5	8	|
+		*/
+
+		// [0,1,2,3,4,5,6,7,8]T = [0,3,6,1,4,7,2,5,8]
+
+		return mat3(this->mat[0], mat[3], mat[6],
+			mat[1], mat[4], mat[7],
+			mat[2],mat[5], mat[8]);
+	}
+
+	const float mat3::determinant()
+	{
+		/*
+		|	0,m11	1,m12	2,m13	|
+		|	3,m21	4,m22	5,m23	|
+		|	6,m31	7,m32	8,m33	|
+		*/
+		return mat[0]*(mat[4]*mat[8] - mat[5]*mat[7]) 
+			- mat[1] * (mat[3] * mat[8] - mat[5] * mat[6]) 
+			+ mat[3] * (mat[3] * mat[7] - mat[4] * mat[6]);
+	}
+
+	const mat3 mat3::inverse()
+	{
+		// first det != 0
+		if (fcmpm(0, this->determinant())) {
+			return mat3(2);
+		}
+
+		// second transpose
+		mat3 t = this->transpose();
+		// third and fourth , determinant of minor matrices, create co-factor matrix and adjugate
+		mat3 co_f_adj = mat3(t.mat[4] * t.mat[8] - t.mat[5] * t.mat[7],-( t.mat[3] * t.mat[8] - t.mat[5] * t.mat[6]), t.mat[3] * t.mat[7] - t.mat[4] * t.mat[6]
+						, -(t.mat[1] * t.mat[8] - t.mat[2] * t.mat[7]), t.mat[0] * t.mat[8] - t.mat[2] * t.mat[6], -(t.mat[0] * t.mat[7] - t.mat[1] * t.mat[6])
+						,t.mat[1] * t.mat[5] - t.mat[2] * t.mat[4], -(t.mat[0] * t.mat[5] - t.mat[2] * t.mat[3]), t.mat[0] * t.mat[4] - t.mat[1] * t.mat[3]);
+		std::cout << " coF " << std::endl << co_f_adj << std::endl;
+		return co_f_adj;
+	}
+
 	std::ostream & operator<<(std::ostream & out, const mat3 & m)
 	{
 		out << "| " << m.mat[0] << "  " << m.mat[1] << "  " << m.mat[2] << " |" << std::endl;
@@ -93,13 +193,13 @@ namespace engine {
 	const mat3 MatrixFactory::createIdentityMatrix3() {
 		return mat3(1);
 	}
-	const mat3 MatrixFactory::createDualMatrix(const vec3 v) {
+	const mat3 MatrixFactory::createDualMatrix(const vec3& v) {
 		return mat3(0, -v.z, v.y,
 					v.z, 0, -v.x,
 					-v.y, v.x, 0);
 	}
 
-	
+
 
 
 }

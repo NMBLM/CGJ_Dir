@@ -259,13 +259,15 @@ int main(int argc, char* argv[])
 	engine::vec3 y = engine::vec3(0.0f, 1.0f, 0.0f);
 	engine::vec3 z = engine::vec3(0.0f, 0.0f, 1.0f);
 	engine::vec3 zl = engine::vec3(0.0f);
+	engine::vec3 zz = engine::vec3(0.0f);
+
 	std::cout << "v1 =  " << v1 << std::endl;
 	std::cout << "v2 =  " << v2 << std::endl;
 	std::cout << "v3 =  " << v3 << std::endl;
 	std::cout << "v1 * 2 =  " << v1 * 2 << std::endl;
 	std::cout << "2 * v1 =  " << 2 * v1 << std::endl;
-	std::cout << "v2 * v3 =  " << v2.dot(v2, v3) << std::endl;
-	zl = x.cross(x, y);
+	std::cout << "v2 * v3 =  " << v2.dot(v3) << std::endl;
+	zl = x.cross( y);
 	std::cout << "zl =  " << zl << std::endl;
 	std::cout << "z =  " << z << std::endl;
 	if (zl == z) {
@@ -274,13 +276,25 @@ int main(int argc, char* argv[])
 	else {
 		std::cout << "False" << std::endl;
 	}
-
-
+	zz = y.cross(x);
+	std::cout << "zz =  " << zz << std::endl;
+	std::cout << "z =  " << z << std::endl;
+	if (zz == z) {
+		std::cout << "True" << std::endl;
+	}
+	else {
+		std::cout << "False" << std::endl;
+	}
+	v1 += v2;
+	std::cout << "v1 += v2  " << v1 << std::endl;
 	engine::mat3 m1 = engine::MatrixFactory::createIdentityMatrix3();
 	std::cout << m1;
 	engine::mat3 m2 = engine::MatrixFactory::createDualMatrix(v1);
 	std::cout << m2;
-
+	std::cout << m2.mat[2] << std::endl;
+	std::cout << m2.data()[2] << std::endl;
+	std::cout << m2 * m2.inverse();
+	std::cout << m2.inverse() * m2;
 
 
 }

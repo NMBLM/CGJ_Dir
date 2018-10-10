@@ -1,16 +1,29 @@
 #pragma once
+#ifndef MATRIX_H
+#define MATRIX_H
+
+
 #include "vector.h"
+#include <iostream>
 
 namespace engine {
 
 	struct mat2;
 	struct mat3;
 	struct mat4;
-	/*
+	
 	struct mat2 {
-		float mat[4];
-
+		float mat[4] = {};
+		/*
+		|	0	1	|
+		|	2	3	|
+		*/
 		//constructor
+		mat2(const float k);
+
+		mat2(const float m11, const  float m12, 	// First Row
+			 const float m21, const  float m22); 	// Second Row
+		const float* data(mat2& m);
 
 		// transform to diff dimension
 
@@ -27,7 +40,7 @@ namespace engine {
 
 
 	};
-	*/
+	
 	struct mat3 {
 		float mat[9] = {};
 		/*
@@ -44,33 +57,45 @@ namespace engine {
 		mat3(const mat3& m);
 		mat3(const mat4& m);
 
+		const float* data();
+
+
 
 	   //assignment, comparison
 
-	   //input/output
+
 
 	   //sum, subtraction 
 
-	   //multiplication (by another matrix, a scalar, or a vector) 
+	   //multiplication (by another matrix, a scalar, or a vector)
+		mat3 operator+= (const mat3& m);
+		mat3 operator-= (const mat3& m);
+		friend mat3 operator+ (const mat3& m1, const mat3& m2);
+		friend mat3 operator- (const mat3& m1, const mat3& m2);
 		friend mat3 operator* (const mat3& m1, const mat3& m2);
 		friend mat3 operator* (const mat3& m, const float alpha);
 		friend mat3 operator* (const float alpha, const mat3& m);
 		friend vec3 operator* (const mat3& m, const vec3& v);
-	   //transpose, determinant and inverse (except for 4x4 matrices)
 
+	   //transpose, determinant and inverse (except for 4x4 matrices)
+		const mat3 transpose();
+		const float determinant();
+		const mat3 inverse();
+
+		//input/output
 		friend std::ostream& operator<< (std::ostream& out, const mat3& m);
 		friend std::istream& operator>> (std::istream& in, mat3& m);
 	};
 	
 	struct mat4 {
-		float mat[16];
+		float mat[16] = {};
 		/*
 		|	0	1	2	3	|
 		|	4	5	6	7	|
 		|	8	9	10	11	|
 		|	12	13	14	15	|
 		*/
-		/*
+		
 		//constructor
 		mat4(const float k);
 
@@ -79,8 +104,10 @@ namespace engine {
 			 const float m31, const  float m32, const  float m33, const  float m34,  // Third  Row
 			 const float m41, const  float m42, const  float m43, const  float m44); // Fourth Row	
 
-		mat4(const mat3& m, const float w=0);
+		mat4(const mat3& m, const float w=1);
 		mat4(const mat4& m);
+		const float* data(mat4& m);
+
 		//assignment, comparison
 
 		//input/output
@@ -90,7 +117,7 @@ namespace engine {
 		//multiplication (by another matrix, a scalar, or a vector)
 
 		//transpose, determinant and inverse (except for 4x4 matrices)
-		*/
+		
 	};
 	
 
@@ -101,17 +128,31 @@ namespace engine {
 		static const mat3 createIdentityMatrix3();
 		static const mat4 createIdentityMatrix4();
 
+	
 
 		// scale ( x, y, z);
+		static const mat2 createScaleMatrix2(const float sx, const float sy);
+		static const mat3 createScaleMatrix3(const float sx, const float sy);
 
-		// translation (x,y,z) revisit this
 
 		// rotation ( angle )
+		static const mat2 createRotationMatrix2(const float angle);
+		static const mat3 createRotationMatrix3Z(const float angle);
+		static const mat3 createRotationMatrix3Y(const float angle);
+		static const mat3 createRotationMatrix3X(const float angle);
+		static const mat3 createRotationMatrix(const float angle, const vec3& v);
 
+		// translation (x,y,z)
+		static const mat4 createTranslationMatrix(const float x, const float y, const float z);
+
+		// Transformation of Normals
+		static const mat4 createNormalMatrix(const mat4& m);
 		// dual is for cross Product
-		static const mat3 createDualMatrix(const vec3 v);
+		static const mat3 createDualMatrix(const vec3& v);
 
 		//Shear/Sheer?
 	};
 
 }
+
+#endif

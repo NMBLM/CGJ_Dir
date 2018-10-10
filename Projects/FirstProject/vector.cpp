@@ -86,14 +86,14 @@ namespace engine {
 			return vec3(v.x*alpha, v.y*alpha, v.z*alpha);
 		}
 
-		const vec3 vec3::cross(const vec3 & v1,const vec3 & v2)
+		const vec3 vec3::cross(const vec3 & v2)
 		{	
-			mat3 dual = MatrixFactory::createDualMatrix(v1);
+			mat3 dual = MatrixFactory::createDualMatrix(*this);
 			return dual*v2;
 		}
-		const float vec3::dot(const vec3 & v1,const vec3 & v2)
+		const float vec3::dot(const vec3 & v2)
 		{
-			return v1.x*v2.x + v1.y*v2.y + v1.z*v2.z;
+			return x*v2.x + y*v2.y + z*v2.z;
 		}
 
 		std::ostream& operator<<(std::ostream & out, const vec3 & v)

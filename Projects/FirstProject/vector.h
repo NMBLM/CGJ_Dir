@@ -1,4 +1,7 @@
 #pragma once
+#ifndef VECTOR_H
+#define VECTOR_H
+
 #include <iostream>
 
 namespace engine {
@@ -7,13 +10,14 @@ namespace engine {
 	struct vec3;
 	struct vec4;
 
-	/*
+	
 	struct vec2 
 	{
 		float x, y;
 		// Constructor
 		vec2(const float x,const float y);
 		vec2(const vec2& v);
+		float* data(const vec2& v);
 
 		friend const bool operator==(const vec2& v1, const vec2& v2);
 
@@ -29,7 +33,7 @@ namespace engine {
 		friend std::ostream & operator<< (std::ostream &out, const vec2 &v);
 		friend std::istream & operator>> (std::istream &in, vec2 &v);
 	};
-	*/
+	
 
 
 	struct vec3 {
@@ -42,7 +46,7 @@ namespace engine {
 		vec3(const vec3& v);
 		vec3(const vec4& v);
 
-		const float* data();
+		const float* data(vec3& v);
 
 
 		// assignment, Comparison
@@ -61,8 +65,8 @@ namespace engine {
 		friend vec3 operator*(const float alpha, const vec3& v);
 
 		// cross,dot product
-		const vec3 cross(const vec3& v1, const vec3& v2);
-		const float dot(const vec3& v1, const vec3& v2);
+		const vec3 cross( const vec3& v2);
+		const float dot( const vec3& v2);
 
 		// input output
 		friend std::ostream& operator<< (std::ostream& out, const vec3& v);
@@ -76,6 +80,8 @@ namespace engine {
 		// Constructor
 		vec4(const float x, const float y,const float z,const float w);
 		vec4(const vec3& v ,const float w = 0);
+		const float* data(vec3& v);
+
 		// transform to diff dimension
 
 		friend const bool operator==(const vec4& v1, const vec4& v2);
@@ -90,3 +96,5 @@ namespace engine {
 
 
 }
+
+#endif
