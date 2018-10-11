@@ -38,6 +38,8 @@ namespace engine {
 		friend vec2 operator*(const vec2& v, const float alpha);
 		friend vec2 operator*(const float alpha, const vec2& v);
 
+		const float length();
+		const float quadrance();
 
 		// input output
 		friend std::ostream & operator<< (std::ostream &out, const vec2 &v);
@@ -110,7 +112,6 @@ namespace engine {
 		
 	};
 	
-
 
 }
 

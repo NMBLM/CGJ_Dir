@@ -61,6 +61,16 @@ namespace engine {
 		return *this;
 	}
 
+	const float vec2::length()
+	{
+		return sqrt(x * x + y * y);
+	}
+
+	const float vec2::quadrance()
+	{
+		return x * x + y * y;
+	}
+
 	
 	const bool operator==(const vec2 & v1, const vec2 & v2)
 	{

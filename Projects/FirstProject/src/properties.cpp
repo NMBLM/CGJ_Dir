@@ -249,15 +249,15 @@ int main(int argc, char* argv[])
 */
 ///////////////////////////////////////////////////////////////////////
 
-int main(int argc, char* argv[])
+int properties()
 {
 	
 	engine::vec3 v1 = engine::vec3(1.0f, 1.0f, 1.0f);
 	engine::vec3 v2 = engine::vec3(1.0f, 0.0f, 1.0f);
 	engine::vec3 v3 = engine::vec3(1.0f, 0.0f, -1.0f);
-	engine::vec3 x = engine::vec3(1.0f, 0.0f, 0.0f);
-	engine::vec3 y = engine::vec3(0.0f, 1.0f, 0.0f);
-	engine::vec3 z = engine::vec3(0.0f, 0.0f, 1.0f);
+	engine::vec3 x  = engine::vec3(1.0f, 0.0f, 0.0f);
+	engine::vec3 y  = engine::vec3(0.0f, 1.0f, 0.0f);
+	engine::vec3 z  = engine::vec3(0.0f, 0.0f, 1.0f);
 	engine::vec3 zl = engine::vec3(0.0f);
 	engine::vec3 zz = engine::vec3(0.0f);
 
