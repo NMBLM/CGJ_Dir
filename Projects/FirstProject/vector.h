@@ -16,6 +16,7 @@ namespace engine {
 	{
 		float x, y;
 		// Constructor
+		vec2(const float k);
 		vec2(const float x,const float y);
 		vec2(const vec2& v);
 		float* data();
@@ -94,6 +95,8 @@ namespace engine {
 		vec4(const float x, const float y, const float z);
 		vec4(const float x, const float y,const float z,const float w);
 		vec4(const vec3& v ,const float w = 1);
+		vec4(const vec4& v);
+
 		const float* data(vec4& v);
 
 		// assigment

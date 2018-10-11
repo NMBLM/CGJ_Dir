@@ -6,10 +6,14 @@
 
 namespace engine {
 
-	
+	// VECTOR 2 ////////////////////////////////////////////////////
 	const bool fcmp(float a, float b, float epsilon)
 	{
 		return fabs(a - b) < epsilon;
+	}
+
+	vec2::vec2(const float k): x(k), y(k)
+	{
 	}
 
 	vec2::vec2(const float x, const float y) : x(x), y(y)
@@ -97,9 +101,8 @@ namespace engine {
 		return in;
 	}
 
+	// VECTOR 3 ////////////////////////////////////////////////////
 
-
-	//BEGIN vec3 constructor
 	vec3::vec3(float k) 
 	{ // all values equal
 		x = k; y = k; z = k;
@@ -128,9 +131,7 @@ namespace engine {
 		data[1] = y;
 		data[2] = z;
 		return data;
-	}
-	//END vec3 constructor
-			
+	}			
 		
 	vec3 vec3::operator=(const vec3 & v)
 	{
@@ -223,6 +224,62 @@ namespace engine {
 		return in;
 	}
 
+	// VECTOR 4 ////////////////////////////////////////////////////
+
+	vec4::vec4(float k)
+	{ // all values equal
+		x = k; y = k; z = k; w=1;
+	}
+
+	vec4::vec4(const float x, const float y, const float z) :x(x), y(y), z(z), w(1) {}
+
+	vec4::vec4(const float x, const float y, const float z, const float w)
+		: x(x / w), y(y / w), z(z / w) , w(1){}
 
 
+	vec4::vec4(const vec3& v, const float _w)
+	{
+		x = v.x; y = v.y; z = v.z; w = _w;
+	}
+
+	vec4::vec4(const vec4& v)
+	{
+		x = v.x;
+		y = v.y;
+		z = v.z;
+		w = v.z;
+	}
+
+	const float * vec4::data(vec4 & v)
+	{
+		float *data = new float[4]();
+		data[0] = x;
+		data[1] = y;
+		data[2] = z;
+		data[3] = w;
+		return data;
+	}
+
+
+	const bool operator==(const vec4 & v1, const vec4 & v2)
+	{
+		return fcmp(v1.x, v2.x) && fcmp(v1.y, v2.y) && fcmp(v1.z, v2.z) && fcmp(v1.w, v2.w);
+	}
+
+	const bool operator!=(const vec4 & v1, const vec4 & v2)
+	{
+		return !(fcmp(v1.x, v2.x) && fcmp(v1.y, v2.y) && fcmp(v1.z, v2.z) && fcmp(v1.w, v2.w));
+	}
+
+	std::ostream& operator<<(std::ostream& out, const vec4 & v)
+	{
+		out << "( " << v.x << " , " << v.y << " , " << v.z << " , " << v.w << " )";
+		return out;
+	}
+
+	std::istream & operator>>(std::istream& in, vec4 & v)
+	{
+		in >> v.x >> v.y >> v.z >> v.w;
+		return in;
+	}
 }

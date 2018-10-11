@@ -287,6 +287,7 @@ int main(int argc, char* argv[])
 	}
 	v1 += v2;
 	std::cout << "v1 += v2  " << v1 << std::endl;
+	std::cout << "Identity and dual " << std::endl;
 	engine::mat3 m1 = engine::MatrixFactory::createIdentityMatrix3();
 	std::cout << m1;
 	engine::mat3 m2 = engine::MatrixFactory::createDualMatrix(v1);
@@ -294,8 +295,30 @@ int main(int argc, char* argv[])
 	std::cout << m2.mat[2] << std::endl;
 	std::cout << m2.data()[2] << std::endl;
 	engine::mat3 m3 = engine::mat3(2, 0, 0, 0, 2, 0, 0, 0, 2);
+	std::cout << "inv 3 " << std::endl;
+	std::cout <<  m3.inverse();
 	std::cout << m3 * m3.inverse();
 	std::cout << m3.inverse() * m3;
+	engine::mat4 mm = engine::MatrixFactory::createIdentityMatrix4() * engine::MatrixFactory::createIdentityMatrix4();
+	std::cout << mm;
+	std::cout << "trans " << std::endl;
 
+	engine::mat4 t = engine::MatrixFactory::createTranslationMatrix(2, 4, 6);
+	std::cout << t;
+	std::cout << "normal " << std::endl << engine::MatrixFactory::createNormalMatrix(t);
+	std::cout << "rot " << std::endl;
+	engine::mat3 rot = engine::MatrixFactory::createRotationMatrix3(3.14159265f / 2.0f, engine::vec3(1,0,0));
+	std::cout << rot;
+	std::cout << rot * x << std::endl;
+	std::cout << rot * y << std::endl;
+	std::cout << rot * z << std::endl;
 
+	engine::mat2 m4 = engine::mat2(2, 1, 4, 4);
+	std::cout << "2 det " << std::endl;
+	std::cout << m4.determinant() << std::endl;
+
+	std::cout << "inv 2 " << std::endl;
+	std::cout << m4.inverse() << std::endl;
+	std::cout << m4 * m4.inverse() << std::endl;
+	std::cout << m4.inverse() * m4 << std::endl;
 }

@@ -5,7 +5,136 @@
 
 namespace engine {
 	
-	// mat3 constructor
+
+	// MAT 2 /////////////////////////////////////
+
+	mat2::mat2(const float k)
+	{
+		mat[0] = k; mat[3] = k;
+	}
+
+	mat2::mat2(const float m11, const float m12, const float m21, const float m22)
+	{
+		mat[0] = m11; mat[1] = m12;
+		mat[2] = m21; mat[3] = m22;
+	}
+
+	const float * mat2::data(mat2 & m)
+	{
+		float * data = new float[4]();
+		data[0] = m.mat[0]; data[1] = m.mat[2];
+		data[2] = m.mat[1]; data[3] = m.mat[3];
+		return data;
+	}
+
+	void mat2::clean()
+	{
+		for (int i = 0; i < 9; i++) {
+			if (fcmp(mat[i], 0)) {
+				mat[i] = 0;
+			}
+		}
+	}
+
+	mat2 mat2::operator+=(const mat2 & m)
+	{
+
+		for (int i = 0; i < 4; i++) {
+			this->mat[i] += m.mat[i];
+		}
+		return *this;
+	}
+
+	mat2 mat2::operator-=(const mat2 & m)
+	{
+		for (int i = 0; i < 4; i++) {
+			this->mat[i] -= m.mat[i];
+		}
+		return *this;
+	}
+
+
+
+	mat2 operator+(const mat2 & m1, const mat2 & m2)
+	{
+		return mat2(m1.mat[0] + m2.mat[0], m1.mat[1] + m2.mat[1], 
+					m1.mat[2] + m2.mat[2], m1.mat[3] + m2.mat[3]);
+	}
+
+	mat2 operator-(const mat2 & m1, const mat2 & m2)
+	{
+		return mat2(m1.mat[0] - m2.mat[0], m1.mat[1] - m2.mat[1],
+					m1.mat[2] - m2.mat[2], m1.mat[3] - m2.mat[3]);
+	}
+
+	mat2 operator*(const mat2 & m1, const mat2 & m2)
+	{
+		/*
+		|	0	1	| 	*	|	a	b	|		|	0*a+1*c		0*b+1*d	|
+		|	2	3	|		|	c	d	|	=	|	2*a+3*c		0*b+1*d	|
+		*/
+
+		return mat2(m1.mat[0] * m2.mat[0] + m1.mat[1] * m2.mat[2],	//m11
+					m1.mat[0] * m2.mat[1] + m1.mat[1] * m2.mat[3],	//m12
+					m1.mat[2] * m2.mat[0] + m1.mat[3] * m2.mat[2],	//m21
+					m1.mat[2] * m2.mat[1] + m1.mat[3] * m2.mat[3]);	//m22
+	}
+
+	mat2 operator*(const mat2 & m, const float alpha)
+	{
+		return mat2(m.mat[0] * alpha, m.mat[1] * alpha,
+					m.mat[2] * alpha, m.mat[3] * alpha);
+	}
+
+	mat2 operator*(const float alpha, const mat2 & m)
+	{
+		return mat2(m.mat[0] * alpha, m.mat[1] * alpha,
+					m.mat[2] * alpha, m.mat[3] * alpha);
+	}
+
+	vec2 operator*(const mat2 & m, const vec2 & v)
+	{
+		vec2 ret = vec2(0);
+		ret.x = m.mat[0] * v.x + m.mat[1] * v.y ;
+		ret.y = m.mat[2] * v.x + m.mat[3] * v.y ;
+		return ret;
+	}
+
+	const mat2 mat2::transpose()
+	{
+		return mat2(mat[0], mat[2],
+					mat[1], mat[3]);
+	}
+
+	const float mat2::determinant()
+	{
+
+		return mat[0] * mat[3] - mat[1] * mat[2];
+	}
+
+	const mat2 mat2::inverse()
+	{
+		return (1 / this->determinant()) * mat2(mat[3], -mat[1], -mat[2], mat[0]);
+	}
+
+	std::ostream & operator<<(std::ostream & out, const mat2 & m)
+	{
+		out << "| " << m.mat[0] << "  " << m.mat[1] << " |" << std::endl;
+		out << "| " << m.mat[2] << "  " << m.mat[3] << " |" << std::endl;
+
+		return out;
+	}
+
+	std::istream & operator>>(std::istream & in, mat2 & m)
+	{
+		in >> m.mat[0] >> m.mat[1] >> m.mat[2]
+			>> m.mat[3] >> m.mat[4] >> m.mat[5]
+			>> m.mat[6] >> m.mat[7] >> m.mat[8];
+		return in;
+	}
+
+
+	// MAT 3 /////////////////////////////////////
 	mat3::mat3(const float k) // diagonal is same value
 	{
 		mat[0] = mat[4] = mat[8] = k;
@@ -29,39 +158,36 @@ namespace engine {
 
 	const float * mat3::data()
 	{
-		float data[9] = { mat[0] ,mat[3] ,mat[6]
-						 ,mat[1] ,mat[4] ,mat[7]
-						 ,mat[2] ,mat[5] ,mat[8]};
+		float* data = new float[9]();
+		data[0] = mat[0]; data[1] = mat[3]; data[2] = mat[6];
+		data[3] = mat[1]; data[4] = mat[4]; data[5] = mat[7];
+		data[6] = mat[2]; data[7] = mat[8]; data[9] = mat[8];
 		return data;
+	}
+
+	void mat3::clean()
+	{
+		for (int i = 0; i < 9; i++) {
+			if (fcmp(mat[i], 0)) {
+				mat[i] = 0;
+			}
+		}
 	}
 
 	mat3 mat3::operator+=(const mat3 & m)
 	{
 		
-
-		this->mat[0] += m.mat[0];
-		this->mat[1] += m.mat[1];
-		this->mat[2] += m.mat[2];
-		this->mat[3] += m.mat[3];
-		this->mat[4] += m.mat[4];
-		this->mat[5] += m.mat[5];
-		this->mat[6] += m.mat[6];
-		this->mat[7] += m.mat[7];
-		this->mat[8] += m.mat[8];
+		for (int i = 0; i < 9; i++) {
+			mat[i] += m.mat[i];
+		}
 		return *this;
 	}
 
 	mat3 mat3::operator-=(const mat3 & m)
 	{
-		this->mat[0] -= m.mat[0];
-		this->mat[1] -= m.mat[1];
-		this->mat[2] -= m.mat[2];
-		this->mat[3] -= m.mat[3];
-		this->mat[4] -= m.mat[4];
-		this->mat[5] -= m.mat[5];
-		this->mat[6] -= m.mat[6];
-		this->mat[7] -= m.mat[7];
-		this->mat[8] -= m.mat[8];
+		for (int i = 0; i < 9; i++) {
+			mat[i] -= m.mat[i];
+		}
 		return *this;
 	}
 
@@ -131,9 +257,9 @@ namespace engine {
 
 		// [0,1,2,3,4,5,6,7,8]T = [0,3,6,1,4,7,2,5,8]
 
-		return mat3(this->mat[0], mat[3], mat[6],
-			mat[1], mat[4], mat[7],
-			mat[2],mat[5], mat[8]);
+		return mat3(mat[0], mat[3], mat[6],
+					mat[1], mat[4], mat[7],
+					mat[2],mat[5], mat[8]);
 	}
 
 	const float mat3::determinant()
@@ -179,21 +305,13 @@ namespace engine {
 		in  >> m.mat[0] >> m.mat[1] >> m.mat[2] 
 			>> m.mat[3] >> m.mat[4] >> m.mat[5] 
 			>> m.mat[6] >> m.mat[7] >> m.mat[8];
-
 		return in;
 	}
 
 
-	const mat3 MatrixFactory::createIdentityMatrix3() {
-		return mat3(1);
-	}
-	const mat3 MatrixFactory::createDualMatrix(const vec3& v) {
-		return mat3(0, -v.z, v.y,
-					v.z, 0, -v.x,
-					-v.y, v.x, 0);
-	}
 
 
+	// MAT 4 /////////////////////////////////////
 
 
 	mat4::mat4(const float k)
@@ -214,10 +332,236 @@ namespace engine {
 
 	mat4::mat4(const mat3 & m, const float w)
 	{
+		mat[0] = m.mat[0];	mat[1] = m.mat[1];	mat[2] = m.mat[2];
+		mat[4] = m.mat[3];	mat[5] = m.mat[4];	mat[6] = m.mat[5];
+		mat[8] = m.mat[6];	mat[9] = m.mat[7];	mat[10] = m.mat[8];
+		mat[15] = w;
 	}
 
 	mat4::mat4(const mat4 & m)
 	{
+		memcpy(mat, m.mat, sizeof(m.mat));
 	}
+
+	const float * mat4::data(mat4 & m)
+	{
+		return nullptr;
+	}
+
+	void mat4::clean()
+	{
+		for (int i = 0; i < 16; i++) {
+			if (fcmp(mat[i], 0)) {
+				mat[i] = 0;
+			}
+		}
+	}
+
+	mat4 mat4::operator+=(const mat4 & m)
+	{
+		for (int i = 0; i < 16; i++) {
+			this->mat[i] += m.mat[i];
+		}
+		return *this;
+	}
+	mat4 mat4::operator-=(const mat4 & m)
+	{
+		for (int i = 0; i < 16; i++) {
+			this->mat[i] -= m.mat[i];
+		}
+		return *this;
+	}
+
+
+	mat4 operator+(const mat4 & m1, const mat4 & m2)
+	{	
+		mat4 m = mat4(1);
+		for (int i = 0; i < 16; i++) {
+			m.mat[i] = m1.mat[i] + m2.mat[i];
+		}
+		return m;
+	}
+
+	mat4 operator-(const mat4 & m1, const mat4 & m2)
+	{
+		mat4 m = mat4(1);
+		for (int i = 0; i < 16; i++) {
+			m.mat[i] = m1.mat[i] - m2.mat[i];
+		}
+		return m;
+	}
+
+	mat4 operator*(const mat4 & m1, const mat4 & m2)
+	{
+		/* 
+		|	0	1	2	3	| |	0	1	2	3	| |	0*0 +1*4 + 2*8 +3*12	0*1 +1*5 + 2*9 +3*13 	0*2 +1*6 +2 *10 +3*14	0*3 +1*7 +2 *11 +3*15	|
+		|	4	5	6	7	|*|	4	5	6	7	|=|	4*0 +1*4 + 2*6 +7*12	4*1 +5*5 + 6*9 +7*13 	4*2 +5*6 +6 *10 +7*14	4*3 +5*7 +6 *11 +7*15	|
+		|	8	9	10	11	| |	8	9	10	11	| |	8*0 +9*4 +10*8+11*12	8*1 +9*5 +10*9+11*13	8*2 +9*6 +10*10+11*14	8*3 +9*7 +10*11+11*15	|
+		|	12	13	14	15	| |	12	13	14	15	| |	12*0+13*4+14*8+15*12	12*1+13*5+14*9+15*13	12*2+13*6+14*10+15*14	12*3+13*7+14*11+15*15	|
+		*/
+		mat4 m = mat4(2);
+
+		for (int i = 0; i < 16; i++) {
+			for (int j = 0; j < 13; j+=4) {
+				for (int k = 0; k < 4; i++ ,k++  ) {
+					m.mat[i] = m1.mat[j] * m2.mat[k] + m1.mat[j+1] * m2.mat[k+4] + m1.mat[j+2] * m2.mat[k+8] + m1.mat[j+3] * m2.mat[k+12];
+					/*std::cout << "m.mat[i =" << i << "] = " << m.mat[i] << " = "
+						<< "(m1.mat[j =" << j << "] = " << m1.mat[j] << ") * " << "(m2.mat[k =" << k << "] = " << m2.mat[k] << ") + "
+						<< "(m1.mat[j +1 =" << j + 1 << "] = " << m1.mat[j + 1] << ") * " << "(m2.mat[k+4 =" << k + 4 << "] = " << m2.mat[k + 4] << ") + "
+						<< "(m1.mat[j +2 =" << j + 2 << "] = " << m1.mat[j + 2] << ") * " << "(m2.mat[k+8 =" << k + 8 << "] = " << m2.mat[k + 8] << ") + "
+						<< "(m1.mat[j +3 =" << j + 3 << "] = " << m1.mat[j + 3] << ") * " << "(m2.mat[k+12 =" << k + 12 << "] = " << m2.mat[k + 12] << ")" << std::endl;
+					*/
+				}
+			}
+		}
+
+		return m;
+	}
+
+	mat4 operator*(const mat4 & m, const float alpha)
+	{
+		mat4 r = mat4(1);
+		for (int i = 0; i < 16; i++) {
+			r.mat[i] = m.mat[i] * alpha;
+		}
+		return r;
+	}
+
+	mat4 operator*(const float alpha, const mat4 & m)
+	{
+		mat4 r = mat4(1);
+		for (int i = 0; i < 16; i++) {
+			r.mat[i] = m.mat[i] * alpha;
+		}
+		return r;
+	}
+
+	vec4 operator*(const mat4 & m, const vec4 & v)
+	{
+		vec4 ret = vec4(0);
+		ret.x = m.mat[0] * v.x + m.mat[1] * v.y + m.mat[2] * v.z + m.mat[3] * v.w;
+		ret.y = m.mat[4] * v.x + m.mat[5] * v.y + m.mat[6] * v.z + m.mat[7] * v.w;
+		ret.z = m.mat[8] * v.x + m.mat[9] * v.y + m.mat[10] * v.z + m.mat[11] * v.w;
+		ret.w = m.mat[12] * v.x + m.mat[13] * v.y + m.mat[14] * v.z + m.mat[15] * v.w;
+		return ret;
+
+	}
+
+	std::ostream & operator<<(std::ostream & out, const mat4 & m)
+	{
+		out << "| " << m.mat[0] << "  " << m.mat[1] << "  " << m.mat[2] << "  " << m.mat[3] << " |" << std::endl;
+		out << "| " << m.mat[4] << "  " << m.mat[5] << "  " << m.mat[6] << "  " << m.mat[7] << " |" << std::endl;
+		out << "| " << m.mat[8] << "  " << m.mat[9] << "  " << m.mat[10] << "  " << m.mat[11] << " |" << std::endl;
+		out << "| " << m.mat[12] << "  " << m.mat[13] << "  " << m.mat[14] << "  " << m.mat[15] << " |" << std::endl;
+		return out;
+	}
+
+	std::istream & operator>>(std::istream & in, mat4 & m)
+	{	
+		in	>> m.mat[0]  >> m.mat[1]  >> m.mat[2]  >> m.mat[3]
+			>> m.mat[4]  >> m.mat[5]  >> m.mat[6]  >> m.mat[7]
+			>> m.mat[8]  >> m.mat[9]  >> m.mat[10] >> m.mat[11]
+			>> m.mat[12] >> m.mat[13] >> m.mat[14] >> m.mat[15];
+		return in;
+	}
+
+
+	// MATRIX FACTORY 2 ///////////////////////////
+
+	const mat2 MatrixFactory::createIdentityMatrix2()
+	{
+		return mat2(1);
+	}
+
+	const mat2 MatrixFactory::createScaleMatrix2(const float sx, const float sy)
+	{
+		mat2 ret = mat2(1);
+		ret.mat[0] = sx;
+		ret.mat[3] = sy;
+		return mat2(1);
+	}
+	
+	// MATRIX FACTORY 3 ///////////////////////////
+	   
+	const mat3 MatrixFactory::createIdentityMatrix3() {
+		return mat3(1);
+	}
+	const mat3 MatrixFactory::createRotationMatrix3(const float angle, const vec3 & v)
+	{
+		mat3 A  = engine::MatrixFactory::createDualMatrix(v);
+		mat3 A2 = engine::MatrixFactory::createSquareDualMatrix(v);
+		mat3 R  = engine::MatrixFactory::createIdentityMatrix3() + sin(angle) * A + (1 - cos(angle)) * A2;
+		return R;
+	}
+
+	const mat3 MatrixFactory::createDualMatrix(const vec3& v) {
+		return mat3(0, -v.z, v.y,
+			v.z, 0, -v.x,
+			-v.y, v.x, 0);
+	}
+
+	const mat3 MatrixFactory::createSquareDualMatrix(const vec3 & v)
+	{
+		return mat3( (-v.z*v.z) -v.y*v.y, v.x*v.y , v.x * v.z,
+					 v.x*v.y, (-v.z*v.z) - v.x*v.x, v.y * v.z,
+					 v.x*v.z, v.y * v.z,  (-v.y*v.y) - v.x*v.x);
+	}
+
+	const mat3 MatrixFactory::createScaleMatrix3(const float x, const float y, const float z)
+	{
+		mat3 ret = mat3(1);
+		ret.mat[0] = x;
+		ret.mat[4] = y;
+		ret.mat[8] = z;
+		return ret;
+	}
+
+	const mat3 MatrixFactory::transformMatrix4to3(const mat4 & m)
+	{
+		return mat3(m);
+	}
+
+	const mat3 MatrixFactory::createNormalMatrix(const mat4 & m)
+	{
+		mat3 M = engine::MatrixFactory::transformMatrix4to3(m);
+		mat3 Q = M.inverse();
+		Q = Q.transpose();
+		return Q;
+	}
+
+
+	// MATRIX FACTORY 4 ///////////////////////////
+
+
+	const mat4 MatrixFactory::createIdentityMatrix4()
+	{
+		return mat4(1);
+	}
+
+	const mat4 MatrixFactory::createRotationMatrix4(const float angle, const vec4 & v)
+	{
+		return MatrixFactory::transformMatrix3to4(MatrixFactory::createRotationMatrix3(angle,vec3(v) ) );
+	}
+
+	const mat4 MatrixFactory::createTranslationMatrix(const float x, const float y, const float z)
+	{
+		mat4 res = MatrixFactory::createIdentityMatrix4();
+		res.mat[3] = x;
+		res.mat[7] = y;
+		res.mat[11] = z;
+
+		return res;
+	}
+
+	const mat4 MatrixFactory::createScaleMatrix4(const float x, const float y, const float z)
+	{
+		return  MatrixFactory::transformMatrix3to4(MatrixFactory::createScaleMatrix3(x, y, z));
+	}
+
+	const mat4 MatrixFactory::transformMatrix3to4(const mat3 & m)
+	{
+		return  mat4(m);
+	}
+
 
 }
