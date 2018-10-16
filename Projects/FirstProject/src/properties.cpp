@@ -321,4 +321,6 @@ int properties()
 	std::cout << m4.inverse() << std::endl;
 	std::cout << m4 * m4.inverse() << std::endl;
 	std::cout << m4.inverse() * m4 << std::endl;
+	return 0;
 }
+

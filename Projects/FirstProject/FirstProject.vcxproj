@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="2-Hello2dWorld.cpp" />
     <ClCompile Include="matrix.cpp" />
+    <ClCompile Include="test.cpp" />
     <ClCompile Include="vector.cpp" />
     <ClCompile Include="src\properties.cpp" />
   </ItemGroup>

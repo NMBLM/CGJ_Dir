@@ -193,6 +193,16 @@ namespace engine {
 
 
 
+	bool operator==(const mat3 & m1, const mat3 & m2)
+	{
+		for (int i = 0; i < 9; i++) {
+			if (!fcmp(m1.mat[i], m2.mat[i])) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	mat3 operator+(const mat3 & m1, const mat3 & m2)
 	{
 		return mat3(m1.mat[0] + m2.mat[0], m1.mat[1] + m2.mat[1], m1.mat[2] + m2.mat[2], 
@@ -488,8 +498,9 @@ namespace engine {
 	}
 	const mat3 MatrixFactory::createRotationMatrix3(const float angle, const vec3 & v)
 	{
-		mat3 A  = engine::MatrixFactory::createDualMatrix(v);
-		mat3 A2 = engine::MatrixFactory::createSquareDualMatrix(v);
+		vec3 a = (1 / v.length()) * v;
+		mat3 A  = engine::MatrixFactory::createDualMatrix(a);
+		mat3 A2 = engine::MatrixFactory::createSquareDualMatrix(a);
 		mat3 R  = engine::MatrixFactory::createIdentityMatrix3() + sin(angle) * A + (1 - cos(angle)) * A2;
 		return R;
 	}

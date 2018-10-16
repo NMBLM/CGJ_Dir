@@ -6,7 +6,7 @@
 
 namespace engine {
 
-	const bool fcmp(float a, float b, float epsilon = 0.00005f);
+	const bool fcmp(float a, float b, float epsilon = 0.000001f);
 	struct vec2;
 	struct vec3;
 	struct vec4;
@@ -38,8 +38,8 @@ namespace engine {
 		friend vec2 operator*(const vec2& v, const float alpha);
 		friend vec2 operator*(const float alpha, const vec2& v);
 
-		const float length();
-		const float quadrance();
+		const float length() const;
+		const float quadrance() const;
 
 		// input output
 		friend std::ostream & operator<< (std::ostream &out, const vec2 &v);
@@ -52,6 +52,7 @@ namespace engine {
 		float x, y, z;
 
 		// Constructor
+		vec3();
 		vec3(const float k); // all values equal
 		vec3(const float x, const float y, const float z);
 		vec3(const float x, const float y, const float z, const float w); //vec4 to vec3 except all values, w = 1 means real world point w=0 means vector
@@ -81,8 +82,8 @@ namespace engine {
 		const vec3 cross( const vec3& v2);
 		const float dot( const vec3& v2);
 		// quadrance and length assigment
-		const float length();
-		const float quadrance();
+		const float length() const;
+		const float quadrance() const;
 		// input output
 		friend std::ostream& operator<< (std::ostream& out, const vec3& v);
 		friend std::istream& operator>> (std::istream& in, vec3& v);

@@ -123,8 +123,37 @@ static void checkOpenGLError(std::string error)
 	}
 }
 
-/////////////////////////////////////////////////////////////////////// SHADERs
+/////////////////////////////////////////////////////////////////////// SHADERS
 
+//const GLchar* VertexShader =
+//{
+//	"#version 330 core\n"
+//
+//	"in vec4 in_Position;\n"
+//	"in vec4 in_Color;\n"
+//	"out vec4 ex_Color;\n"
+//
+//	"uniform mat4 Matrix;\n"
+//
+//	"void main(void)\n"
+//	"{\n"
+//	"	gl_Position = Matrix * in_Position;\n"
+//	"	ex_Color = in_Color;\n"
+//	"}\n"
+//};
+//
+//const GLchar* FragmentShader =
+//{
+//	"#version 330 core\n"
+//
+//	"in vec4 ex_Color;\n"
+//	"out vec4 out_Color;\n"
+//
+//	"void main(void)\n"
+//	"{\n"
+//	"	out_Color = ex_Color;\n"
+//	"}\n"
+//};
 
 const GLchar* getShader(const char* filename) {
 	std::ifstream t(filename);
@@ -133,6 +162,7 @@ const GLchar* getShader(const char* filename) {
 		std::istreambuf_iterator<char>());
 	return data.c_str();
 }
+
 void createShaderProgram()
 {	
 	const GLchar * VertexShader = getShader("VertexShader.glsl");
@@ -141,7 +171,9 @@ void createShaderProgram()
 	glShaderSource(VertexShaderId, 1, &VertexShader, 0);
 	glCompileShader(VertexShaderId);
 
+
 	const GLchar * FragmentShader = getShader("FragmentShader.glsl");
+
 	FragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(FragmentShaderId, 1, &FragmentShader, 0);
 	glCompileShader(FragmentShaderId);
@@ -377,6 +409,7 @@ void setupGLUT(int argc, char* argv[])
 
 void init(int argc, char* argv[])
 {
+
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();

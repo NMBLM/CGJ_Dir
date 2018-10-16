@@ -80,6 +80,7 @@ namespace engine {
 	   //multiplication (by another matrix, a scalar, or a vector)
 		mat3 operator+= (const mat3& m);
 		mat3 operator-= (const mat3& m);
+		friend bool operator== (const mat3& m1, const mat3& m2);
 		friend mat3 operator+ (const mat3& m1, const mat3& m2);
 		friend mat3 operator- (const mat3& m1, const mat3& m2);
 		friend mat3 operator* (const mat3& m1, const mat3& m2);

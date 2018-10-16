@@ -61,12 +61,12 @@ namespace engine {
 		return *this;
 	}
 
-	const float vec2::length()
+	const float vec2::length() const
 	{
 		return sqrt(x * x + y * y);
 	}
 
-	const float vec2::quadrance()
+	const float vec2::quadrance() const
 	{
 		return x * x + y * y;
 	}
@@ -113,7 +113,11 @@ namespace engine {
 
 	// VECTOR 3 ////////////////////////////////////////////////////
 
-	vec3::vec3(float k) 
+	vec3::vec3() :x(0), y(0), z(0)
+	{
+	}
+
+	vec3::vec3(float k)
 	{ // all values equal
 		x = k; y = k; z = k;
 	}
@@ -212,12 +216,12 @@ namespace engine {
 		return x*v2.x + y*v2.y + z*v2.z;
 	}
 
-	const float vec3::length()
+	const float vec3::length() const 
 	{
 		return sqrt(x * x + y * y + z * z);
 	}
 
-	const float vec3::quadrance()
+	const float vec3::quadrance() const
 	{
 		return x * x + y * y + z * z;
 	}
