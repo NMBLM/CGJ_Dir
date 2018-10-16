@@ -52,3 +52,11 @@ Projects/FirstProject/x64/Release/matrix.obj
 Projects/FirstProject/x64/Release/properties.obj
 Projects/FirstProject/x64/Release/vc141.pdb
 Projects/FirstProject/x64/Release/vector.obj
+Projects/FirstProject/x64/Release/test.obj
+Projects/FirstProject/x64/Debug/test.obj
+Projects/FirstProject/x64/Debug/properties.obj
+Projects/FirstProject/x64/Debug/FirstProject.tlog/link.delete.1.tlog
+Projects/.vs/Projects/v15/ipch/AutoPCH/e25d98fa20030e2b/PROPERTIES.ipch
+Projects/.vs/Projects/v15/ipch/AutoPCH/7c7f801ca5a9deea/TEST.ipch
+CGJ_Dir.rar
+bin/x64/FirstProject.ilk
