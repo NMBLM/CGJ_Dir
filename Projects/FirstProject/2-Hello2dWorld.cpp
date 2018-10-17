@@ -129,43 +129,6 @@ static void checkOpenGLError(std::string error)
 
 /////////////////////////////////////////////////////////////////////// SHADERS
 
-//const GLchar* VertexShader =
-//{
-//	"#version 330 core\n"
-//
-//	"in vec4 in_Position;\n"
-//	"in vec4 in_Color;\n"
-//	"out vec4 ex_Color;\n"
-//
-//	"uniform mat4 Matrix;\n"
-//
-//	"void main(void)\n"
-//	"{\n"
-//	"	gl_Position = Matrix * in_Position;\n"
-//	"	ex_Color = in_Color;\n"
-//	"}\n"
-//};
-//
-//const GLchar* FragmentShader =
-//{
-//	"#version 330 core\n"
-//
-//	"in vec4 ex_Color;\n"
-//	"out vec4 out_Color;\n"
-//
-//	"void main(void)\n"
-//	"{\n"
-//	"	out_Color = ex_Color;\n"
-//	"}\n"
-//};
-
-//const GLchar* getShader(const char* filename) {
-//	std::ifstream t(filename);
-//	std::string data;
-//	data.assign((std::istreambuf_iterator<char>(t)),
-//		std::istreambuf_iterator<char>());
-//	return data.c_str();
-//}
 
 void createShaderProgram()
 {
