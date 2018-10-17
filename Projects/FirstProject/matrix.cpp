@@ -323,7 +323,9 @@ namespace engine {
 
 	// MAT 4 /////////////////////////////////////
 
-
+	mat4::mat4()
+	{
+	}
 	mat4::mat4(const float k)
 	{
 		mat[0] = k; mat[5] = k; mat[10] = k; mat[15] = k;
@@ -353,9 +355,14 @@ namespace engine {
 		memcpy(mat, m.mat, sizeof(m.mat));
 	}
 
-	const float * mat4::data(mat4 & m)
+	const float * mat4::data() const
 	{
-		return nullptr;
+		float* data = new float[16]();
+		data[0] = mat[0];	data[1] = mat[4];	data[2] = mat[8];	data[3] = mat[12];
+		data[4] = mat[1];	data[5] = mat[5];	data[6] = mat[9];	data[7] = mat[13];
+		data[8] = mat[2];	data[9] = mat[6];	data[10] = mat[10];	data[11] = mat[14];
+		data[12] = mat[3];	data[13] = mat[7];	data[14] = mat[11];	data[15] = mat[15];
+		return data;
 	}
 
 	void mat4::clean()

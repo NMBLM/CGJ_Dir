@@ -108,6 +108,7 @@ namespace engine {
 		*/
 		
 		//constructor
+		mat4();
 		mat4(const float k);
 
 		mat4(const float m11, const  float m12, const  float m13, const  float m14,	 // First  Row
@@ -117,7 +118,7 @@ namespace engine {
 
 		mat4(const mat3& m, const float w=1);
 		mat4(const mat4& m);
-		const float* data(mat4& m);
+		const float* data() const;
 		void clean();
 
 		mat4 operator+= (const mat4& m);

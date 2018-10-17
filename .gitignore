@@ -60,3 +60,7 @@ Projects/.vs/Projects/v15/ipch/AutoPCH/e25d98fa20030e2b/PROPERTIES.ipch
 Projects/.vs/Projects/v15/ipch/AutoPCH/7c7f801ca5a9deea/TEST.ipch
 CGJ_Dir.rar
 bin/x64/FirstProject.ilk
+bin/x64/FirstProject.exe
+bin/x64/FirstProject.pdb
+Projects/.vs/Projects/v15/ipch/AutoPCH/348ffeaa0b76ca5d/SHADER.ipch
+Projects/FirstProject/x64/Debug/Shader.obj
