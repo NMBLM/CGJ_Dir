@@ -65,3 +65,6 @@ bin/x64/FirstProject.pdb
 Projects/.vs/Projects/v15/ipch/AutoPCH/348ffeaa0b76ca5d/SHADER.ipch
 Projects/FirstProject/x64/Debug/Shader.obj
 Projects/.vs/Projects/v15/ipch/AutoPCH/e58c0b97c7c563ed/2-HELLO2DWORLD.ipch
+Projects/.vs/Projects/v15/ipch/AutoPCH/ae4178b28c947195/SHADER.ipch
+Projects/.vs/Projects/v15/ipch/AutoPCH/cb9533af327e5c52/TEST.ipch
+*.ipch

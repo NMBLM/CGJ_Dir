@@ -37,7 +37,7 @@
 
 using namespace engine;
 
-int WinX = 400, WinY = 400;
+int WinX = 640, WinY = 400;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
@@ -136,6 +136,7 @@ void createShaderProgram()
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 }
+
 void destroyShaderProgram()
 {
 	glUseProgram(0);
@@ -149,14 +150,14 @@ void destroyShaderProgram()
 typedef struct 
 {
 	GLfloat XYZW[4];
-	GLfloat RGBA[4];
+
 } Vertex;
 
 const Vertex Vertices[] = 
 {
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.8f, 0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }},
-	{{ 0.4f, 0.4f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}
+	{{ 0.0f, 0.0f, 0.0f, 1.0f }},
+	{{ 0.8f, 0.0f, 0.0f, 1.0f }},
+	{{ 0.4f, 0.4f, 0.0f, 1.0f }}
 };
 
 const GLubyte Indices[] =
@@ -166,10 +167,10 @@ const GLubyte Indices[] =
 
 const Vertex SquareVertices[] =
 {
-	{{  0.0f,  0.0f,  0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }}, //middle left
-	{{  0.2f,  -0.2f,  0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }}, //bottom middle
-	{{  0.4f,  0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //middle right
-	{{  0.2f,  0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //top middle
+	{{  0.0f,  0.0f,  0.0f, 1.0f }  }, //middle left
+	{{  0.2f,  -0.2f,  0.0f, 1.0f } }, //bottom middle
+	{{  0.4f,  0.0f, 0.0f, 1.0f }   }, //middle right
+	{{  0.2f,  0.2f, 0.0f, 1.0f }   }, //top middle
 
 };
 
@@ -181,10 +182,10 @@ const GLubyte SquareIndices[] =
 
 const Vertex ParallelogramVertices[] =
 {
-	{{  0.0f,  0.0f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }}, //bottom left
-	{{  0.4f,  0.0f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }}, //bottom right
-	{{  0.6f,  0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //top right
-	{{  0.2f,  0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //top left
+	{{  0.0f,  0.0f, 0.0f, 1.0f }}, //bottom left
+	{{  0.4f,  0.0f, 0.0f, 1.0f }}, //bottom right
+	{{  0.6f,  0.2f, 0.0f, 1.0f }}, //top right
+	{{  0.2f,  0.2f, 0.0f, 1.0f }}, //top left
 };
 
 const GLubyte ParallelogramIndices[] =
@@ -206,8 +207,6 @@ void createBufferObjects()
 			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
 			glEnableVertexAttribArray(VERTICES);
 			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(Vertices[0].XYZW));
 		}
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
 		{
@@ -230,8 +229,6 @@ void createBufferObjects()
 			glBufferData(GL_ARRAY_BUFFER, sizeof(SquareVertices), SquareVertices, GL_STATIC_DRAW);
 			glEnableVertexAttribArray(VERTICES);
 			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(SquareVertices[0].XYZW));
 		}
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SVboId[1]);
 		{
@@ -254,8 +251,6 @@ void createBufferObjects()
 			glBufferData(GL_ARRAY_BUFFER, sizeof(ParallelogramVertices), ParallelogramVertices, GL_STATIC_DRAW);
 			glEnableVertexAttribArray(VERTICES);
 			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(ParallelogramVertices[0].XYZW));
 		}
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, PVboId[1]);
 		{
@@ -308,10 +303,12 @@ void destroyBufferObjects()
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Parallelogram");
 }
 
-/////////////////////////////////////////////////////////////////////// SCENE
 
 const float PI = 3.14159265f;
 
+/////////////////////////////////////////////////////////////////////// SCENE SWORD 
+
+// Model Matrix
 const mat4 tr1 =	MatrixFactory::createTranslationMatrix(-0.2f, 0.8f, 0.0f) * 
 					MatrixFactory::createRotationMatrix4(-PI / 2,  vec4(0, 0, 1, 1));
 
@@ -328,19 +325,24 @@ const mat4 tr6 =	MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *
 					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
 					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
 
-const mat4 sq78 =	MatrixFactory::createTranslationMatrix(0.f, -0.4f, 0.0f);
+const mat4 sq78 =	MatrixFactory::createTranslationMatrix(0.0f, -0.14f -0.2f, 0.0f) * // '.14f is half the side of the square
+					MatrixFactory::createRotationMatrix4(PI / 4, vec4(0, 0, 1, 1)) * //rotate 45 degrees
+					MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
 
-const mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.3f, -0.6f, 0.0f) *  
-					MatrixFactory::createScaleMatrix4(0.75f, 0.75f, 0) *  
+const mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, -0.2f - 0.28f , 0.0f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
+					MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
 					MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
-
-const GLfloat red[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
+// COLORS
+const GLfloat red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 const GLfloat green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-const GLfloat blue[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
+const GLfloat blue[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
 const GLfloat cyan[4] = { 0.0f, 1.0f, 1.0f, 1.0f };
 const GLfloat magenta[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
 const GLfloat yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
 const GLfloat white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
+const GLfloat orange[4] = { 1.0f, 0.2f, 0.0f, 1.0f };
+const GLfloat purple[4] = { 0.4f, 0.0f, 0.4f, 1.0f };
+
 
 void drawScene()
 {
@@ -409,6 +411,109 @@ void drawScene()
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
 
+/////////////////////////////////////////////////////////////////////// SCENE ORIGINAL
+
+// Model Matrix
+
+//const mat4 mvtocnr = MatrixFactory::createTranslationMatrix(0.6f, 0.6f, 0.0f);
+
+const mat4 mvtocnr = MatrixFactory::createIdentityMatrix4();
+
+const mat4 otr1 =	mvtocnr *
+					MatrixFactory::createTranslationMatrix(0.4f, 0.4f, 0.0f) *
+					MatrixFactory::createRotationMatrix4(PI , vec4(0, 0, 1, 1));
+
+const mat4 otr2 =	mvtocnr *
+					MatrixFactory::createTranslationMatrix(-0.4f, 0.4f, 0.0f) *
+					MatrixFactory::createRotationMatrix4(-PI / 2, vec4(0, 0, 1, 1));
+
+const mat4 otr3 =	mvtocnr *
+					MatrixFactory::createTranslationMatrix(0.4f, 0.0f, 0.0f) *
+					MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
+					MatrixFactory::createRotationMatrix4(-PI/2 - PI/4, vec4(0, 0, 1, 1)); // -90 degrees - 45 degrees
+
+const mat4 opl45 =	mvtocnr *
+					MatrixFactory::createTranslationMatrix(-0.4f, -0.4f, 0.0f);
+
+const mat4 otr6 =	mvtocnr *
+					MatrixFactory::createTranslationMatrix(0.4f, 0.0f, 0.0f) *
+					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *
+					MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));
+
+const mat4 osq78 =	mvtocnr *
+					MatrixFactory::createIdentityMatrix4();
+
+const mat4 otr9 =	mvtocnr *
+					MatrixFactory::createTranslationMatrix(-0.8f * 0.5f / 2, -0.4f * 0.5f, 0.0f) *	// 0.8f * 0.5f / 2  is the center of the hypotenuse to the origin						   
+					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0);								// and -0.4f * 0.5f is the height of the triangle
+
+void drawSceneOriginal()
+{
+
+	// TRIANGLES DRAW START
+	glBindVertexArray(VaoId);
+	glUseProgram(shaders.ProgramId);
+
+	// Triangle 1 RED
+	glUniform4fv(shaders.UniformColorId, 1, red);
+	glUniformMatrix4fv(shaders.UniformId, 1, GL_FALSE, otr1.data());
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	// Triangle 2 ORANGE
+	glUniform4fv(shaders.UniformColorId, 1, orange);
+	glUniformMatrix4fv(shaders.UniformId, 1, GL_FALSE, otr2.data());
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	// Triangle 3 YELLOW
+	glUniform4fv(shaders.UniformColorId, 1, yellow);
+	glUniformMatrix4fv(shaders.UniformId, 1, GL_FALSE, otr3.data());
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	// Triangle 4 GREEN
+	glUniform4fv(shaders.UniformColorId, 1, green);
+	glUniformMatrix4fv(shaders.UniformId, 1, GL_FALSE, otr6.data());
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	// Triangle 5 CYAN
+	glUniform4fv(shaders.UniformColorId, 1, cyan);
+	glUniformMatrix4fv(shaders.UniformId, 1, GL_FALSE, otr9.data());
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	// TRIANGLES DRAW END 
+
+
+	// SQUARE 6 DRAW START PURPLE
+	glBindVertexArray(SVaoId);
+	glUseProgram(shaders.ProgramId);
+
+	glUniform4fv(shaders.UniformColorId, 1, purple);
+	glUniformMatrix4fv(shaders.UniformId, 1, GL_FALSE, osq78.data());
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	// SQUARE DRAW END 
+
+	// PARALLELOGRAM 7 DRAW START BLUE
+	glBindVertexArray(PVaoId);
+	glUseProgram(shaders.ProgramId);
+
+	glUniform4fv(shaders.UniformColorId, 1, blue);
+	glUniformMatrix4fv(shaders.UniformId, 1, GL_FALSE, opl45.data());
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+
+	glUseProgram(0);
+	glBindVertexArray(0);
+
+	// PARALLELOGRAM DRAW END 
+
+	checkOpenGLError("ERROR: Could not draw scene.");
+}
+
 /////////////////////////////////////////////////////////////////////// CALLBACKS
 
 void cleanup()
@@ -422,6 +527,7 @@ void display()
 	++FrameCount;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	drawScene();
+	//drawSceneOriginal();
 	glutSwapBuffers();
 }
 

@@ -31,7 +31,6 @@ Shader::Shader(const char* vertexShaderFile, const char* fragmentShaderFile)
 	glAttachShader(ProgramId, FragmentShaderId);
 
 	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
-	glBindAttribLocation(ProgramId, COLORS, "in_Color");
 
 	glLinkProgram(ProgramId);
 	UniformId = glGetUniformLocation(ProgramId, "Matrix");

@@ -27,7 +27,7 @@ namespace engine {
 		const float* data(mat2& m);
 		void clean();
 
-
+		mat2 operator= (const mat2& m);
 		mat2 operator+= (const mat2& m);
 		mat2 operator-= (const mat2& m);
 		friend mat2 operator+ (const mat2& m1, const mat2& m2);
@@ -78,6 +78,7 @@ namespace engine {
 	   //sum, subtraction 
 
 	   //multiplication (by another matrix, a scalar, or a vector)
+		mat3 operator= (const mat3& m);
 		mat3 operator+= (const mat3& m);
 		mat3 operator-= (const mat3& m);
 		friend bool operator== (const mat3& m1, const mat3& m2);
@@ -121,6 +122,7 @@ namespace engine {
 		const float* data() const;
 		void clean();
 
+		mat4 operator= (const mat4& m);
 		mat4 operator+= (const mat4& m);
 		mat4 operator-= (const mat4& m);
 		friend mat4 operator+ (const mat4& m1, const mat4& m2);

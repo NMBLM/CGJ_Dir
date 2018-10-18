@@ -36,6 +36,14 @@ namespace engine {
 		}
 	}
 
+	mat2 mat2::operator=(const mat2 & m)
+	{
+		for (int i = 0; i < 4; i++) {
+			mat[i] = m.mat[i];
+		}
+		return *this;
+	}
+
 	mat2 mat2::operator+=(const mat2 & m)
 	{
 
@@ -172,6 +180,14 @@ namespace engine {
 				mat[i] = 0;
 			}
 		}
+	}
+
+	mat3 mat3::operator=(const mat3 & m)
+	{
+		for (int i = 0; i < 9; i++) {
+			mat[i] = m.mat[i];
+		}
+		return *this;
 	}
 
 	mat3 mat3::operator+=(const mat3 & m)
@@ -372,6 +388,14 @@ namespace engine {
 				mat[i] = 0;
 			}
 		}
+	}
+
+	mat4 mat4::operator=(const mat4 & m)
+	{
+		for (int i = 0; i < 16; i++) {
+			mat[i] = m.mat[i];
+		}
+		return *this;
 	}
 
 	mat4 mat4::operator+=(const mat4 & m)
