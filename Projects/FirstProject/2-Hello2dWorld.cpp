@@ -37,16 +37,16 @@
 
 using namespace engine;
 
-int WinX = 640, WinY = 480;
+int WinX = 400, WinY = 400;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
 #define VERTICES 0
 #define COLORS 1
-
-GLuint VaoId, VboId[2];
-GLuint SVaoId,SVboId[2];
-GLuint PVaoId, PVboId[2];
+//VAO = Vertex 
+GLuint VaoId, VboId[2];		// Triagle buffers
+GLuint SVaoId,SVboId[2];	// Square buffers
+GLuint PVaoId, PVboId[2];	// Parallelogram buffers
 Shader shaders;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -166,10 +166,10 @@ const GLubyte Indices[] =
 
 const Vertex SquareVertices[] =
 {
-	{{ -0.2f, -0.2f, 0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }}, //bottom left
-	{{  0.2f, -0.2f, 0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }}, //bottom right
-	{{  0.2f,  0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //top right
-	{{ -0.2f,  0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //top left
+	{{  0.0f,  0.0f,  0.0f, 1.0f }, { 1.0f, 0.0f, 0.0f, 1.0f }}, //middle left
+	{{  0.2f,  -0.2f,  0.0f, 1.0f }, { 0.0f, 1.0f, 0.0f, 1.0f }}, //bottom middle
+	{{  0.4f,  0.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //middle right
+	{{  0.2f,  0.2f, 0.0f, 1.0f }, { 0.0f, 0.0f, 1.0f, 1.0f }}, //top middle
 
 };
 
@@ -272,6 +272,7 @@ void createBufferObjects()
 
 void destroyBufferObjects()
 {
+	// Triangle
 	glBindVertexArray(VaoId);
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
@@ -280,51 +281,56 @@ void destroyBufferObjects()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindVertexArray(0);
+	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Triangle");
 
-	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
+	//Square
+	glBindVertexArray(SVaoId);
+	glDisableVertexAttribArray(VERTICES);
+	glDisableVertexAttribArray(COLORS);
+	glDeleteBuffers(2, SVboId);
+	glDeleteVertexArrays(1, &SVaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Square");
+
+	//Parallelogram
+	glBindVertexArray(PVaoId);
+	glDisableVertexAttribArray(VERTICES);
+	glDisableVertexAttribArray(COLORS);
+	glDeleteBuffers(2,PVboId);
+	glDeleteVertexArrays(1, &PVaoId);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindVertexArray(0);
+
+	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Parallelogram");
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
-
-typedef GLfloat Matrix[16];
-
-const Matrix I = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Row Major (GLSL is Column Major)
-const Matrix M = {
-	1.0f,  0.0f,  0.0f, -1.0f,
-	0.0f,  1.0f,  0.0f, -1.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-}; // Row Major (GLSL is Column Major)
-
-const mat4 Im = MatrixFactory::createIdentityMatrix4();
-const mat4 Mm = MatrixFactory::createTranslationMatrix(-1,-1,0);
 
 const float PI = 3.14159265f;
 
 const mat4 tr1 =	MatrixFactory::createTranslationMatrix(-0.2f, 0.8f, 0.0f) * 
 					MatrixFactory::createRotationMatrix4(-PI / 2,  vec4(0, 0, 1, 1));
 
-const  mat4 tr2 =	MatrixFactory::createTranslationMatrix(-0.4f, -0.2f, 0.0f);
+const mat4 tr2 =	MatrixFactory::createTranslationMatrix(-0.4f, -0.2f, 0.0f);
 
-const  mat4 tr3 =	MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *  
+const mat4 tr3 =	MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *  
 					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
 					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
 
-const  mat4 pl45 =	MatrixFactory::createTranslationMatrix(0.2f, 0.4f, 0.0f) * 
+const mat4 pl45 =	MatrixFactory::createTranslationMatrix(0.2f, 0.4f, 0.0f) * 
 					MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));;
 
-const  mat4 tr6 =	MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *  
+const mat4 tr6 =	MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *  
 					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
 					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
 
-const  mat4 sq78 = MatrixFactory::createTranslationMatrix(0.f, -0.4f, 0.0f);
+const mat4 sq78 =	MatrixFactory::createTranslationMatrix(0.f, -0.4f, 0.0f);
 
-const  mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.3f, -0.6f, 0.0f) *  
+const mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.3f, -0.6f, 0.0f) *  
 					MatrixFactory::createScaleMatrix4(0.75f, 0.75f, 0) *  
 					MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
 
