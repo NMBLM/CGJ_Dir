@@ -157,8 +157,9 @@ namespace engine {
 		static const mat4 createIdentityMatrix4();
 		static const mat4 createRotationMatrix4(const float angle, const vec4& v);
 		static const mat4 createTranslationMatrix(const float x, const float y, const float z);
+		static const mat4 createTranslationMatrix(const vec3& v);
 		static const mat4 createScaleMatrix4(const float x, const float y, const float z);
-		static const  inline mat4 transformMatrix3to4(const mat3& m);
+		static const inline mat4 transformMatrix3to4(const mat3& m);
 	};
 
 }

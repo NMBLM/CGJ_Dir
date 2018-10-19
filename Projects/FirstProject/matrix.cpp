@@ -595,6 +595,16 @@ namespace engine {
 		return res;
 	}
 
+	const mat4 MatrixFactory::createTranslationMatrix(const vec3& v)
+	{
+		mat4 res = MatrixFactory::createIdentityMatrix4();
+		res.mat[3] = v.x;
+		res.mat[7] = v.y;
+		res.mat[11] = v.z;
+
+		return res;
+	}
+
 	const mat4 MatrixFactory::createScaleMatrix4(const float x, const float y, const float z)
 	{
 		return  MatrixFactory::transformMatrix3to4(MatrixFactory::createScaleMatrix3(x, y, z));

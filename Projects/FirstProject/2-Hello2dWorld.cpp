@@ -332,6 +332,7 @@ const mat4 sq78 =	MatrixFactory::createTranslationMatrix(0.0f, -0.14f -0.2f, 0.0
 const mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, -0.2f - 0.28f , 0.0f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
 					MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
 					MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
+
 // COLORS
 const GLfloat red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 const GLfloat green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
