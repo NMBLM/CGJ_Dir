@@ -69,3 +69,4 @@ Projects/.vs/Projects/v15/ipch/AutoPCH/ae4178b28c947195/SHADER.ipch
 Projects/.vs/Projects/v15/ipch/AutoPCH/cb9533af327e5c52/TEST.ipch
 *.ipch
 Projects/dragoon.png
+*.obj

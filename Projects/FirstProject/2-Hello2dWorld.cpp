@@ -44,9 +44,6 @@ unsigned int FrameCount = 0;
 
 #define VERTICES 0
 #define COLORS 1
-GLuint VaoId, VboId[2];		// Triagle buffers
-GLuint SVaoId,SVboId[2];	// Square buffers
-GLuint PVaoId, PVboId[2];	// Parallelogram buffers
 Shader shaders;
 Triangle *triangle;
 Square *square;
@@ -148,125 +145,6 @@ void destroyShaderProgram()
 	checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
-/////////////////////////////////////////////////////////////////////// VAOs & VBOs
-
-//typedef struct 
-//{
-//	GLfloat XYZW[4];
-//
-//} Vertex;
-
-const Vertex Vertices[] = 
-{
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.8f, 0.0f, 0.0f, 1.0f }},
-	{{ 0.4f, 0.4f, 0.0f, 1.0f }}
-};
-
-const GLubyte Indices[] =
-{
-	0,1,2
-};
-
-const Vertex SquareVertices[] =
-{
-	{{  0.0f,  0.0f,  0.0f, 1.0f }  }, //middle left
-	{{  0.2f,  -0.2f,  0.0f, 1.0f } }, //bottom middle
-	{{  0.4f,  0.0f, 0.0f, 1.0f }   }, //middle right
-	{{  0.2f,  0.2f, 0.0f, 1.0f }   }, //top middle
-
-};
-
-const GLubyte SquareIndices[] =
-{
-	0,1,2,2,3,0
-};
-
-
-const Vertex ParallelogramVertices[] =
-{
-	{{  0.0f,  0.0f, 0.0f, 1.0f }}, //bottom left
-	{{  0.4f,  0.0f, 0.0f, 1.0f }}, //bottom right
-	{{  0.6f,  0.2f, 0.0f, 1.0f }}, //top right
-	{{  0.2f,  0.2f, 0.0f, 1.0f }}, //top left
-};
-
-const GLubyte ParallelogramIndices[] =
-{
-	0,1,3,1,2,3
-};
-
-
-void FcreateBufferObjects()
-{
-	// TRIANGLE START
-	glGenVertexArrays(1, &VaoId);
-	glBindVertexArray(VaoId);
-	{
-		glGenBuffers(2, VboId);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
-		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(VERTICES);
-			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Indices), Indices, GL_STATIC_DRAW);
-		}
-	}
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	// TRIANGLE END
-
-	// SQUARE START
-	glGenVertexArrays(1, &SVaoId);
-	glBindVertexArray(SVaoId);
-	{
-		glGenBuffers(2, SVboId);
-
-		glBindBuffer(GL_ARRAY_BUFFER, SVboId[0]);
-		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(SquareVertices), SquareVertices, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(VERTICES);
-			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SVboId[1]);
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(SquareIndices), SquareIndices, GL_STATIC_DRAW);
-		}
-	}
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	// SQUARE END
-
-	// PARALLELOGRAM START
-	glGenVertexArrays(1, &PVaoId);
-	glBindVertexArray(PVaoId);
-	{
-		glGenBuffers(2, PVboId);
-
-		glBindBuffer(GL_ARRAY_BUFFER, PVboId[0]);
-		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(ParallelogramVertices), ParallelogramVertices, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(VERTICES);
-			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, PVboId[1]);
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ParallelogramIndices), ParallelogramIndices, GL_STATIC_DRAW);
-		}
-	}
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	// PARALLELOGRAM END
-
-	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
-}
 
 void createBufferObjects()
 {
@@ -287,44 +165,6 @@ void createBufferObjects()
 	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 }
 
-void FdestroyBufferObjects()
-{
-	// Triangle
-	glBindVertexArray(VaoId);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, VboId);
-	glDeleteVertexArrays(1, &VaoId);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Triangle");
-
-	//Square
-	glBindVertexArray(SVaoId);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, SVboId);
-	glDeleteVertexArrays(1, &SVaoId);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Square");
-
-	//Parallelogram
-	glBindVertexArray(PVaoId);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2,PVboId);
-	glDeleteVertexArrays(1, &PVaoId);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
-
-	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Parallelogram");
-}
-
 void destroyBufferObjects()
 {
 	// Triangle
@@ -332,9 +172,13 @@ void destroyBufferObjects()
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Triangle");
 
 	//Square
+	square->destroyBuffers();
+
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Square");
 
 	//Parallelogram
+	parallelogram->destroyBuffers();
+
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Parallelogram");
 }
 
@@ -388,73 +232,9 @@ void drawScene()
 	square->draw(sq78, yellow, shaders);
 	parallelogram->draw(pl45, white, shaders);
 
-
-}
-void FdrawScene()
-{
-
-	glBindVertexArray(VaoId);
-	glUseProgram(shaders.ProgramId);
-	
-	glUniform4fv(shaders.UniformId("force_color"), 1, red);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, tr1.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 2
-	glUniform4fv(shaders.UniformId("force_color"), 1, green);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, tr2.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 3
-	glUniform4fv(shaders.UniformId("force_color"), 1, blue);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, tr3.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 6
-	glUniform4fv(shaders.UniformId("force_color"), 1, cyan);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, tr6.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 9
-	glUniform4fv(shaders.UniformId("force_color"), 1, magenta);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, tr9.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
-
-	// TRIANGLES DRAW END 
-
-
-	// SQUARE DRAW START
-	glBindVertexArray(SVaoId);
-	glUseProgram(shaders.ProgramId);
-
-	glUniform4fv(shaders.UniformId("force_color"), 1, yellow);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, sq78.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
-
-	// SQUARE DRAW END 
-
-	// PARALLELOGRAM DRAW START
-	glBindVertexArray(PVaoId);
-	glUseProgram(shaders.ProgramId);
-
-	glUniform4fv(shaders.UniformId("force_color"), 1, white);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, pl45.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
-
-	// PARALLELOGRAM DRAW END 
-
 	checkOpenGLError("ERROR: Could not draw scene.");
-}
 
+}
 
 /////////////////////////////////////////////////////////////////////// SCENE ORIGINAL
 
@@ -495,64 +275,14 @@ const mat4 otr9 =	mvtocnr *
 void drawSceneOriginal()
 {
 
-	// TRIANGLES DRAW START
-	glBindVertexArray(VaoId);
-	glUseProgram(shaders.ProgramId);
+	triangle->draw(otr1, red, shaders);
+	triangle->draw(otr2, orange, shaders);
+	triangle->draw(otr3, yellow, shaders);
+	triangle->draw(otr6, green, shaders);
+	triangle->draw(otr9, cyan, shaders);
+	square->draw(osq78, purple, shaders);
+	parallelogram->draw(opl45, blue, shaders);
 
-	// Triangle 1 RED
-	glUniform4fv(shaders.UniformId("force_color"), 1, red);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, otr1.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 2 ORANGE
-	glUniform4fv(shaders.UniformId("force_color"), 1, orange);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, otr2.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 3 YELLOW
-	glUniform4fv(shaders.UniformId("force_color"), 1, yellow);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, otr3.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 4 GREEN
-	glUniform4fv(shaders.UniformId("force_color"), 1, green);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, otr6.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	// Triangle 5 CYAN
-	glUniform4fv(shaders.UniformId("force_color"), 1, cyan);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, otr9.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
-
-	// TRIANGLES DRAW END 
-
-
-	// SQUARE 6 DRAW START PURPLE
-	glBindVertexArray(SVaoId);
-	glUseProgram(shaders.ProgramId);
-
-	glUniform4fv(shaders.UniformId("force_color"), 1, purple);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, osq78.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
-
-	// SQUARE DRAW END 
-
-	// PARALLELOGRAM 7 DRAW START BLUE
-	glBindVertexArray(PVaoId);
-	glUseProgram(shaders.ProgramId);
-
-	glUniform4fv(shaders.UniformId("force_color"), 1, blue);
-	glUniformMatrix4fv(shaders.UniformId("Matrix"), 1, GL_FALSE, opl45.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
 
 	// PARALLELOGRAM DRAW END 
 
