@@ -133,13 +133,16 @@
     <ClCompile Include="2-Hello2dWorld.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="shape.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="vector.cpp" />
     <ClCompile Include="src\properties.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="matrix.h" />
+    <ClInclude Include="program.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="shape.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>

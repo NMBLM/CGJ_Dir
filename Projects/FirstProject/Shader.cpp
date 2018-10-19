@@ -2,6 +2,7 @@
 
 Shader::Shader()
 {
+
 }
 
 Shader::Shader(const char* vertexShaderFile, const char* fragmentShaderFile)
@@ -33,8 +34,6 @@ Shader::Shader(const char* vertexShaderFile, const char* fragmentShaderFile)
 	glBindAttribLocation(ProgramId, VERTICES, "in_Position");
 
 	glLinkProgram(ProgramId);
-	UniformId = glGetUniformLocation(ProgramId, "Matrix");
-	UniformColorId = glGetUniformLocation(ProgramId, "force_color");
 
 	glDetachShader(ProgramId, VertexShaderId);
 	glDeleteShader(VertexShaderId);
@@ -45,6 +44,11 @@ Shader::Shader(const char* vertexShaderFile, const char* fragmentShaderFile)
 
 void Shader::useProgram()
 {
+}
+
+GLint Shader::UniformId(const char * uniformName)
+{
+	return glGetUniformLocation(ProgramId, uniformName);
 }
 
 void use() {

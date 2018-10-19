@@ -22,21 +22,16 @@
 class Shader {
 	public:
 		GLuint VertexShaderId, FragmentShaderId, ProgramId;
-		GLint UniformId, UniformColorId;
 
 		Shader();
 		Shader(const char* vertexShader, const char* fragmentShader);
 
 		void useProgram();
+		GLint UniformId(const char* uniformName);
 
 
 
 };
-
-
-
-
-
 
 
 

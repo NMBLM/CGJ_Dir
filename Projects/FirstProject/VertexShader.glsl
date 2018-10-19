@@ -2,7 +2,6 @@
 
 in vec4 in_Position;
 
-
 uniform mat4 Matrix;
 
 void main(void)
