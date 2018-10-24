@@ -160,7 +160,8 @@ namespace engine {
 		static const mat4 createTranslationMatrix(const vec3& v);
 		static const mat4 createScaleMatrix4(const float x, const float y, const float z);
 		static const inline mat4 transformMatrix3to4(const mat3& m);
-		static const mat4 createViewMatrix(const vec3 eye, const vec3 center, const vec3 up);
+		static const mat4 createLookAt(const vec3 eye, const vec3 center, const vec3 up);
+		static const mat4 createLookAt(const vec3 eye, const vec3 view, const vec3 up, const vec3 side);
 		static const mat4 createOrtographicProjectionMatrix(const float left, const float right, 
 															const float bottom, const float top, 
 															const float near, const float far);

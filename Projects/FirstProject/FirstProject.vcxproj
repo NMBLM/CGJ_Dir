@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="2-Hello2dWorld.cpp" />
     <ClCompile Include="3-Hello3dWorld.cpp" />
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="shape.cpp" />

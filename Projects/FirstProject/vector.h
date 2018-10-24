@@ -77,10 +77,10 @@ namespace engine {
 		friend vec3 operator-(const vec3& v1, const vec3& v2);
 		friend vec3 operator*(const vec3& v, const float alpha);
 		friend vec3 operator*(const float alpha, const vec3& v);
-
+		friend const vec3 normalize(const vec3& v);
 		// cross,dot product
-		const vec3 cross( const vec3& v2);
-		const float dot( const vec3& v2);
+		const vec3 cross( const vec3& v2) const;
+		const float dot( const vec3& v2) const;
 		// quadrance and length assigment
 		const float length() const;
 		const float quadrance() const;

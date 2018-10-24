@@ -31,23 +31,32 @@
 
 #include "matrix.h"
 #include "vector.h"
+#include "camera.h"
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
 #define CAPTION "Hello Modern 3D World"
 
-int WinX = 640, WinY = 480;
+using namespace engine;
+
+int WinX = 640, WinY = 640;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
 #define VERTICES 0
 #define COLORS 1
 
+Camera* camera;
+
 GLuint VaoId, VboId[2];
 GLuint VertexShaderId, FragmentShaderId, ProgramId;
 GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
+float lastFrame = 0.0f;
+float delta = 0.0f;
+int lastMouseY = WinX / 2;
+int lastMouseX = WinY / 2;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -105,6 +114,38 @@ void setupErrors()
 	glDebugMessageCallback(error, 0);
 	glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DONT_CARE, 0, 0, GL_TRUE);
 	// params: source, type, severity, count, ids, enabled
+}
+void mouse_input(int x, int y) {
+
+	int xoffset = lastMouseX - x;
+	int yoffset = lastMouseY - y;
+	lastMouseX = x;
+	lastMouseY = y;
+	float sen = 0.25f;
+	camera->cameraLookAround( xoffset * sen, yoffset * sen , delta);
+
+}
+void keyboard_input(unsigned char key, int x, int y) {
+
+	switch (key) {
+	case 'a':
+	case 'A':
+		camera->cameraMoveLeft(delta);
+		break;
+	case 's':
+	case 'S':
+		camera->cameraMoveBack(delta);
+		break;
+	case 'd':
+	case 'D':
+		camera->cameraMoveRight(delta);
+		break;
+	case 'w':
+	case 'W':
+		camera->cameraMoveForward(delta);
+		break;
+	}
+	 
 }
 
 static bool isOpenGLError() {
@@ -351,7 +392,7 @@ const Matrix ProjectionMatrix2 = {
 void drawScene()
 {
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), ViewMatrix1);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), camera->ViewMatrix().data());
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix2);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -385,6 +426,9 @@ void display()
 
 void idle()
 {
+	float currentFrame = glutGet(GLUT_ELAPSED_TIME);
+	delta = ((float) currentFrame - (float)lastFrame) / 100;
+	lastFrame = (float) currentFrame;
 	glutPostRedisplay();
 }
 
@@ -413,6 +457,8 @@ void setupCallbacks()
 	glutCloseFunc(cleanup);
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
+	glutKeyboardFunc(keyboard_input);
+	glutMotionFunc(mouse_input);
 	glutReshapeFunc(reshape);
 	glutTimerFunc(0,timer,0);
 	setupErrors();
@@ -474,11 +520,18 @@ void setupGLUT(int argc, char* argv[])
 	}
 }
 
+void setupCamera() {
+	camera =new Camera(vec3(5,5,5), vec3(0,0,0), vec3(0,1,0));
+	std::cout << "VIEW MATRIX" << std::endl << camera->ViewMatrix();
+}
+
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
 	setupGLEW();
 	setupOpenGL();
+	setupCamera();
 	setupCallbacks();
 	createShaderProgram();
 	createBufferObjects();
@@ -486,11 +539,6 @@ void init(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-	std::cout << "(-2, 2) TopBottom(-2, 2) NearFar(1, 10)" << std::endl;
-	std::cout << engine::MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
-
-	std::cout << "Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)" << std::endl;
-	std::cout << engine::MatrixFactory::createPerspectiveProjectionMatrix(30,(float) WinX/ (float) WinY, 1, 10);
 
 	init(argc, argv);
 	glutMainLoop();	

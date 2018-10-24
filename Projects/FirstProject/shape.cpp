@@ -67,7 +67,11 @@ void Triangle::draw(engine::mat4 transform, const  GLfloat * color, Shader shade
 
 	glUniform4fv(shader.UniformId("force_color"), 1, color);
 	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glUniform4fv(shader.UniformId("force_color"), 1, color);
+	glDrawArrays(GL_TRIANGLES, 3, 3);
+
+
 
 	glUseProgram(0);
 	glBindVertexArray(0);

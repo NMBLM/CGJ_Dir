@@ -615,18 +615,30 @@ namespace engine {
 		return  mat4(m);
 	}
 
-	const mat4 MatrixFactory::createViewMatrix(const vec3 eye, const vec3 center, const vec3 up)
+	const mat4 MatrixFactory::createLookAt(const vec3 eye, const vec3 center, const vec3 up)
 	{
 		vec3 v = center - eye;
 		v = v *(1/ v.length()); // normalize
 		vec3 s = v.cross(up);
-		s = s * (1 / s.length());
+		s = s * (1 / s.length());  // normalize
 		vec3 u = s.cross(v); //is a unit vector only because s and v are perpendicular to each other and are unit vectors |s x v| = |s||v|*sin(angle)
 		return mat4(s.x, s.y, s.z, -s.dot(eye),
 					u.x, u.y, u.z, -u.dot(eye),
-					v.x, v.y, v.z, -v.dot(eye),
+					-v.x, v.y, v.z, v.dot(eye),
 					0,	0,	 0,	  1);
 	}
+
+
+	const mat4 MatrixFactory::createLookAt(const vec3 eye, const vec3 v, const vec3 u, const vec3 s)
+	{
+		return mat4(s.x, s.y, s.z, -s.dot(eye),
+					u.x, u.y, u.z, -u.dot(eye),
+					-v.x, v.y, v.z, v.dot(eye),
+					0, 0, 0, 1);
+	}
+
+
+
 
 	const mat4 MatrixFactory::createOrtographicProjectionMatrix(const float left, const float right, const float bottom, const float top, const float near, const float far)
 	{

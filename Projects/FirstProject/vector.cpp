@@ -206,12 +206,17 @@ namespace engine {
 		return vec3(v.x*alpha, v.y*alpha, v.z*alpha);
 	}
 
-	const vec3 vec3::cross(const vec3& v2)
+	const vec3 normalize(const vec3 & v)
+	{
+		return v * (1 / v.length());
+	}
+
+	const vec3 vec3::cross(const vec3& v2) const
 	{	
 		mat3 dual = MatrixFactory::createDualMatrix(*this);
 		return dual*v2;
 	}
-	const float vec3::dot(const vec3& v2)
+	const float vec3::dot(const vec3& v2) const
 	{
 		return x*v2.x + y*v2.y + z*v2.z;
 	}
