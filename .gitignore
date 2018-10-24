@@ -70,3 +70,10 @@ Projects/.vs/Projects/v15/ipch/AutoPCH/cb9533af327e5c52/TEST.ipch
 *.ipch
 Projects/dragoon.png
 *.obj
+bin/x64/FirstProject.exe
+bin/x64/FirstProject.pdb
+Projects/FirstProject/x64/Debug/shape.obj
+*.exe
+*.pdb
+*.exe
+*.pdb

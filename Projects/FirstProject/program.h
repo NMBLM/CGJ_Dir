@@ -9,6 +9,10 @@
 #include <sstream>
 #include <string>
 
+#include "matrix.h"
+#include "Shader.h"
+#include "camera.h"
+
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
@@ -21,11 +25,15 @@ class Program {
 public:
 	GLuint VertexShaderId, FragmentShaderId, ProgramId;
 	GLint UniformId, UniformColorId;
+	engine::mat4 projMat;
+	camera cam;
 
 	Program();
 	Program(const char* vertexShader, const char* fragmentShader);
 	
 	void useProgram();
+	void changeCamere();
+	void changeProjection(engine::mat4 projectionMatrix);
 
 };
 
