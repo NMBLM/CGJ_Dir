@@ -538,8 +538,8 @@ namespace engine {
 
 	const mat3 MatrixFactory::createDualMatrix(const vec3& v) {
 		return mat3(0, -v.z, v.y,
-			v.z, 0, -v.x,
-			-v.y, v.x, 0);
+					v.z, 0, -v.x,
+					-v.y, v.x, 0);
 	}
 
 	const mat3 MatrixFactory::createSquareDualMatrix(const vec3 & v)
@@ -613,6 +613,41 @@ namespace engine {
 	const mat4 MatrixFactory::transformMatrix3to4(const mat3 & m)
 	{
 		return  mat4(m);
+	}
+
+	const mat4 MatrixFactory::createViewMatrix(const vec3 eye, const vec3 center, const vec3 up)
+	{
+		vec3 v = center - eye;
+		v = v *(1/ v.length()); // normalize
+		vec3 s = v.cross(up);
+		s = s * (1 / s.length());
+		vec3 u = s.cross(v); //is a unit vector only because s and v are perpendicular to each other and are unit vectors |s x v| = |s||v|*sin(angle)
+		return mat4(s.x, s.y, s.z, -s.dot(eye),
+					u.x, u.y, u.z, -u.dot(eye),
+					v.x, v.y, v.z, -v.dot(eye),
+					0,	0,	 0,	  1);
+	}
+
+	const mat4 MatrixFactory::createOrtographicProjectionMatrix(const float left, const float right, const float bottom, const float top, const float near, const float far)
+	{
+		return mat4(2/(right-left),0,0,(left+right)/(left-right),
+					0, 2/(top-bottom), 0, (top+ bottom)/(bottom - top),
+					0, 0 ,-2/(far-near), (far+near)/(near-far),
+					0, 0, 0, 1);
+	}
+
+	const mat4 MatrixFactory::createPerspectiveProjectionMatrix(const float fovY, const float aspect, const float near , const float far )
+	{	
+		const float PI = 3.14159265f;
+		float angle = fovY / 2 * (PI / 180);
+		float d = 1 / tan(angle);
+		std::cout << " d/ aspect " << d/ aspect << std::endl;
+
+		std::cout << "aspect " << aspect << std::endl;
+		return mat4(d/aspect, 0 ,0 ,0,
+					0, d, 0, 0,
+					0, 0, (near+far)/(near-far), (2* far * near)/(near-far),
+					0, 0, -1, 0);
 	}
 
 

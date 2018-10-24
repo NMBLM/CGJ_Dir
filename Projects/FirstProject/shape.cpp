@@ -50,7 +50,7 @@ Triangle::Triangle()
 
 	const GLubyte i[] =
 	{
-		0,1,2
+		0,1,2,2,1,0
 	};
 
 
@@ -67,7 +67,7 @@ void Triangle::draw(engine::mat4 transform, const  GLfloat * color, Shader shade
 
 	glUniform4fv(shader.UniformId("force_color"), 1, color);
 	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
 	glBindVertexArray(0);
@@ -85,7 +85,7 @@ Square::Square()
 
 	const GLubyte i[] =
 	{
-		0,1,2,2,3,0
+		0,1,2,2,3,0,0,3,2,2,1,0
 	};
 
 
@@ -101,7 +101,7 @@ void Square::draw(engine::mat4 transform, const GLfloat * color, Shader shader)
 
 	glUniform4fv(shader.UniformId("force_color"), 1, color);
 	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
 	glBindVertexArray(0);
@@ -119,7 +119,7 @@ Parallelogram::Parallelogram()
 
 	const GLubyte i[] =
 	{
-		0,1,3,1,2,3
+		0,1,3,1,2,3,3,2,1,3,1,0
 	};
 
 
@@ -136,7 +136,7 @@ void Parallelogram::draw(engine::mat4 transform, const GLfloat * color, Shader s
 
 	glUniform4fv(shader.UniformId("force_color"), 1, color);
 	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
 	glUseProgram(0);
 	glBindVertexArray(0);

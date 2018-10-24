@@ -131,6 +131,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="2-Hello2dWorld.cpp" />
+    <ClCompile Include="3-Hello3dWorld.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="shape.cpp" />
@@ -139,9 +140,10 @@
     <ClCompile Include="src\properties.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="program.h" />
-    <ClInclude Include="Shader.h" />
+    <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
