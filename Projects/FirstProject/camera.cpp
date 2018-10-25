@@ -21,7 +21,9 @@ Camera::Camera(const vec3 eye, const vec3 center, const vec3 up)
 
 mat4 Camera::ViewMatrix()
 {
-	return MatrixFactory::createLookAt(eye, v, u, s);
+
+	//return MatrixFactory::createLookAt(eye, v, u, s);
+	return MatrixFactory::createLookAt(eye, eye + v, u);
 
 }
 

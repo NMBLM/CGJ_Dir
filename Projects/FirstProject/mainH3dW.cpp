@@ -373,7 +373,7 @@ void display()
 
 void idle()
 {
-	int currentFrame = glutGet(GLUT_ELAPSED_TIME);
+	float currentFrame =(float) glutGet(GLUT_ELAPSED_TIME);
 	delta = ((float)currentFrame - (float)lastFrame) / 100;
 	lastFrame = (float)currentFrame;
 	glutPostRedisplay();
@@ -468,7 +468,7 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void setupCamera() {
-	camera = new Camera(vec3(0, 0, -5), vec3(0, 0, 0), vec3(0, 1, 0));
+	camera = new Camera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
 }
 
 
