@@ -258,15 +258,6 @@ void destroyBufferObjects()
 	parallelogram->destroyBuffers();
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Parallelogram");
 
-	/*glBindVertexArray(VaoId);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, VboId);
-	glDeleteVertexArrays(1, &VaoId);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindVertexArray(0);*/
-
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
 }
 
@@ -284,7 +275,7 @@ const mat4 tr3 =	MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *
 					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
 
 const mat4 pl45 =	MatrixFactory::createTranslationMatrix(0.2f, 0.4f, 0.0f) * 
-					MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));;
+					MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));
 
 const mat4 tr6 =	MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *  
 					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
@@ -313,18 +304,15 @@ const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
 void drawScene()
 {	
 
-	mat4 mvp = projectionMatrix * camera->ViewMatrix();
-	std::cout << "vertice 1" << mvp * tr1 * vec4(0, 0, 0, 1.0f) << std::endl;
-	std::cout << "vertice 2" << mvp * tr1 * vec4(0.8f, 0, 0, 1.0f) << std::endl;
-	std::cout << "vertice 3" << mvp * tr1 * vec4(0.4f, 0.4f, 0, 1.0f) << std::endl;
+	mat4 ViewMatrix = camera->ViewMatrix();
 
-	triangle->draw(tr1, camera->ViewMatrix(), projectionMatrix, red, prog);
-	triangle->draw(tr2, camera->ViewMatrix(), projectionMatrix, green, prog);
-	triangle->draw(tr3, camera->ViewMatrix(), projectionMatrix, blue, prog);
-	triangle->draw(tr6, camera->ViewMatrix(), projectionMatrix, cyan, prog);
-	triangle->draw(tr9, camera->ViewMatrix(), projectionMatrix, magenta, prog);
-	square->draw(sq78, camera->ViewMatrix(), projectionMatrix, yellow, prog);
-	parallelogram->draw(pl45, camera->ViewMatrix(), projectionMatrix, white, prog);
+	triangle->draw(tr1, ViewMatrix, projectionMatrix, red, prog);
+	triangle->draw(tr2, ViewMatrix, projectionMatrix, green, prog);
+	triangle->draw(tr3, ViewMatrix, projectionMatrix, blue, prog);
+	triangle->draw(tr6, ViewMatrix, projectionMatrix, cyan, prog);
+	triangle->draw(tr9, ViewMatrix, projectionMatrix, magenta, prog);
+	square->draw(sq78, ViewMatrix, projectionMatrix, yellow, prog);
+	parallelogram->draw(pl45, ViewMatrix, projectionMatrix, white, prog);
 
 	//mat4 I = MatrixFactory::createIdentityMatrix4();
 	//triangle->draw(tr1, I, I, red, prog);
@@ -344,6 +332,7 @@ void drawScene()
 	//parallelogram->draw(pl45, white, prog);
 
 
+	//mat4 mvp = projectionMatrix * camera->ViewMatrix();
 	//triangle->draw(mvp * tr1, red, prog);
 	//triangle->draw(mvp * tr2, green, prog);
 	//triangle->draw(mvp * tr3, blue, prog);
@@ -352,6 +341,9 @@ void drawScene()
 	//square->draw(mvp * sq78, yellow, prog);
 	//parallelogram->draw(mvp * pl45, white, prog);
 
+	//std::cout << "vertice 1" << mvp * tr1 * vec4(0, 0, 0, 1.0f) << std::endl;
+	//std::cout << "vertice 2" << mvp * tr1 * vec4(0.8f, 0, 0, 1.0f) << std::endl;
+	//std::cout << "vertice 3" << mvp * tr1 * vec4(0.4f, 0.4f, 0, 1.0f) << std::endl;
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
 
@@ -373,7 +365,7 @@ void display()
 
 void idle()
 {
-	float currentFrame = glutGet(GLUT_ELAPSED_TIME);
+	int currentFrame = glutGet(GLUT_ELAPSED_TIME);
 	delta = ((float)currentFrame - (float)lastFrame) / 100;
 	lastFrame = (float)currentFrame;
 	glutPostRedisplay();
@@ -468,7 +460,7 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void setupCamera() {
-	camera = new Camera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
+	camera = new Camera(vec3(0, 0, -5), vec3(0, 0, 0), vec3(0, 1, 0));
 }
 
 

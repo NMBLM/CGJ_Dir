@@ -146,6 +146,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="program.h" />
+    <ClInclude Include="rgbtohsl.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="vector.h" />

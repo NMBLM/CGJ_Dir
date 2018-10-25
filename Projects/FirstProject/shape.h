@@ -26,7 +26,7 @@ class Shape {
 
 public:
 	GLuint VaoId, VboId[3], UBO_PB;
-
+	mat4 reverse;
 
 	Shape() {};
 	void createBuffers(const Vertex* v, const GLubyte* i);

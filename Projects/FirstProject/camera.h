@@ -10,12 +10,14 @@ using namespace engine;
 
 class Camera {
 
-	engine::vec3 v;
-	engine::vec3 s;
-	engine::vec3 u;
-	engine::vec3 eye;
+	vec3 v;
+	vec3 s;
+	vec3 u;
+	vec3 center;
+	vec3 eye;
 
-	const float SPEED = 2;
+	mat4 viewMatrix;
+	const float SPEED = 1.0f;
 	float lastFrame = 0.0f;
 
 	public:

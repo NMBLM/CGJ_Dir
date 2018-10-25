@@ -17,51 +17,60 @@ Camera::Camera(const vec3 eye, const vec3 center, const vec3 up)
 	s = v.cross(up);
 	s = s * (1 / s.length());  // normalize
 	u = s.cross(v); //is a unit vector only because s and v are perpendicular to each other and are unit vectors |s x v| = |s||v|*sin(angle)
-
 }
 
 mat4 Camera::ViewMatrix()
 {
 	return MatrixFactory::createLookAt(eye, v, u, s);
+
 }
 
 void Camera::cameraLookAround(float x, float y, const float deltatime)
 {
 	int sideX = (x >=0 )? 1 : -1 ;
 	int sideY = (y >= 0) ? 1 : -1;
-	int mulX = (x > 2 && x < -2) ? 3 : 2;
-	int mulY = (y > 2 && y < -2) ? 3 : 2;
-	mulX = (x < 1 && x > -1) ? 0.2 : mulX;
-	mulY = (y < 1 && y > -1) ? 0.2 : mulY;
-	mat3 rotU = MatrixFactory::createRotationMatrix3( mulX *  sideX *  deltatime * SPEED / 8, u);
+	float mulX = (x > 2 && x < -2) ? 3 : 2;
+	float mulY = (y > 2 && y < -2) ? 3 : 2;
+	mulX = (x < 1 && x > -1) ? 0.2f : mulX;
+	mulY = (y < 1 && y > -1) ? 0.2f : mulY;
+	mat3 rotU = MatrixFactory::createRotationMatrix3( mulX *  sideX *  deltatime * SPEED / 16, u);
 	v = rotU * v;
-	s = rotU * s;
-	mat3 rotS = MatrixFactory::createRotationMatrix3( mulY * sideY * deltatime * SPEED / 8, s);
+	s = v.cross(u);
+	mat3 rotS = MatrixFactory::createRotationMatrix3( mulY * sideY * deltatime * SPEED / 16, s);
 	v = rotS * v;
-	u = rotS * u;
+	u = s.cross(v);
 	v = normalize(v);
-	u = normalize(u);
 	s = normalize(s);
+	u = normalize(u);
+
 }
 
 void Camera::cameraMoveRight(const float deltatime)
 {
 	eye = eye + s * SPEED * deltatime;
+	center = center + s * SPEED * deltatime;
+
 }
 
 void Camera::cameraMoveLeft(const float deltatime)
 {
 	eye = eye - s * SPEED * deltatime;
+	center = center - s * SPEED * deltatime;
+
 }
 
 void Camera::cameraMoveForward(const float deltatime)
 {
 	eye = eye + v * SPEED * deltatime;
+	center = center + v * SPEED * deltatime;
+
 }
 
 void Camera::cameraMoveBack(const float deltatime)
 {
 	eye = eye - v * SPEED * deltatime;
+	center = center - s * SPEED * deltatime;
+
 }
 
 

@@ -23,7 +23,16 @@ void Program::detachShader(Shader shader)
 
 void Program::link()
 {
+	int success = 0;
+	char log[512];
 	glLinkProgram(id);
+	glGetProgramiv(id, GL_LINK_STATUS, &success);
+	if (!success)
+	{
+		glGetProgramInfoLog(id, 512, NULL, log);
+		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" <<log << std::endl;
+	}
+
 }
 
 void Program::bindAttribLocation(const int atnum, const char * atname)
