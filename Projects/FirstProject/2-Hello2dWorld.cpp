@@ -163,19 +163,11 @@
 //
 //void createBufferObjects()
 //{
-//	// TRIANGLE START
 //	triangle = new Triangle();
-//
-//	// TRIANGLE END
-//
-//
-//	// SQUARE START
+
 //	square = new Square();
-//	// SQUARE END
 //
-//	// PARALLELOGRAM START
 //	parallelogram = new Parallelogram();
-//	// PARALLELOGRAM END
 //
 //	checkOpenGLError("ERROR: Could not create VAOs and VBOs.");
 //}

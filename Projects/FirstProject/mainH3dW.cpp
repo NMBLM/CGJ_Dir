@@ -35,7 +35,7 @@
 #include "shader.h"
 #include "camera.h"
 
-//#include "shape.h"
+#include "shape.h"
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
@@ -44,23 +44,29 @@
 
 using namespace engine;
 
-int WinX = 640, WinY = 640;
+int WinX = 640, WinY = 480;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
 
 Camera* camera;
+Triangle *triangle;
+Square *square;
+Parallelogram *parallelogram;
 
 GLuint VaoId, VboId[2];
 Program prog;
 VertexShader vShader;
 FragmentShader fShader;
-GLint UboId, UniformId;
 const GLuint UBO_BP = 0;
 float lastFrame = 0.0f;
 float delta = 0.0f;
 int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
+// Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
+mat4 projectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
+// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+mat4 otherProjectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float) WinY, 1, 10);
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -148,6 +154,13 @@ void keyboard_input(unsigned char key, int x, int y) {
 	case 'W':
 		camera->cameraMoveForward(delta);
 		break;
+
+	case'p':
+	case'P':
+		mat4 temp = projectionMatrix;
+		projectionMatrix = otherProjectionMatrix;
+		otherProjectionMatrix = temp;
+		break;
 	}
 
 }
@@ -175,56 +188,19 @@ static void checkOpenGLError(std::string error)
 
 /////////////////////////////////////////////////////////////////////// SHADERs
 
-const GLchar* VertexShaderCamera =
-{
-	"#version 330 core\n"
-
-	"in vec4 in_Position;\n"
-	"in vec4 in_Color;\n"
-	"out vec4 ex_Color;\n"
-
-	"uniform mat4 ModelMatrix;\n"
-
-	"uniform SharedMatrices\n"
-	"{\n"
-	"	mat4 ViewMatrix;\n"
-	"	mat4 ProjectionMatrix;\n"
-	"};\n"
-
-	"void main(void)\n"
-	"{\n"
-	"	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * in_Position;\n"
-	"	ex_Color = in_Color;\n"
-	"}\n"
-};
-
-const GLchar* FragmentShaderCamera  =
-{
-	"#version 330 core\n"
-
-	"in vec4 ex_Color;\n"
-	"out vec4 out_Color;\n"
-
-	"void main(void)\n"
-	"{\n"
-	"	out_Color = ex_Color;\n"
-	"}\n"
-};
 
 void createShaderProgram()
 {
 	prog = Program(glCreateProgram());
 	vShader = VertexShader("VertexShaderCamera.glsl");
-	fShader = FragmentShader("FragmentShaderCamera.glsl");
+	fShader = FragmentShader("FragmentShader.glsl");
 
 	prog.attachShader(vShader);
 	prog.attachShader(fShader);
 
 	prog.bindAttribLocation(VERTICES, "in_Position");
 	prog.link();
-	UniformId = prog.UniformLocation("ModelMatrix");
-	UboId = prog.uniformBlockIndex( "SharedMatrices");
-	glUniformBlockBinding(prog.id, UboId, UBO_BP);
+	glUniformBlockBinding(prog.id, prog.uniformBlockIndex("SharedMatrices"), UBO_BP);
 
 	prog.detachShader( vShader);
 	prog.detachShader(fShader);
@@ -242,164 +218,109 @@ void destroyShaderProgram()
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
 
-typedef struct {
-	GLfloat XYZW[4];
-	GLfloat RGBA[4];
-} Vertex;
-
-typedef GLfloat Matrix[16];
-
-const Vertex Vertices[] = // no indices?
-{
-	{{ 0.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 0 - FRONT
-	{{ 1.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 1
-	{{ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 2
-	{{ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 2	
-	{{ 0.0f, 1.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 3
-	{{ 0.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.0f, 1.0f }}, // 0
-
-	{{ 1.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 0.9f, 0.0f, 1.0f }}, // 1 - RIGHT
-	{{ 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.0f, 1.0f }}, // 5
-	{{ 1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.0f, 1.0f }}, // 6
-	{{ 1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.0f, 1.0f }}, // 6	
-	{{ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.9f, 0.0f, 1.0f }}, // 2
-	{{ 1.0f, 0.0f, 1.0f, 1.0f }, { 0.0f, 0.9f, 0.0f, 1.0f }}, // 1
-
-	{{ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.9f, 1.0f }}, // 2 - TOP
-	{{ 1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.9f, 1.0f }}, // 6
-	{{ 0.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.9f, 1.0f }}, // 7
-	{{ 0.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.0f, 0.9f, 1.0f }}, // 7	
-	{{ 0.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.9f, 1.0f }}, // 3
-	{{ 1.0f, 1.0f, 1.0f, 1.0f }, { 0.0f, 0.0f, 0.9f, 1.0f }}, // 2
-
-	{{ 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.9f, 1.0f }}, // 5 - BACK
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.9f, 1.0f }}, // 4
-	{{ 0.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.9f, 1.0f }}, // 7
-	{{ 0.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.9f, 1.0f }}, // 7	
-	{{ 1.0f, 1.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.9f, 1.0f }}, // 6
-	{{ 1.0f, 0.0f, 0.0f, 1.0f }, { 0.0f, 0.9f, 0.9f, 1.0f }}, // 5
-
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.9f, 0.0f, 0.9f, 1.0f }}, // 4 - LEFT
-	{{ 0.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.9f, 1.0f }}, // 0
-	{{ 0.0f, 1.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.9f, 1.0f }}, // 3
-	{{ 0.0f, 1.0f, 1.0f, 1.0f }, { 0.9f, 0.0f, 0.9f, 1.0f }}, // 3	
-	{{ 0.0f, 1.0f, 0.0f, 1.0f }, { 0.9f, 0.0f, 0.9f, 1.0f }}, // 7
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.9f, 0.0f, 0.9f, 1.0f }}, // 4
-
-	{{ 0.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.9f, 0.0f, 1.0f }}, // 0 - BOTTOM
-	{{ 0.0f, 0.0f, 0.0f, 1.0f }, { 0.9f, 0.9f, 0.0f, 1.0f }}, // 4
-	{{ 1.0f, 0.0f, 0.0f, 1.0f }, { 0.9f, 0.9f, 0.0f, 1.0f }}, // 5
-	{{ 1.0f, 0.0f, 0.0f, 1.0f }, { 0.9f, 0.9f, 0.0f, 1.0f }}, // 5	
-	{{ 1.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.9f, 0.0f, 1.0f }}, // 1
-	{{ 0.0f, 0.0f, 1.0f, 1.0f }, { 0.9f, 0.9f, 0.0f, 1.0f }}  // 0
-};
-
 void createBufferObjects()
 {
-	glGenVertexArrays(1, &VaoId);
-	glBindVertexArray(VaoId);
-	{
-		glGenBuffers(2, VboId);
+	triangle = new Triangle();
 
-		glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
-		{
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertices), Vertices, GL_STATIC_DRAW);
-			glEnableVertexAttribArray(VERTICES);
-			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-			glEnableVertexAttribArray(COLORS);
-			glVertexAttribPointer(COLORS, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (GLvoid *)sizeof(Vertices[0].XYZW));
-		}
-	}
-	glBindVertexArray(0);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	square = new Square();
 
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	{
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(Matrix) * 2, 0, GL_STREAM_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, UBO_BP, VboId[1]);
-	}
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	parallelogram = new Parallelogram();
 
 	checkOpenGLError("ERROR: Could not create VAOs, VBOs and UBOs.");
 }
 
 void destroyBufferObjects()
 {
-	glBindVertexArray(VaoId);
+	// Triangle
+	triangle->destroyBuffers();
+	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Triangle");
+
+	//Square
+	square->destroyBuffers();
+	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Square");
+
+	//Parallelogram
+	parallelogram->destroyBuffers();
+	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs. Parallelogram");
+
+	/*glBindVertexArray(VaoId);
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
 	glDeleteBuffers(2, VboId);
 	glDeleteVertexArrays(1, &VaoId);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	glBindVertexArray(0);
+	glBindVertexArray(0);*/
 
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
 
-const Matrix I = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-	0.0f,  0.0f,  0.0f,  1.0f
-};
+// Model Matrix
+const float PI = 3.14159265f;
+const mat4 tr1 =	MatrixFactory::createTranslationMatrix(-0.2f, 0.8f, 0.0f) * 
+					MatrixFactory::createRotationMatrix4(-PI / 2,  vec4(0, 0, 1, 1));
 
-const Matrix ModelMatrix = {
-	1.0f,  0.0f,  0.0f,  0.0f,
-	0.0f,  1.0f,  0.0f,  0.0f,
-	0.0f,  0.0f,  1.0f,  0.0f,
-   -0.5f, -0.5f, -0.5f,  1.0f
-}; // Column Major
+const mat4 tr2 =	MatrixFactory::createTranslationMatrix(-0.4f, -0.2f, 0.0f);
 
-// Eye(5,5,5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix1 = {
-	0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.82f,  0.58f,  0.00f,
-   -0.70f, -0.41f,  0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
+const mat4 tr3 =	MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *  
+					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
+					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
 
-// Eye(-5,-5,-5) Center(0,0,0) Up(0,1,0)
-const Matrix ViewMatrix2 = {
-   -0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.82f, -0.58f,  0.00f,
-	0.70f, -0.41f, -0.58f,  0.00f,
-	0.00f,  0.00f, -8.70f,  1.00f
-}; // Column Major
+const mat4 pl45 =	MatrixFactory::createTranslationMatrix(0.2f, 0.4f, 0.0f) * 
+					MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));;
 
-// Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
-const Matrix ProjectionMatrix1 = {
-	0.50f,  0.00f,  0.00f,  0.00f,
-	0.00f,  0.50f,  0.00f,  0.00f,
-	0.00f,  0.00f, -0.22f,  0.00f,
-	0.00f,  0.00f, -1.22f,  1.00f
-}; // Column Major
+const mat4 tr6 =	MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *  
+					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
+					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
 
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-const Matrix ProjectionMatrix2 = {
-	2.79f,  0.00f,  0.00f,  0.00f,
-	0.00f,  3.73f,  0.00f,  0.00f,
-	0.00f,  0.00f, -1.22f, -1.00f,
-	0.00f,  0.00f, -2.22f,  0.00f
-}; // Column Major
+const mat4 sq78 =	MatrixFactory::createTranslationMatrix(0.0f, -0.14f -0.2f, 0.0f) * // '.14f is half the side of the square
+					MatrixFactory::createRotationMatrix4(PI / 4, vec4(0, 0, 1, 1)) * //rotate 45 degrees
+					MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
+
+const mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, -0.2f - 0.28f , 0.0f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
+					MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
+					MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
+
+const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
+const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
+const vec4 blue = vec4( 0.0f, 0.0f, 1.0f, 1.0f );
+const vec4 cyan = vec4( 0.0f, 1.0f, 1.0f, 1.0f );
+const vec4 magenta = vec4( 1.0f, 0.0f, 1.0f, 1.0f );
+const vec4 yellow = vec4( 1.0f, 1.0f, 0.0f, 1.0f );
+const vec4 white = vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+const vec4 orange = vec4( 1.0f, 0.2f, 0.0f, 1.0f );
+const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
+
+
 
 void drawScene()
 {
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), camera->ViewMatrix().data());
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix2);
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	triangle->draw(tr1, camera->ViewMatrix(), projectionMatrix, red, prog);
+	triangle->draw(tr2, camera->ViewMatrix(), projectionMatrix, green, prog);
+	triangle->draw(tr3, camera->ViewMatrix(), projectionMatrix, blue, prog);
+	triangle->draw(tr6, camera->ViewMatrix(), projectionMatrix, cyan, prog);
+	triangle->draw(tr9, camera->ViewMatrix(), projectionMatrix, magenta, prog);
+	square->draw(sq78, camera->ViewMatrix(), projectionMatrix, yellow, prog);
+	parallelogram->draw(pl45, camera->ViewMatrix(), projectionMatrix, white, prog);
 
-	glBindVertexArray(VaoId);
-	glUseProgram(prog.id);
+	//mat4 I = MatrixFactory::createIdentityMatrix4();
+	//triangle->draw(tr1, I, I, red, prog);
+	//triangle->draw(tr2, I, I, green, prog);
+	//triangle->draw(tr3, I, I, blue, prog);
+	//triangle->draw(tr6, I, I, cyan, prog);
+	//triangle->draw(tr9, I, I, magenta, prog);
+	//square->draw(sq78, I, I, yellow, prog);
+	//parallelogram->draw(pl45, I, I, white, prog);
 
-	glUniformMatrix4fv(UniformId, 1, GL_FALSE, ModelMatrix);
-	glDrawArrays(GL_TRIANGLES, 0, 36);
-
-	glUseProgram(0);
-	glBindVertexArray(0);
+	//triangle->draw(tr1, red, prog);
+	//triangle->draw(tr2, green, prog);
+	//triangle->draw(tr3, blue, prog);
+	//triangle->draw(tr6, cyan, prog);
+	//triangle->draw(tr9, magenta, prog);
+	//square->draw(sq78, yellow, prog);
+	//parallelogram->draw(pl45, white, prog);
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -534,7 +455,6 @@ void init(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
-
 	init(argc, argv);
 	glutMainLoop();
 	exit(EXIT_SUCCESS);

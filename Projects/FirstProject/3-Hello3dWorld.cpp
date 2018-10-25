@@ -57,6 +57,10 @@
 //float delta = 0.0f;
 //int lastMouseY = WinX / 2;
 //int lastMouseX = WinY / 2;
+////Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
+//mat4 projectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
+////Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+//mat4 otherProjectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 10);
 //
 ///////////////////////////////////////////////////////////////////////// ERRORS
 //
@@ -143,6 +147,12 @@
 //	case 'w':
 //	case 'W':
 //		camera->cameraMoveForward(delta);
+//		break;
+//	case'p':
+//	case'P':
+//		mat4 temp = projectionMatrix;
+//		projectionMatrix = otherProjectionMatrix;
+//		otherProjectionMatrix = temp;
 //		break;
 //	}
 //	 
@@ -393,7 +403,7 @@
 //{
 //	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 //	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), camera->ViewMatrix().data());
-//	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), ProjectionMatrix2);
+//	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), projectionMatrix.data());
 //	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 //
 //	glBindVertexArray(VaoId);

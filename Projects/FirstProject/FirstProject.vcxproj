@@ -137,7 +137,7 @@
     <ClCompile Include="program.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shape.cpp" />
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="mainH3dW.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="vector.cpp" />
     <ClCompile Include="src\properties.cpp" />
