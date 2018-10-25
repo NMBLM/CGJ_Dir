@@ -33,10 +33,10 @@ void Camera::cameraLookAround(float x, float y, const float deltatime)
 	int mulY = (y > 2 && y < -2) ? 3 : 2;
 	mulX = (x < 1 && x > -1) ? 0.2 : mulX;
 	mulY = (y < 1 && y > -1) ? 0.2 : mulY;
-	mat3 rotU = MatrixFactory::createRotationMatrix3( mulX * 0.25f * sideX *  deltatime * SPEED, u);
+	mat3 rotU = MatrixFactory::createRotationMatrix3( mulX *  sideX *  deltatime * SPEED / 8, u);
 	v = rotU * v;
 	s = rotU * s;
-	mat3 rotS = MatrixFactory::createRotationMatrix3( mulY * 0.25f * sideY * deltatime * SPEED, s);
+	mat3 rotS = MatrixFactory::createRotationMatrix3( mulY * sideY * deltatime * SPEED / 8, s);
 	v = rotS * v;
 	u = rotS * u;
 }

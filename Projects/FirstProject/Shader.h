@@ -21,19 +21,31 @@
 
 class Shader {
 	public:
-		GLuint VertexShaderId, FragmentShaderId, ProgramId;
-		//GLint UboId;
+		GLuint id;
 
-		Shader();
-		Shader(const char* vertexShader, const char* fragmentShader);
+		void deleteShader();
 
-		void useProgram();
-		GLint UniformId(const char* uniformName);
+};
 
+class VertexShader: public Shader {
+public:
+
+
+	VertexShader();
+	VertexShader(const char* shaderFilename);
 
 
 };
 
+class FragmentShader : public Shader {
+public:
+
+
+	FragmentShader();
+	FragmentShader(const char* shaderFilename);
+
+
+};
 
 
 #endif

@@ -32,6 +32,7 @@
 //#include "matrix.h"
 //#include "Shader.h"
 //#include "shape.h"
+//#include "program.h"
 //#include "GL/glew.h"
 //#include "GL/freeglut.h"
 //
@@ -45,7 +46,9 @@
 //
 //#define VERTICES 0
 //#define COLORS 1
-//Shader shaders;
+//Program prog;
+//VertexShader vShader;
+//FragmentShader fShader;
 //Triangle *triangle;
 //Square *square;
 //Parallelogram *parallelogram;
@@ -133,15 +136,26 @@
 //
 //void createShaderProgram()
 //{
-//	shaders = Shader("VertexShader.glsl" , "FragmentShader.glsl");
+//	vShader = VertexShader("VertexShader.glsl");
+//	fShader = FragmentShader("FragmentShader.glsl");
+//	prog = Program();
+//	prog.id =  glCreateProgram();
+//	prog.attachShader(vShader);
+//	prog.attachShader(fShader);
 //
+//	prog.bindAttribLocation( VERTICES, "in_Position");
+//
+//	prog.link();
+//
+//	prog.detachShader(vShader);
+//	prog.detachShader(fShader);
 //	checkOpenGLError("ERROR: Could not create shaders.");
 //}
 //
 //void destroyShaderProgram()
 //{
 //	glUseProgram(0);
-//	glDeleteProgram(shaders.ProgramId);
+//	glDeleteProgram(prog.id);
 //
 //	checkOpenGLError("ERROR: Could not destroy shaders.");
 //}
@@ -214,19 +228,6 @@
 //
 //const mat4 rot = MatrixFactory::createRotationMatrix4(PI, vec3(0, 1, 0));
 //
-//// COLORS
-///*
-//const GLfloat red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
-//const GLfloat green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
-//const GLfloat blue[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
-//const GLfloat cyan[4] = { 0.0f, 1.0f, 1.0f, 1.0f };
-//const GLfloat magenta[4] = { 1.0f, 0.0f, 1.0f, 1.0f };
-//const GLfloat yellow[4] = { 1.0f, 1.0f, 0.0f, 1.0f };
-//const GLfloat white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
-//const GLfloat orange[4] = { 1.0f, 0.2f, 0.0f, 1.0f };
-//const GLfloat purple[4] = { 0.4f, 0.0f, 0.4f, 1.0f };
-//*/
-//
 //const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
 //const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
 //const vec4 blue = vec4( 0.0f, 0.0f, 1.0f, 1.0f );
@@ -239,13 +240,13 @@
 //
 //void drawScene()
 //{
-//	triangle->draw(rot * tr1, red, shaders);
-//	triangle->draw(rot * tr2, green, shaders);
-//	triangle->draw(rot * tr3, blue, shaders);
-//	triangle->draw(rot * tr6, cyan, shaders);
-//	triangle->draw(rot * tr9, magenta, shaders);
-//	square->draw(rot * sq78, yellow, shaders);
-//	parallelogram->draw(rot * pl45, white, shaders);
+//	triangle->draw(rot * tr1, red, prog);
+//	triangle->draw(rot * tr2, green, prog);
+//	triangle->draw(rot * tr3, blue, prog);
+//	triangle->draw(rot * tr6, cyan, prog);
+//	triangle->draw(rot * tr9, magenta, prog);
+//	square->draw(rot * sq78, yellow, prog);
+//	parallelogram->draw(rot * pl45, white, prog);
 //
 //	checkOpenGLError("ERROR: Could not draw scene.");
 //
@@ -255,9 +256,9 @@
 //
 //// Model Matrix
 //
-////const mat4 mvtocnr = MatrixFactory::createTranslationMatrix(0.6f, 0.6f, 0.0f);
+//const mat4 mvtocnr = MatrixFactory::createTranslationMatrix(0.6f, 0.6f, 0.0f);
 //
-//const mat4 mvtocnr = MatrixFactory::createIdentityMatrix4();
+////const mat4 mvtocnr = MatrixFactory::createIdentityMatrix4();
 //
 //const mat4 otr1 =	mvtocnr *
 //					MatrixFactory::createTranslationMatrix(0.4f, 0.4f, 0.0f) *
@@ -290,13 +291,13 @@
 //void drawSceneOriginal()
 //{
 //
-//	triangle->draw(otr1, red, shaders);
-//	triangle->draw(otr2, orange, shaders);
-//	triangle->draw(otr3, yellow, shaders);
-//	triangle->draw(otr6, green, shaders);
-//	triangle->draw(otr9, cyan, shaders);
-//	square->draw(osq78, purple, shaders);
-//	parallelogram->draw(opl45, blue, shaders);
+//	triangle->draw(otr1, red, prog);
+//	triangle->draw(otr2, orange, prog);
+//	triangle->draw(otr3, yellow, prog);
+//	triangle->draw(otr6, green, prog);
+//	triangle->draw(otr9, cyan, prog);
+//	square->draw(osq78, purple, prog);
+//	parallelogram->draw(opl45, blue, prog);
 //
 //
 //	// PARALLELOGRAM DRAW END 
@@ -317,7 +318,7 @@
 //	++FrameCount;
 //	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 //	drawScene();
-//	//drawSceneOriginal();
+//	drawSceneOriginal();
 //	glutSwapBuffers();
 //}
 //

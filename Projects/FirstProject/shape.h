@@ -11,6 +11,7 @@
 #include "vector.h"
 #include "matrix.h"
 #include "Shader.h"
+#include "program.h"
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
@@ -47,7 +48,7 @@ public:
 
 
 
-	virtual void draw(engine::mat4 transform,const vec4 color, Shader shader) = 0;
+	virtual void draw(engine::mat4 transform,const vec4 color, Program prog) = 0;
 	
 protected:
 	Vertex *Vertices;
@@ -62,21 +63,21 @@ protected:
 class Triangle : public Shape {
 public:	
 	Triangle();
-	virtual void draw(engine::mat4 transform, const vec4 color, Shader shader);
+	virtual void draw(engine::mat4 transform, const vec4 color, Program prog);
 
 };
 
 class Square : public Shape {
 public:
 	Square();
-	virtual void draw(engine::mat4 transform, const vec4 color, Shader shader);
+	virtual void draw(engine::mat4 transform, const vec4 color, Program prog);
 
 };
 
 class Parallelogram : public Shape {
 public:
 	Parallelogram();
-	virtual void draw(engine::mat4 transform, const vec4 color, Shader shader);
+	virtual void draw(engine::mat4 transform, const vec4 color, Program prog);
 
 };
 

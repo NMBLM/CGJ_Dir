@@ -17,24 +17,17 @@
 #include "GL/freeglut.h"
 
 
-#define VERTICES 0
-#define COLORS 1
-
-
 class Program {
 public:
-	GLuint VertexShaderId, FragmentShaderId, ProgramId;
-	GLint UniformId, UniformColorId;
-	engine::mat4 projMat;
-	camera cam;
+	GLuint id;
 
 	Program();
-	Program(const char* vertexShader, const char* fragmentShader);
 	
-	void useProgram();
-	void changeCamere();
-	void changeProjection(engine::mat4 projectionMatrix);
-
+	void attachShader(Shader shader);
+	void detachShader(Shader shader);
+	void link();
+	void bindAttribLocation(const int atnum, const char* atname);
+	GLint UniformId(const char* uniformName);
 };
 
 
