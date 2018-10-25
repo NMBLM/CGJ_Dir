@@ -5,6 +5,11 @@ Program::Program()
 	
 }
 
+Program::Program(GLuint i)
+{
+	id = i;
+}
+
 void Program::attachShader(Shader shader)
 {
 	glAttachShader(id, shader.id);

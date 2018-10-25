@@ -138,8 +138,8 @@
 //{
 //	vShader = VertexShader("VertexShader.glsl");
 //	fShader = FragmentShader("FragmentShader.glsl");
-//	prog = Program();
-//	prog.id =  glCreateProgram();
+//	prog = Program(glCreateProgram());
+//
 //	prog.attachShader(vShader);
 //	prog.attachShader(fShader);
 //

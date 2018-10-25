@@ -22,6 +22,7 @@ public:
 	GLuint id;
 
 	Program();
+	Program(GLuint i);
 	
 	void attachShader(Shader shader);
 	void detachShader(Shader shader);
