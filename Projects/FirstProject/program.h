@@ -10,7 +10,7 @@
 #include <string>
 
 #include "matrix.h"
-#include "Shader.h"
+#include "shader.h"
 #include "camera.h"
 
 #include "GL/glew.h"
@@ -29,6 +29,10 @@ public:
 	void link();
 	void bindAttribLocation(const int atnum, const char* atname);
 	GLint UniformId(const char* uniformName);
+	GLint UniformLocation(const char* uniformName);
+	GLint uniformBlockIndex(const char* uniformName);
+
+
 };
 
 

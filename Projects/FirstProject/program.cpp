@@ -40,3 +40,13 @@ GLint Program::UniformId(const char * uniformName)
 
 
 }
+
+GLint Program::UniformLocation(const char * uniformName)
+{
+	return glGetUniformLocation(id, uniformName);
+}
+
+GLint Program::uniformBlockIndex(const char * uniformName)
+{
+	return glGetUniformBlockIndex(id, uniformName);
+}

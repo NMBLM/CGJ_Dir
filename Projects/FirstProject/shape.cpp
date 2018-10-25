@@ -1,5 +1,5 @@
 #include "shape.h"
-#include "Shader.h"
+#include "shader.h"
 #include "program.h"
 #include "vector.h"
 

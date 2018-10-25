@@ -30,7 +30,7 @@
 //
 //#include "vector.h"
 //#include "matrix.h"
-//#include "Shader.h"
+//#include "shader.h"
 //#include "shape.h"
 //#include "program.h"
 //#include "GL/glew.h"

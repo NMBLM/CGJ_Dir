@@ -48,6 +48,9 @@
     <ClCompile Include="program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.h">
@@ -74,6 +77,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="FragmentShader.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="VertexShaderCamera.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="FragmentShaderCamera.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
