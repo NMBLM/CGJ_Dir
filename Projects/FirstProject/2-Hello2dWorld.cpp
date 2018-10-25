@@ -215,7 +215,7 @@
 //const mat4 rot = MatrixFactory::createRotationMatrix4(PI, vec3(0, 1, 0));
 //
 //// COLORS
-//
+///*
 //const GLfloat red[4] = { 1.0f, 0.0f, 0.0f, 1.0f };
 //const GLfloat green[4] = { 0.0f, 1.0f, 0.0f, 1.0f };
 //const GLfloat blue[4] = { 0.0f, 0.0f, 1.0f, 1.0f };
@@ -225,6 +225,17 @@
 //const GLfloat white[4] = { 1.0f, 1.0f, 1.0f, 1.0f };
 //const GLfloat orange[4] = { 1.0f, 0.2f, 0.0f, 1.0f };
 //const GLfloat purple[4] = { 0.4f, 0.0f, 0.4f, 1.0f };
+//*/
+//
+//const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
+//const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
+//const vec4 blue = vec4( 0.0f, 0.0f, 1.0f, 1.0f );
+//const vec4 cyan = vec4( 0.0f, 1.0f, 1.0f, 1.0f );
+//const vec4 magenta = vec4( 1.0f, 0.0f, 1.0f, 1.0f );
+//const vec4 yellow = vec4( 1.0f, 1.0f, 0.0f, 1.0f );
+//const vec4 white = vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+//const vec4 orange = vec4( 1.0f, 0.2f, 0.0f, 1.0f );
+//const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
 //
 //void drawScene()
 //{

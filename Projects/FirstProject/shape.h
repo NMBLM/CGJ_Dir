@@ -14,6 +14,7 @@
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
+using namespace engine;
 typedef struct
 {
 	GLfloat XYZW[4];
@@ -23,7 +24,7 @@ typedef struct
 class Shape {
 
 public:
-	GLuint VaoId, VboId[2];
+	GLuint VaoId, VboId[2], UBO_PB;
 
 
 	Shape() {};
@@ -46,7 +47,7 @@ public:
 
 
 
-	virtual void draw(engine::mat4 transform,const  GLfloat* color, Shader shader) = 0;
+	virtual void draw(engine::mat4 transform,const vec4 color, Shader shader) = 0;
 	
 protected:
 	Vertex *Vertices;
@@ -61,21 +62,21 @@ protected:
 class Triangle : public Shape {
 public:	
 	Triangle();
-	virtual void draw(engine::mat4 transform, const  GLfloat* color, Shader shader);
+	virtual void draw(engine::mat4 transform, const vec4 color, Shader shader);
 
 };
 
 class Square : public Shape {
 public:
 	Square();
-	virtual void draw(engine::mat4 transform, const  GLfloat* color, Shader shader);
+	virtual void draw(engine::mat4 transform, const vec4 color, Shader shader);
 
 };
 
 class Parallelogram : public Shape {
 public:
 	Parallelogram();
-	virtual void draw(engine::mat4 transform, const  GLfloat* color, Shader shader);
+	virtual void draw(engine::mat4 transform, const vec4 color, Shader shader);
 
 };
 

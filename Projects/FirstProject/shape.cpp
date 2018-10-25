@@ -1,6 +1,8 @@
 #include "shape.h"
 #include "shape.h"
+#include "vector.h"
 
+using namespace engine;
 
 void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 {
@@ -60,16 +62,17 @@ Triangle::Triangle()
 
 }
 
-void Triangle::draw(engine::mat4 transform, const  GLfloat * color, Shader shader)
+void Triangle::draw(engine::mat4 transform, const  vec4  color, Shader shader)
 {
 	glBindVertexArray(getVaoId());
 	glUseProgram(shader.ProgramId);
 
-	glUniform4fv(shader.UniformId("force_color"), 1, color);
+	glUniform4fv(shader.UniformId("force_color"), 1, color.data());
 	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
-	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
-	glUniform4fv(shader.UniformId("force_color"), 1, color);
-	glDrawArrays(GL_TRIANGLES, 3, 3);
+	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	//vec4 colorL = color * 0.80f;
+	//glUniform4fv(shader.UniformId("force_color"), 1, colorL.data());
+	//glDrawArrays(GL_TRIANGLES, 3, 3);
 
 
 
@@ -98,14 +101,17 @@ Square::Square()
 	createBuffers(v, i);
 }
 
-void Square::draw(engine::mat4 transform, const GLfloat * color, Shader shader)
+void Square::draw(engine::mat4 transform, const vec4 color, Shader shader)
 {
 	glBindVertexArray(getVaoId());
 	glUseProgram(shader.ProgramId);
 
-	glUniform4fv(shader.UniformId("force_color"), 1, color);
+	glUniform4fv(shader.UniformId("force_color"), 1, color.data());
 	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
 	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	//vec4 colorL = color * 0.80f;
+	//glUniform4fv(shader.UniformId("force_color"), 1, colorL.data());
+	//glDrawArrays(GL_TRIANGLES, 6, 6);
 
 	glUseProgram(0);
 	glBindVertexArray(0);
@@ -132,16 +138,34 @@ Parallelogram::Parallelogram()
 	createBuffers(v, i);
 }
 
-
-void Parallelogram::draw(engine::mat4 transform, const GLfloat * color, Shader shader)
+void Parallelogram::draw(engine::mat4 transform, const vec4 color, Shader shader)
 {
+
 	glBindVertexArray(getVaoId());
 	glUseProgram(shader.ProgramId);
 
-	glUniform4fv(shader.UniformId("force_color"), 1, color);
+	glUniform4fv(shader.UniformId("force_color"), 1, color.data());
 	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
 	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, (GLvoid*)0);
-
+	//vec4 colorL = color * 0.80f;
+	//glUniform4fv(shader.UniformId("force_color"), 1, colorL.data());
+	//glDrawArrays(GL_TRIANGLES, 6, 6);
 	glUseProgram(0);
 	glBindVertexArray(0);
 }
+
+
+//void Parallelogram::draw(engine::mat4 transform, const vec4 color, Shader shader)
+//{
+//	glBindVertexArray(getVaoId());
+//	glUseProgram(shader.ProgramId);
+//
+//	glUniform4fv(shader.UniformId("force_color"), 1, color.data());
+//	glUniformMatrix4fv(shader.UniformId("Matrix"), 1, GL_FALSE, transform.data());
+//	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
+//	vec4 colorL = color * 0.80f;
+//	glUniform4fv(shader.UniformId("force_color"), 1, colorL.data());
+//	glDrawArrays(GL_TRIANGLES, 6, 6);
+//	glUseProgram(0);
+//	glBindVertexArray(0);
+//}

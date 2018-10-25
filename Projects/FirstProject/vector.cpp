@@ -269,7 +269,7 @@ namespace engine {
 		w = v.z;
 	}
 
-	const float * vec4::data(vec4 & v)
+	const float * vec4::data() const 
 	{
 		float *data = new float[4]();
 		data[0] = x;
@@ -289,6 +289,17 @@ namespace engine {
 	{
 		return !(fcmp(v1.x, v2.x) && fcmp(v1.y, v2.y) && fcmp(v1.z, v2.z) && fcmp(v1.w, v2.w));
 	}
+
+	vec4 operator*(const vec4 & v, const float alpha)
+	{
+		return vec4(v.x*alpha, v.y*alpha, v.z*alpha,v.w);
+	}
+
+	vec4 operator*(const float alpha, const vec4 & v)
+	{
+		return vec4(v.x*alpha, v.y*alpha, v.z*alpha, v.w);
+	}
+
 
 	std::ostream& operator<<(std::ostream& out, const vec4 & v)
 	{

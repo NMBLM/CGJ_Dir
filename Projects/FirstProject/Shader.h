@@ -22,6 +22,7 @@
 class Shader {
 	public:
 		GLuint VertexShaderId, FragmentShaderId, ProgramId;
+		//GLint UboId;
 
 		Shader();
 		Shader(const char* vertexShader, const char* fragmentShader);

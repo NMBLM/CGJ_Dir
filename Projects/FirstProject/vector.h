@@ -100,12 +100,14 @@ namespace engine {
 		vec4(const vec3& v ,const float w = 1);
 		vec4(const vec4& v);
 
-		const float* data(vec4& v);
+		const float* data() const;
 
 		// assigment
 
 		friend const bool operator ==(const vec4& v1, const vec4& v2);
 		friend const bool operator !=(const vec4& v1, const vec4& v2);
+		friend vec4 operator*(const vec4& v, const float alpha);
+		friend vec4 operator*(const float alpha, const vec4& v);
 
 		// input output
 		friend std::ostream & operator<< (std::ostream& out, const vec4& v);
