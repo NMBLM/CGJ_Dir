@@ -44,7 +44,7 @@
 
 using namespace engine;
 
-int WinX = 640, WinY = 480;
+int WinX = 640, WinY = 640;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
@@ -206,6 +206,21 @@ void createShaderProgram()
 	prog.detachShader(fShader);
 
 	checkOpenGLError("ERROR: Could not create shaders.");
+
+	//vShader = VertexShader("VertexShader.glsl");
+	//fShader = FragmentShader("FragmentShader.glsl");
+	//prog = Program(glCreateProgram());
+
+	//prog.attachShader(vShader);
+	//prog.attachShader(fShader);
+
+	//prog.bindAttribLocation( VERTICES, "in_Position");
+
+	//prog.link();
+
+	//prog.detachShader(vShader);
+	//prog.detachShader(fShader);
+	//checkOpenGLError("ERROR: Could not create shaders.");
 }
 
 void destroyShaderProgram()
@@ -296,7 +311,13 @@ const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
 
 
 void drawScene()
-{
+{	
+
+	mat4 mvp = projectionMatrix * camera->ViewMatrix();
+	std::cout << "vertice 1" << mvp * tr1 * vec4(0, 0, 0, 1.0f) << std::endl;
+	std::cout << "vertice 2" << mvp * tr1 * vec4(0.8f, 0, 0, 1.0f) << std::endl;
+	std::cout << "vertice 3" << mvp * tr1 * vec4(0.4f, 0.4f, 0, 1.0f) << std::endl;
+
 	triangle->draw(tr1, camera->ViewMatrix(), projectionMatrix, red, prog);
 	triangle->draw(tr2, camera->ViewMatrix(), projectionMatrix, green, prog);
 	triangle->draw(tr3, camera->ViewMatrix(), projectionMatrix, blue, prog);
@@ -321,6 +342,15 @@ void drawScene()
 	//triangle->draw(tr9, magenta, prog);
 	//square->draw(sq78, yellow, prog);
 	//parallelogram->draw(pl45, white, prog);
+
+
+	//triangle->draw(mvp * tr1, red, prog);
+	//triangle->draw(mvp * tr2, green, prog);
+	//triangle->draw(mvp * tr3, blue, prog);
+	//triangle->draw(mvp * tr6, cyan, prog);
+	//triangle->draw(mvp * tr9, magenta, prog);
+	//square->draw(mvp * sq78, yellow, prog);
+	//parallelogram->draw(mvp * pl45, white, prog);
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -438,7 +468,7 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void setupCamera() {
-	camera = new Camera(vec3(5, 5, 5), vec3(0, 0, 0), vec3(0, 1, 0));
+	camera = new Camera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
 }
 
 

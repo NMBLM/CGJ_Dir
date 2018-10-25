@@ -164,7 +164,7 @@
 //void createBufferObjects()
 //{
 //	triangle = new Triangle();
-
+//
 //	square = new Square();
 //
 //	parallelogram = new Parallelogram();
@@ -218,8 +218,8 @@
 //					MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
 //					MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
 //
-//const mat4 rot = MatrixFactory::createRotationMatrix4(PI, vec3(0, 1, 0));
-//
+////const mat4 rot = MatrixFactory::createRotationMatrix4(PI, vec3(0, 1, 0));
+//const mat4 rot = MatrixFactory::createIdentityMatrix4();
 //const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
 //const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
 //const vec4 blue = vec4( 0.0f, 0.0f, 1.0f, 1.0f );

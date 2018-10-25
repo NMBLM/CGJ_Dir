@@ -19,19 +19,22 @@ void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 			glEnableVertexAttribArray(VERTICES);
 			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 		}
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
-		{
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize, i, GL_STATIC_DRAW);
-		}
-		glBindBuffer(GL_UNIFORM_BUFFER, VboId[2]);
+		glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 		{
 			glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat[16]) * 2, 0, GL_STREAM_DRAW);
 			glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[2]);
 		}
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[2]);
+		{
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize, i, GL_STATIC_DRAW);
+		}
+		
 	}
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 }
 
 void Shape::destroyBuffers()
@@ -43,6 +46,7 @@ void Shape::destroyBuffers()
 	glDeleteVertexArrays(1, &VaoId);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	glBindVertexArray(0);
 }
 
@@ -76,10 +80,10 @@ void Triangle::draw(engine::mat4 transform, const  vec4  color, Program prog)
 
 	glUniform4fv(prog.UniformId("force_color"), 1, color.data());
 	glUniformMatrix4fv(prog.UniformId("ModelMatrix"), 1, GL_FALSE, transform.data());
-	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (GLvoid*)0);
-	//vec4 colorL = color * 0.80f;
-	//glUniform4fv(shader.UniformId("force_color"), 1, colorL.data());
-	//glDrawArrays(GL_TRIANGLES, 3, 3);
+	glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_BYTE, (GLvoid*)0);
+	vec4 colorL = color * 0.80f;
+	glUniform4fv(prog.UniformId("force_color"), 1, colorL.data());
+	glDrawArrays(GL_TRIANGLES, 3, 3);
 
 
 
@@ -91,9 +95,9 @@ void Triangle::draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Prog
 {
 	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
- 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[2]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(matrixSize), view.data());
-	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(matrixSize), sizeof(matrixSize), proj.data());
+ 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, view.data());
+	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, proj.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	draw(transform, color, prog);
 }
@@ -139,7 +143,7 @@ void Square::draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Progra
 {
 	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[2]);
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(matrixSize), view.data());
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(matrixSize), sizeof(matrixSize), proj.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
@@ -186,7 +190,8 @@ void Parallelogram::draw(engine::mat4 transform, const  vec4  color, Program pro
 void Parallelogram::draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog)
 {
 	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[2]);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(matrixSize), view.data());
 	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(matrixSize), sizeof(matrixSize), proj.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);

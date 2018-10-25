@@ -622,19 +622,24 @@ namespace engine {
 		vec3 s = v.cross(up);
 		s = s * (1 / s.length());  // normalize
 		vec3 u = s.cross(v); //is a unit vector only because s and v are perpendicular to each other and are unit vectors |s x v| = |s||v|*sin(angle)
-		return mat4(s.x, s.y, s.z, -s.dot(eye),
-					u.x, u.y, u.z, -u.dot(eye),
-					-v.x, v.y, v.z, v.dot(eye),
-					0,	0,	 0,	  1);
+		
+		mat4 res = mat4(s.x, s.y, s.z, -s.dot(eye),
+						u.x, u.y, u.z, -u.dot(eye),
+						-v.x, v.y, v.z, v.dot(eye),
+						0, 0, 0, 1);
+		res.clean();
+		return res;
 	}
 
 
 	const mat4 MatrixFactory::createLookAt(const vec3 eye, const vec3 v, const vec3 u, const vec3 s)
 	{
-		return mat4(s.x, s.y, s.z, -s.dot(eye),
-					u.x, u.y, u.z, -u.dot(eye),
-					-v.x, v.y, v.z, v.dot(eye),
-					0, 0, 0, 1);
+		mat4 res =  mat4(s.x, s.y, s.z, -s.dot(eye),
+						u.x, u.y, u.z, -u.dot(eye),
+						-v.x, v.y, v.z, v.dot(eye),
+						0, 0, 0, 1);
+		res.clean();
+		return res;
 	}
 
 
@@ -642,10 +647,12 @@ namespace engine {
 
 	const mat4 MatrixFactory::createOrtographicProjectionMatrix(const float left, const float right, const float bottom, const float top, const float near, const float far)
 	{
-		return mat4(2/(right-left),0,0,(left+right)/(left-right),
+		mat4 res= mat4(2/(right-left),0,0,(left+right)/(left-right),
 					0, 2/(top-bottom), 0, (top+ bottom)/(bottom - top),
 					0, 0 ,-2/(far-near), (far+near)/(near-far),
 					0, 0, 0, 1);
+		res.clean();
+		return res;
 	}
 
 	const mat4 MatrixFactory::createPerspectiveProjectionMatrix(const float fovY, const float aspect, const float near , const float far )
@@ -656,10 +663,12 @@ namespace engine {
 		std::cout << " d/ aspect " << d/ aspect << std::endl;
 
 		std::cout << "aspect " << aspect << std::endl;
-		return mat4(d/aspect, 0 ,0 ,0,
-					0, d, 0, 0,
-					0, 0, (near+far)/(near-far), (2* far * near)/(near-far),
-					0, 0, -1, 0);
+		mat4 res = mat4(d / aspect, 0, 0, 0,
+			0, d, 0, 0,
+			0, 0, (near + far) / (near - far), (2 * far * near) / (near - far),
+			0, 0, -1, 0);
+			res.clean();
+		return res;
 	}
 
 

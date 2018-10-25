@@ -39,6 +39,9 @@ void Camera::cameraLookAround(float x, float y, const float deltatime)
 	mat3 rotS = MatrixFactory::createRotationMatrix3( mulY * sideY * deltatime * SPEED / 8, s);
 	v = rotS * v;
 	u = rotS * u;
+	v = normalize(v);
+	u = normalize(u);
+	s = normalize(s);
 }
 
 void Camera::cameraMoveRight(const float deltatime)
