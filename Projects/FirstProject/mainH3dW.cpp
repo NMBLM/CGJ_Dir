@@ -207,20 +207,24 @@ void createShaderProgram()
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 
-	//vShader = VertexShader("VertexShader.glsl");
-	//fShader = FragmentShader("FragmentShader.glsl");
-	//prog = Program(glCreateProgram());
+}
 
-	//prog.attachShader(vShader);
-	//prog.attachShader(fShader);
+void createOldShaderProgram() {
 
-	//prog.bindAttribLocation( VERTICES, "in_Position");
+	vShader = VertexShader("VertexShader.glsl");
+	fShader = FragmentShader("FragmentShader.glsl");
+	prog = Program(glCreateProgram());
 
-	//prog.link();
+	prog.attachShader(vShader);
+	prog.attachShader(fShader);
 
-	//prog.detachShader(vShader);
-	//prog.detachShader(fShader);
-	//checkOpenGLError("ERROR: Could not create shaders.");
+	prog.bindAttribLocation( VERTICES, "in_Position");
+
+	prog.link();
+
+	prog.detachShader(vShader);
+	prog.detachShader(fShader);
+	checkOpenGLError("ERROR: Could not create shaders.");
 }
 
 void destroyShaderProgram()
@@ -332,14 +336,7 @@ void drawScene()
 	//parallelogram->draw(pl45, white, prog);
 
 
-	//mat4 mvp = projectionMatrix * camera->ViewMatrix();
-	//triangle->draw(mvp * tr1, red, prog);
-	//triangle->draw(mvp * tr2, green, prog);
-	//triangle->draw(mvp * tr3, blue, prog);
-	//triangle->draw(mvp * tr6, cyan, prog);
-	//triangle->draw(mvp * tr9, magenta, prog);
-	//square->draw(mvp * sq78, yellow, prog);
-	//parallelogram->draw(mvp * pl45, white, prog);
+
 
 	//std::cout << "vertice 1" << mvp * tr1 * vec4(0, 0, 0, 1.0f) << std::endl;
 	//std::cout << "vertice 2" << mvp * tr1 * vec4(0.8f, 0, 0, 1.0f) << std::endl;
@@ -347,6 +344,16 @@ void drawScene()
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
 
+void drawOldScene() {
+	mat4 mvp = projectionMatrix * camera->ViewMatrix();
+	triangle->draw(mvp * tr1, red, prog);
+	triangle->draw(mvp * tr2, green, prog);
+	triangle->draw(mvp * tr3, blue, prog);
+	triangle->draw(mvp * tr6, cyan, prog);
+	triangle->draw(mvp * tr9, magenta, prog);
+	square->draw(mvp * sq78, yellow, prog);
+	parallelogram->draw(mvp * pl45, white, prog);
+}
 /////////////////////////////////////////////////////////////////////// CALLBACKS
 
 void cleanup()
@@ -359,7 +366,8 @@ void display()
 {
 	++FrameCount;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	drawScene();
+	//drawScene();
+	drawOldScene();
 	glutSwapBuffers();
 }
 
@@ -471,7 +479,8 @@ void init(int argc, char* argv[])
 	setupOpenGL();
 	setupCamera();
 	setupCallbacks();
-	createShaderProgram();
+	//createShaderProgram();
+	createOldShaderProgram();
 	createBufferObjects();
 }
 
