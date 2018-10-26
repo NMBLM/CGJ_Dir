@@ -13,7 +13,6 @@ class Camera {
 	vec3 v;
 	vec3 s;
 	vec3 u;
-	vec3 center;
 	vec3 eye;
 
 	mat4 viewMatrix;

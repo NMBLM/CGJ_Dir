@@ -25,7 +25,7 @@ typedef struct
 class Shape {
 
 public:
-	GLuint VaoId, VboId[3], UBO_PB;
+	GLuint VaoId, VboId[3];
 	mat4 reverse;
 
 	Shape() {};

@@ -19,6 +19,7 @@ void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 			glBufferData(GL_ARRAY_BUFFER, vSize, v, GL_STATIC_DRAW);
 			glEnableVertexAttribArray(VERTICES);
 			glVertexAttribPointer(VERTICES, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+
 		}
 
 

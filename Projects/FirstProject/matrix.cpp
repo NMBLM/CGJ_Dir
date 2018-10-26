@@ -618,9 +618,9 @@ namespace engine {
 	const mat4 MatrixFactory::createLookAt(const vec3 eye, const vec3 v, const vec3 u, const vec3 s)
 	{
 		mat4 res = mat4(s.x, s.y, s.z, -s.dot(eye),
-			u.x, u.y, u.z, -u.dot(eye),
-			-v.x, v.y, v.z, v.dot(eye),
-			0, 0, 0, 1);
+						u.x, u.y, u.z, -u.dot(eye),
+						-v.x, -v.y, -v.z, v.dot(eye),
+						0, 0, 0, 1);
 		res.clean();
 		return res;
 	}
@@ -635,7 +635,7 @@ namespace engine {
 		
 		mat4 res = mat4(s.x, s.y, s.z, -s.dot(eye),
 						u.x, u.y, u.z, -u.dot(eye),
-						-v.x, v.y, v.z, v.dot(eye),
+						-v.x, -v.y, -v.z, v.dot(eye),
 						0, 0, 0, 1);
 		res.clean();
 		return res;
