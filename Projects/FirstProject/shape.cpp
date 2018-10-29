@@ -22,7 +22,6 @@ void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 
 		}
 
-
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[2]);
 		{
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize, i, GL_STATIC_DRAW);
@@ -48,7 +47,7 @@ void Shape::destroyBuffers()
 	glBindVertexArray(VaoId);
 	glDisableVertexAttribArray(VERTICES);
 	glDisableVertexAttribArray(COLORS);
-	glDeleteBuffers(2, VboId);
+	glDeleteBuffers(3, VboId);
 	glDeleteVertexArrays(1, &VaoId);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
