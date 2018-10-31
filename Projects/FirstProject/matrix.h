@@ -2,6 +2,7 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
+#include "quaternion.h"
 #include "vector.h"
 #include <iostream>
 

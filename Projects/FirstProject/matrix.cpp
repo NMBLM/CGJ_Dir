@@ -529,10 +529,11 @@ namespace engine {
 	}
 	const mat3 MatrixFactory::createRotationMatrix3(const float angle, const vec3 & v)
 	{
+		float rad = angle * DEGREES_TO_RADIANS;
 		vec3 a = (1 / v.length()) * v;
 		mat3 A  = engine::MatrixFactory::createDualMatrix(a);
 		mat3 A2 = engine::MatrixFactory::createSquareDualMatrix(a);
-		mat3 R  = engine::MatrixFactory::createIdentityMatrix3() + sin(angle) * A + (1 - cos(angle)) * A2;
+		mat3 R  = engine::MatrixFactory::createIdentityMatrix3() + sin(rad) * A + (1 - cos(rad)) * A2;
 		return R;
 	}
 

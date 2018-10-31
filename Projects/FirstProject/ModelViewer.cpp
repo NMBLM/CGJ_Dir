@@ -1,25 +1,17 @@
 ///////////////////////////////////////////////////////////////////////
 //
-// Assignment consists in the following:
+// Using quaternions to rotate in 3D.
 //
-// - Create the following changes to your scene:
-//   - Make your TANs double-faced, so they can be seen from both sides.
-//   - The new face of each TAN should share the same hue as the
-//     original top face color but have a different level of saturation 
-//     and brightness.
-//
-// - Add the following functionality:
-//   - Create a View Matrix from (eye, center, up) parameters.
-//   - Create an Orthographic Projection Matrix from (left-right, 
-//     bottom-top, near-far) parameters.
-//   - Create a Perspective Projection Matrix from (fovy, aspect,
-//     nearZ, farZ) parameters.
-//
-// - Add the following dynamics to the application:
-//   - Create a free 3D camera controlled by the mouse allowing to 
-//     visualize the scene through all its angles.
-//   - Change perspective from orthographic to perspective and back as
-//     a response to pressing the key 'p'.
+// Assignment: 1. Create a class for Quaternions.
+//             2. Create a scene with a camera rotating around an 
+//                object at the origin and pointing towards it. 
+//                Do NOT use "gluLookAt" to create the ViewMatrix, 
+//                use rotation matrices!
+//             3. Gimbal lock mode ON: use Translation + Rotation 
+//                matrices (e.g. Euler angles, Rodrigues’ formula).
+//             4. Gimbal lock mode OFF: use Quaternions to produce a 
+//                transformation matrix and avoid gimbal lock.
+//             5. Switch between modes by pressing the 'g' key.
 //
 // (c) 2013-18 by Carlos Martinho
 //
@@ -49,7 +41,7 @@ int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
 
-Camera* camera;
+FixedCamera* camera;
 Triangle *triangle;
 Square *square;
 Parallelogram *parallelogram;
@@ -66,7 +58,7 @@ int lastMouseX = WinY / 2;
 // Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
 mat4 projectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
 // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
-mat4 otherProjectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float) WinY, 1, 10);
+mat4 otherProjectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 10);
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -202,7 +194,7 @@ void createShaderProgram()
 	prog.link();
 	glUniformBlockBinding(prog.id, prog.uniformBlockIndex("SharedMatrices"), UBO_BP);
 
-	prog.detachShader( vShader);
+	prog.detachShader(vShader);
 	prog.detachShader(fShader);
 
 	checkOpenGLError("ERROR: Could not create shaders.");
@@ -218,7 +210,7 @@ void createOldShaderProgram() {
 	prog.attachShader(vShader);
 	prog.attachShader(fShader);
 
-	prog.bindAttribLocation( VERTICES, "in_Position");
+	prog.bindAttribLocation(VERTICES, "in_Position");
 
 	prog.link();
 
@@ -269,44 +261,44 @@ void destroyBufferObjects()
 
 // Model Matrix
 const float PI = 3.14159265f;
-const mat4 tr1 =	MatrixFactory::createTranslationMatrix(-0.2f, 0.8f, 0.0f) * 
-					MatrixFactory::createRotationMatrix4(-PI / 2,  vec4(0, 0, 1, 1));
+const mat4 tr1 = MatrixFactory::createTranslationMatrix(-0.2f, 0.8f, 0.0f) *
+MatrixFactory::createRotationMatrix4(-PI / 2, vec4(0, 0, 1, 1));
 
-const mat4 tr2 =	MatrixFactory::createTranslationMatrix(-0.4f, -0.2f, 0.0f);
+const mat4 tr2 = MatrixFactory::createTranslationMatrix(-0.4f, -0.2f, 0.0f);
 
-const mat4 tr3 =	MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *  
-					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
-					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
+const mat4 tr3 = MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *
+MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *
+MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));
 
-const mat4 pl45 =	MatrixFactory::createTranslationMatrix(0.2f, 0.4f, 0.0f) * 
-					MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));
+const mat4 pl45 = MatrixFactory::createTranslationMatrix(0.2f, 0.4f, 0.0f) *
+MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));
 
-const mat4 tr6 =	MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *  
-					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
-					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
+const mat4 tr6 = MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *
+MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *
+MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));
 
-const mat4 sq78 =	MatrixFactory::createTranslationMatrix(0.0f, -0.14f -0.2f, 0.0f) * // '.14f is half the side of the square
-					MatrixFactory::createRotationMatrix4(PI / 4, vec4(0, 0, 1, 1)) * //rotate 45 degrees
-					MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
+const mat4 sq78 = MatrixFactory::createTranslationMatrix(0.0f, -0.14f - 0.2f, 0.0f) * // '.14f is half the side of the square
+MatrixFactory::createRotationMatrix4(PI / 4, vec4(0, 0, 1, 1)) * //rotate 45 degrees
+MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
 
-const mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, -0.2f - 0.28f , 0.0f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
-					MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
-					MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
+const mat4 tr9 = MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, -0.2f - 0.28f, 0.0f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
+MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
+MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
 
-const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
-const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
-const vec4 blue = vec4( 0.0f, 0.0f, 1.0f, 1.0f );
-const vec4 cyan = vec4( 0.0f, 1.0f, 1.0f, 1.0f );
-const vec4 magenta = vec4( 1.0f, 0.0f, 1.0f, 1.0f );
-const vec4 yellow = vec4( 1.0f, 1.0f, 0.0f, 1.0f );
-const vec4 white = vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-const vec4 orange = vec4( 1.0f, 0.2f, 0.0f, 1.0f );
-const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
+const vec4 red = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+const vec4 green = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+const vec4 blue = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+const vec4 cyan = vec4(0.0f, 1.0f, 1.0f, 1.0f);
+const vec4 magenta = vec4(1.0f, 0.0f, 1.0f, 1.0f);
+const vec4 yellow = vec4(1.0f, 1.0f, 0.0f, 1.0f);
+const vec4 white = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+const vec4 orange = vec4(1.0f, 0.2f, 0.0f, 1.0f);
+const vec4 purple = vec4(0.4f, 0.0f, 0.4f, 1.0f);
 
 
 
 void drawScene()
-{	
+{
 
 	mat4 ViewMatrix = camera->ViewMatrix();
 
@@ -373,7 +365,7 @@ void display()
 
 void idle()
 {
-	float currentFrame =(float) glutGet(GLUT_ELAPSED_TIME);
+	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME);
 	delta = ((float)currentFrame - (float)lastFrame) / 1000;
 	lastFrame = (float)currentFrame;
 	glutPostRedisplay();
@@ -468,7 +460,7 @@ void setupGLUT(int argc, char* argv[])
 }
 
 void setupCamera() {
-	camera = new Camera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
+	camera = new FixedCamera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
 }
 
 
