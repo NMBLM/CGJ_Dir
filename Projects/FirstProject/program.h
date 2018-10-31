@@ -28,6 +28,7 @@ public:
 	void detachShader(Shader shader);
 	void link();
 	void bindAttribLocation(const int atnum, const char* atname);
+	void uniformBlockBinding(GLint bid, GLuint bpo);
 	GLint UniformId(const char* uniformName);
 	GLint UniformLocation(const char* uniformName);
 	GLint uniformBlockIndex(const char* uniformName);

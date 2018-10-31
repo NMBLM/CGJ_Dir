@@ -6,7 +6,7 @@
 
 namespace engine {
 
-	const bool fcmp(float a, float b, float epsilon = 0.000001f);
+	const bool fcmp(float a, float b, float epsilon = (float)1.0e-5);
 	struct vec2;
 	struct vec3;
 	struct vec4;
@@ -94,6 +94,7 @@ namespace engine {
 		float x, y, z, w;
 		
 		// Constructor		
+		vec4();
 		vec4(const float k);
 		vec4(const float x, const float y, const float z);
 		vec4(const float x, const float y,const float z,const float w);
@@ -103,7 +104,7 @@ namespace engine {
 		const float* data() const;
 
 		// assigment
-
+		vec4 operator=(const vec4 v);
 		friend const bool operator ==(const vec4& v1, const vec4& v2);
 		friend const bool operator !=(const vec4& v1, const vec4& v2);
 		friend vec4 operator*(const vec4& v, const float alpha);

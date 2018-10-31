@@ -656,9 +656,7 @@ namespace engine {
 		const float PI = 3.14159265f;
 		float angle = fovY / 2 * (PI / 180);
 		float d = 1 / tan(angle);
-		std::cout << " d/ aspect " << d/ aspect << std::endl;
 
-		std::cout << "aspect " << aspect << std::endl;
 		mat4 res = mat4(d / aspect, 0, 0, 0,
 			0, d, 0, 0,
 			0, 0, (near + far) / (near - far), (2 * far * near) / (near - far),

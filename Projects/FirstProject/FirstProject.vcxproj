@@ -130,11 +130,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="2-Hello2dWorld.cpp" />
-    <ClCompile Include="3-Hello3dWorld.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="program.cpp" />
+    <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="mainH3dW.cpp" />
@@ -146,6 +145,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="program.h" />
+    <ClInclude Include="quaternion.h" />
     <ClInclude Include="rgbtohsl.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />

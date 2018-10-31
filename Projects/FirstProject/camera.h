@@ -5,6 +5,7 @@
 #include "vector.h"
 #include "matrix.h"
 
+
 using namespace engine;
 
 
@@ -14,8 +15,6 @@ class Camera {
 	vec3 s;
 	vec3 u;
 	vec3 eye;
-
-	mat4 viewMatrix;
 	const float SPEED = 1.0f;
 	float lastFrame = 0.0f;
 

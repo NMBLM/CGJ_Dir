@@ -37,8 +37,13 @@ void Program::link()
 
 void Program::bindAttribLocation(const int atnum, const char * atname)
 {
-
 	glBindAttribLocation(id,atnum,atname);
+
+}
+
+void Program::uniformBlockBinding(GLint bid, GLuint bpo)
+{
+	glUniformBlockBinding(id,bid,bpo );
 
 }
 

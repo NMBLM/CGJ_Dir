@@ -77,3 +77,6 @@ Projects/FirstProject/x64/Debug/shape.obj
 *.pdb
 *.exe
 *.pdb
+*.rar
+*.exe
+Projects/FirstProject/4-QuaternionsOld.cpp

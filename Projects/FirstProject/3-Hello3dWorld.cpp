@@ -363,7 +363,6 @@
 //
 //void drawScene()
 //{
-//
 //	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 //	glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(Matrix), camera->ViewMatrix().data());
 //	glBufferSubData(GL_UNIFORM_BUFFER, sizeof(Matrix), sizeof(Matrix), projectionMatrix.data());

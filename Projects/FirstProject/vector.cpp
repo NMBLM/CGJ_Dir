@@ -1,5 +1,6 @@
 #include "vector.h"
 #include "matrix.h"
+#include "quaternion.h"
 
 
 
@@ -137,6 +138,7 @@ namespace engine {
 		x = v.x / v.w;
 		y = v.y / v.w;
 		z = v.z / v.w;
+
 	}
 	const float * vec3::data(vec3 & v)
 	{
@@ -197,6 +199,7 @@ namespace engine {
 	{
 		return vec3(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z);
 	}
+
 	vec3 operator*(const vec3& v, const float alpha) 
 	{
 		return vec3(v.x*alpha, v.y*alpha, v.z*alpha);
@@ -245,6 +248,12 @@ namespace engine {
 
 	// VECTOR 4 ////////////////////////////////////////////////////
 
+	vec4::vec4()
+	{
+		float k = 1.0f;
+		x = k; y = k; z = k; w = 1;
+	}
+
 	vec4::vec4(float k)
 	{ // all values equal
 		x = k; y = k; z = k; w=1;
@@ -266,7 +275,7 @@ namespace engine {
 		x = v.x;
 		y = v.y;
 		z = v.z;
-		w = v.z;
+		w = v.w;
 	}
 
 	const float * vec4::data() const 
@@ -277,6 +286,11 @@ namespace engine {
 		data[2] = z;
 		data[3] = w;
 		return data;
+	}
+
+	vec4 vec4::operator=(const vec4 v)
+	{
+		return vec4(v.x,v.y,v.z,v.w);
 	}
 
 

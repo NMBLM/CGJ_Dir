@@ -33,13 +33,15 @@ void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
+	
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
 	{
 		glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat[16]) * 2, 0, GL_STREAM_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[1]);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[1]); 
 	}
-
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
 
 }
 
@@ -110,12 +112,7 @@ void Triangle::draw(engine::mat4 transform, const  vec4  color, Program prog)
 
 void Triangle::draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog)
 {
-	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
- 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, view.data());
-	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, proj.data());
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	draw(transform, color, prog);
 
