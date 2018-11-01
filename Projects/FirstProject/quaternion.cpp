@@ -103,9 +103,9 @@ namespace engine {
 		return *this;
 	}
 
-	const mat4 qtrn::qToMatrix()
+	const mat4 qToMatrix(const qtrn q)
 	{
-		qtrn qn = normalize(*this);
+		qtrn qn = normalize(q);
 		float xx = qn.x * qn.x;
 		float xy = qn.x * qn.y;
 		float xz = qn.x * qn.z;

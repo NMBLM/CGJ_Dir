@@ -2,9 +2,12 @@
 #ifndef MATRIX_H
 #define MATRIX_H
 
-#include "quaternion.h"
 #include "vector.h"
 #include <iostream>
+
+
+#define DEGREES_TO_RADIANS 0.017453292519f
+#define RADIANS_TO_DEGREES 57.29577951308f
 
 namespace engine {
 

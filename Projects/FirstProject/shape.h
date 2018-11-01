@@ -25,7 +25,7 @@ typedef struct
 class Shape {
 
 public:
-	GLuint VaoId, VboId[3];
+	GLuint VaoId, VboId[2];
 	mat4 reverse;
 
 	Shape() {};
@@ -46,7 +46,6 @@ public:
 	}
 
 	virtual void draw(mat4 transform,const vec4 color, Program prog) = 0;
-	virtual void draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog) = 0;
 
 protected:
 	Vertex *Vertices;
@@ -62,7 +61,6 @@ class Triangle : public Shape {
 public:	
 	Triangle();
 	virtual void draw(mat4 transform, const vec4 color, Program prog);
-	virtual void draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog);
 
 };
 
@@ -70,7 +68,6 @@ class Square : public Shape {
 public:
 	Square();
 	virtual void draw(mat4 transform, const vec4 color, Program prog);
-	virtual void draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog);
 
 };
 
@@ -78,7 +75,6 @@ class Parallelogram : public Shape {
 public:
 	Parallelogram();
 	virtual void draw(mat4 transform, const vec4 color, Program prog);
-	virtual void draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog);
 
 };
 

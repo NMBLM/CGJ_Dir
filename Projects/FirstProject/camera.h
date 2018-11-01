@@ -16,7 +16,8 @@ class Camera {
 		vec3 s;
 		vec3 u;
 		vec3 eye;
-		const float SPEED = 1.0f;
+		const float SPEED = 10.0f;
+		const float vSPEED = 0.5f;
 		float lastFrame = 0.0f;
 
 	public:

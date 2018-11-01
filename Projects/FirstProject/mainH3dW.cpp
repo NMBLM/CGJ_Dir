@@ -54,7 +54,7 @@ Triangle *triangle;
 Square *square;
 Parallelogram *parallelogram;
 
-GLuint VaoId, VboId[2];
+GLuint VboId[1];
 Program prog;
 VertexShader vShader;
 FragmentShader fShader;
@@ -240,10 +240,23 @@ void destroyShaderProgram()
 void createBufferObjects()
 {
 	triangle = new Triangle();
+	checkOpenGLError("ERROR: Could not create Triangle VAOs, VBOs and UBOs.");
+
 
 	square = new Square();
+	checkOpenGLError("ERROR: Could not create Square VAOs, VBOs and UBOs.");
 
 	parallelogram = new Parallelogram();
+	checkOpenGLError("ERROR: Could not create Parallelogram VAOs, VBOs and UBOs.");
+
+	glGenBuffers(1, VboId);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	{
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat[16]) * 2, 0, GL_STREAM_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[0]);
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	checkOpenGLError("ERROR: Could not create VAOs, VBOs and UBOs.");
 }
@@ -270,28 +283,28 @@ void destroyBufferObjects()
 // Model Matrix
 const float PI = 3.14159265f;
 const mat4 tr1 =	MatrixFactory::createTranslationMatrix(-0.2f, 0.8f, 0.0f) * 
-					MatrixFactory::createRotationMatrix4(-PI / 2,  vec4(0, 0, 1, 1));
+					MatrixFactory::createRotationMatrix4(-90.0f,  vec4(0, 0, 1, 1));
 
 const mat4 tr2 =	MatrixFactory::createTranslationMatrix(-0.4f, -0.2f, 0.0f);
 
 const mat4 tr3 =	MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *  
 					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
-					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
+					MatrixFactory::createRotationMatrix4(90.0f,  vec4(0, 0, 1, 1));
 
 const mat4 pl45 =	MatrixFactory::createTranslationMatrix(0.2f, 0.4f, 0.0f) * 
-					MatrixFactory::createRotationMatrix4(PI / 2, vec4(0, 0, 1, 1));
+					MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 0, 1, 1));
 
 const mat4 tr6 =	MatrixFactory::createTranslationMatrix(0.0f, 0.6f, 0.0f) *  
 					MatrixFactory::createScaleMatrix4(0.5f, 0.5f, 0) *  
-					MatrixFactory::createRotationMatrix4(PI / 2,  vec4(0, 0, 1, 1));
+					MatrixFactory::createRotationMatrix4(90.0f,  vec4(0, 0, 1, 1));
 
 const mat4 sq78 =	MatrixFactory::createTranslationMatrix(0.0f, -0.14f -0.2f, 0.0f) * // '.14f is half the side of the square
-					MatrixFactory::createRotationMatrix4(PI / 4, vec4(0, 0, 1, 1)) * //rotate 45 degrees
+					MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 0, 1, 1)) * //rotate 45 degrees
 					MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
 
 const mat4 tr9 =	MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, -0.2f - 0.28f , 0.0f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
 					MatrixFactory::createScaleMatrix4(0.707f, 0.707f, 0) *
-					MatrixFactory::createRotationMatrix4(-PI, vec4(0, 0, 1, 1));
+					MatrixFactory::createRotationMatrix4(-180.0f, vec4(0, 0, 1, 1));
 
 const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
 const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
@@ -309,40 +322,34 @@ void drawScene()
 {	
 
 	mat4 ViewMatrix = camera->ViewMatrix();
-
-	triangle->draw(tr1, ViewMatrix, projectionMatrix, red, prog);
-	triangle->draw(tr2, ViewMatrix, projectionMatrix, green, prog);
-	triangle->draw(tr3, ViewMatrix, projectionMatrix, blue, prog);
-	triangle->draw(tr6, ViewMatrix, projectionMatrix, cyan, prog);
-	triangle->draw(tr9, ViewMatrix, projectionMatrix, magenta, prog);
-	square->draw(sq78, ViewMatrix, projectionMatrix, yellow, prog);
-	parallelogram->draw(pl45, ViewMatrix, projectionMatrix, white, prog);
-
-	//mat4 I = MatrixFactory::createIdentityMatrix4();
-	//triangle->draw(tr1, I, I, red, prog);
-	//triangle->draw(tr2, I, I, green, prog);
-	//triangle->draw(tr3, I, I, blue, prog);
-	//triangle->draw(tr6, I, I, cyan, prog);
-	//triangle->draw(tr9, I, I, magenta, prog);
-	//square->draw(sq78, I, I, yellow, prog);
-	//parallelogram->draw(pl45, I, I, white, prog);
-
-	//triangle->draw(tr1, red, prog);
-	//triangle->draw(tr2, green, prog);
-	//triangle->draw(tr3, blue, prog);
-	//triangle->draw(tr6, cyan, prog);
-	//triangle->draw(tr9, magenta, prog);
-	//square->draw(sq78, yellow, prog);
-	//parallelogram->draw(pl45, white, prog);
+	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
 
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, camera->ViewMatrix().data());
+	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	//triangle->draw(tr1, ViewMatrix, projectionMatrix, red, prog);
+	//triangle->draw(tr2, ViewMatrix, projectionMatrix, green, prog);
+	//triangle->draw(tr3, ViewMatrix, projectionMatrix, blue, prog);
+	//triangle->draw(tr6, ViewMatrix, projectionMatrix, cyan, prog);
+	//triangle->draw(tr9, ViewMatrix, projectionMatrix, magenta, prog);
+	//square->draw(sq78, ViewMatrix, projectionMatrix, yellow, prog);
+	//parallelogram->draw(pl45, ViewMatrix, projectionMatrix, white, prog);
 
 
-	//std::cout << "vertice 1" << mvp * tr1 * vec4(0, 0, 0, 1.0f) << std::endl;
-	//std::cout << "vertice 2" << mvp * tr1 * vec4(0.8f, 0, 0, 1.0f) << std::endl;
-	//std::cout << "vertice 3" << mvp * tr1 * vec4(0.4f, 0.4f, 0, 1.0f) << std::endl;
+	triangle->draw(tr1, red, prog);
+	triangle->draw(tr2, green, prog);
+	triangle->draw(tr3, blue, prog);
+	triangle->draw(tr6, cyan, prog);
+	triangle->draw(tr9, magenta, prog);
+	square->draw(sq78, yellow, prog);
+	parallelogram->draw(pl45, white, prog);
+
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
+
 
 void drawOldScene() {
 	mat4 mvp = projectionMatrix * camera->ViewMatrix();
@@ -374,7 +381,7 @@ void display()
 void idle()
 {
 	float currentFrame =(float) glutGet(GLUT_ELAPSED_TIME);
-	delta = ((float)currentFrame - (float)lastFrame) / 1000;
+	delta = ((float)currentFrame - (float)lastFrame) / 100;
 	lastFrame = (float)currentFrame;
 	glutPostRedisplay();
 }

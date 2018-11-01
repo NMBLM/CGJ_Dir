@@ -12,7 +12,7 @@ void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 	glGenVertexArrays(1, &VaoId);
 	glBindVertexArray(VaoId);
 	{
-		glGenBuffers(3, VboId);
+		glGenBuffers(2, VboId);
 
 		glBindBuffer(GL_ARRAY_BUFFER, VboId[0]);
 		{
@@ -22,7 +22,7 @@ void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 
 		}
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[2]);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, VboId[1]);
 		{
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, iSize, i, GL_STATIC_DRAW);
 		}
@@ -31,15 +31,6 @@ void Shape::createBuffers(const Vertex* v, const GLubyte* i)
 	glBindVertexArray(0);
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-	
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	{
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat[16]) * 2, 0, GL_STREAM_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[1]); 
-	}
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
 
 
 }
@@ -73,7 +64,7 @@ Triangle::Triangle()
 		0,1,2
 	};
 	const float PI = 3.14159265f;
-	reverse = MatrixFactory::createTranslationMatrix(0.8f, 0.0f, 0.0f) * MatrixFactory::createRotationMatrix4(PI, vec4(0.0f,1.0f,0.0f,1.0f));
+	reverse = MatrixFactory::createTranslationMatrix(0.8f, 0.0f, 0.0f) * MatrixFactory::createRotationMatrix4(180.0f, vec4(0.0f,1.0f,0.0f,1.0f));
 	vSize = sizeof(v);
 	iSize = sizeof(i);
 	createBuffers(v,i);
@@ -109,14 +100,6 @@ void Triangle::draw(engine::mat4 transform, const  vec4  color, Program prog)
 	glBindVertexArray(0);
 }
 
-void Triangle::draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog)
-{
-
-
-	draw(transform, color, prog);
-
-	
-}
 
 Square::Square()
 {
@@ -135,7 +118,7 @@ Square::Square()
 	};
 
 	const float PI = 3.14159265f;
-	reverse = MatrixFactory::createTranslationMatrix(0.4f, 0.0f ,0.0f) * MatrixFactory::createRotationMatrix4(PI, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	reverse = MatrixFactory::createTranslationMatrix(0.4f, 0.0f ,0.0f) * MatrixFactory::createRotationMatrix4(180.0f, vec4(0.0f, 1.0f, 0.0f, 1.0f));
 
 	vSize = sizeof(v);
 	iSize = sizeof(i);
@@ -169,17 +152,6 @@ void Square::draw(engine::mat4 transform, const  vec4  color, Program prog)
 	glBindVertexArray(0);
 }
 
-void Square::draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog)
-{
-	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, view.data());
-	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, proj.data());
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-	draw(transform, color, prog);
-
-}
 
 
 Parallelogram::Parallelogram()
@@ -214,7 +186,6 @@ void Parallelogram::draw(engine::mat4 transform, const  vec4  color, Program pro
 	glUniformMatrix4fv(prog.UniformId("ModelMatrix"), 1, GL_FALSE, transform.data());
 	glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_BYTE, (GLvoid*)0);
 
-
 	//rgb  crgb;
 	//crgb.r = color.x;
 	//crgb.g = color.y;
@@ -232,18 +203,3 @@ void Parallelogram::draw(engine::mat4 transform, const  vec4  color, Program pro
 	glUseProgram(0);
 	glBindVertexArray(0);
 }
-
-void Parallelogram::draw(mat4 transform, mat4 view, mat4 proj, const vec4 color, Program prog)
-{
-	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
-
- 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[1]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, view.data());
-	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, proj.data());
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	draw(transform, color, prog);
-
-}
-
-

@@ -48,25 +48,25 @@ void Camera::cameraLookAround(float x, float y, const float deltatime)
 
 void Camera::cameraMoveRight(const float deltatime)
 {
-	eye = eye + s * SPEED * deltatime;
+	eye = eye + s * vSPEED * deltatime;
 
 }
 
 void Camera::cameraMoveLeft(const float deltatime)
 {
-	eye = eye - s * SPEED * deltatime;
+	eye = eye - s * vSPEED * deltatime;
 
 }
 
 void Camera::cameraMoveForward(const float deltatime)
 {
-	eye = eye + v * SPEED * deltatime;
+	eye = eye + v * vSPEED * deltatime;
 
 }
 
 void Camera::cameraMoveBack(const float deltatime)
 {
-	eye = eye - v * SPEED * deltatime;
+	eye = eye - v * vSPEED * deltatime;
 
 }
 
@@ -99,10 +99,10 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime)
 	float mulY = (y > 2 || y < -2) ? 3.0f : 1.5f;
 	mulX = (x < 1 && x > -1) ? 0.0f : mulX;
 	mulY = (y < 1 && y > -1) ? 0.0f : mulY;
-	mat3 rotU = MatrixFactory::createRotationMatrix3(mulX *  sideX *  deltatime * SPEED / 16, u);
+	mat3 rotU = MatrixFactory::createRotationMatrix3(mulX*sideX *  deltatime * SPEED, u);
 	v = rotU * v;
 	s = v.cross(u);
-	mat3 rotS = MatrixFactory::createRotationMatrix3(mulY * sideY * deltatime * SPEED / 16, s);
+	mat3 rotS = MatrixFactory::createRotationMatrix3(mulY*sideY * deltatime * SPEED, s);
 	v = rotS * v;
 	u = s.cross(v);
 	v = normalize(v);

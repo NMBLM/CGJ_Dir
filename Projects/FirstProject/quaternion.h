@@ -3,13 +3,11 @@
 #define QUATERNION_H
 
 
-#define DEGREES_TO_RADIANS 0.01745329251994329547
-#define RADIANS_TO_DEGREES 57.29577951308232185913
-
-#include "vector.h"
 #include "matrix.h"
+#include "vector.h"
 #include <iostream>
 #include <string>
+
 
 
 namespace engine {
@@ -28,6 +26,10 @@ namespace engine {
 		const void qToAngleAxis( float& theta, vec4& axis) const ;
 		const float quadrance() const;
 		const float length() const;
+
+
+
+		friend const mat4 qToMatrix(const qtrn q);
 		friend const qtrn conjugate(const qtrn& q);
 		friend const qtrn inverse(const qtrn& q);
 		friend qtrn operator+(const qtrn& q1, const qtrn& q2);
@@ -39,7 +41,6 @@ namespace engine {
 		friend const bool operator!=(const qtrn& q1, const qtrn& q2);
 		friend const qtrn normalize(const qtrn& q);
 
-		const mat4 qToMatrix();
 		friend const qtrn lerp(const qtrn& q0, const qtrn& q1, float k);
 		friend const qtrn slerp(const qtrn& q0, const qtrn& q1, float k);
 		friend std::ostream & operator<< (std::ostream& out, const qtrn& q);
@@ -48,8 +49,6 @@ namespace engine {
 
 	};
 }
-
-
 
 
 ///////////////////////////////////////////////////////////////////////
