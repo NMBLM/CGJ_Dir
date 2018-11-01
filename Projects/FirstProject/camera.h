@@ -46,6 +46,8 @@ class FixedCamera : public Camera {
 		void cameraMoveLeft(const float deltatime);
 		void cameraMoveForward(const float deltatime);
 		void cameraMoveBack(const float deltatime);
+		void cameraRollRight(const float deltatime);
+		void cameraRollLeft(const float deltatime);
 		void zoom(const int dir, const float deltatime);
 
 };

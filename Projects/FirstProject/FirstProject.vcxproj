@@ -132,6 +132,7 @@
   <ItemGroup>
     <ClCompile Include="4-Quaternions.cpp" />
     <ClCompile Include="camera.cpp" />
+    <ClCompile Include="KeyBuffer.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="ModelViewer.cpp" />
     <ClCompile Include="program.cpp" />
@@ -144,6 +145,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera.h" />
+    <ClInclude Include="KeyBuffer.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="program.h" />
     <ClInclude Include="quaternion.h" />

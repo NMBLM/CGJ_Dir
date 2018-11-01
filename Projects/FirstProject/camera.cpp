@@ -134,15 +134,41 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime)
 
 void FixedCamera::cameraMoveRight(const float deltatime)
 {
-	eye = eye + s * vSPEED * deltatime;
+	qtrn qX;
+	if (gLock) {
+		qX = qtrn(2.0f * deltatime * SPEED, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	}
+	else {
+		qX = qtrn(2.0f * deltatime * SPEED, u);
+	}
+	eye = qToMatrix(qX) * eye;
 }
 
 void FixedCamera::cameraMoveLeft(const float deltatime)
 {
-	eye = eye - s * vSPEED * deltatime;
+	qtrn qX;
+	if (gLock) {
+		qX = qtrn(-2.0f * deltatime * SPEED, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+	}
+	else {
+		qX = qtrn(-2.0f * deltatime * SPEED, u);
+	}
+	eye = qToMatrix(qX) * eye;
 }
 
 void FixedCamera::cameraMoveForward(const float deltatime)
+{
+	qtrn qY;
+	if (gLock) {
+		qY = qtrn(-2.0f * deltatime * SPEED, vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	}
+	else {
+		qY = qtrn(-2.0f * deltatime * SPEED, s);
+	}
+	eye = qToMatrix(qY) * eye;
+}
+
+void FixedCamera::cameraMoveBack(const float deltatime)
 {
 	qtrn qY;
 	if (gLock) {
@@ -154,17 +180,33 @@ void FixedCamera::cameraMoveForward(const float deltatime)
 	eye = qToMatrix(qY) * eye;
 }
 
-void FixedCamera::cameraMoveBack(const float deltatime)
+void FixedCamera::cameraRollRight(const float deltatime)
 {
-	qtrn qY;
+	qtrn qZ;
 	if (gLock) {
-		qY = qtrn(-2.0f * deltatime * SPEED, vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		qZ = qtrn(2.0f * deltatime * SPEED, vec4(0.0f, 0.0f, -1.0f, 1.0f));
 	}
 	else {
-		qY = qtrn(-2.0f * deltatime * SPEED, s);
+		qZ = qtrn(2.0f * deltatime * SPEED, v);
 	}
-	eye = qToMatrix(qY) * eye;
+	u = qToMatrix(qZ) * u;
+	u = normalize(u);
+
 }
+
+void FixedCamera::cameraRollLeft(const float deltatime)
+{
+	qtrn qZ;
+	if (gLock) {
+		qZ = qtrn(-2.0f * deltatime * SPEED, vec4(0.0f, 0.0f, -1.0f, 1.0f));
+	}
+	else {
+		qZ = qtrn(-2.0f * deltatime * SPEED, v);
+	}
+	u = qToMatrix(qZ) * u;
+	u = normalize(u);
+}
+
 
 void FixedCamera::zoom(const int dir, const float deltatime)
 {

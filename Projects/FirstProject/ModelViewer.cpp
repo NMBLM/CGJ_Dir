@@ -26,7 +26,7 @@
 #include "program.h"
 #include "shader.h"
 #include "camera.h"
-
+#include "KeyBuffer.h"
 #include "shape.h"
 
 #include "GL/glew.h"
@@ -133,38 +133,84 @@ void mouse_input(int x, int y) {
 
 }
 
-void keyboard_input(unsigned char key, int x, int y) {
+void keyPress(unsigned char key, int x, int y) {
+	KeyBuffer::instance()->pressKey(key);
+}
 
-	switch (key) {
-	case 'a':
-	case 'A':
-		camera->cameraMoveLeft(delta);
-		break;
-	case 's':
-	case 'S':
-		camera->cameraMoveBack(delta);
-		break;
-	case 'd':
-	case 'D':
-		camera->cameraMoveRight(delta);
-		break;
-	case 'w':
-	case 'W':
-		camera->cameraMoveForward(delta);
-		break;
-	case'g':
-	case'G':
-		camera->gimbalLockSwitch();
-		break;
-	case'p':
-	case'P':
+void keyRelease(unsigned char key, int x, int y) {
+	KeyBuffer::instance()->releaseKey(key);
+}
+
+void update() {
+	if (KeyBuffer::instance()->isKeyDown('a')) camera->cameraMoveLeft(delta);
+	if (KeyBuffer::instance()->isKeyDown('A')) camera->cameraMoveLeft(delta);
+
+	if (KeyBuffer::instance()->isKeyDown('d')) camera->cameraMoveRight(delta);
+	if (KeyBuffer::instance()->isKeyDown('D')) camera->cameraMoveRight(delta);
+
+	if (KeyBuffer::instance()->isKeyDown('s')) camera->cameraMoveBack(delta);
+	if (KeyBuffer::instance()->isKeyDown('S')) camera->cameraMoveBack(delta);
+
+	if (KeyBuffer::instance()->isKeyDown('w')) camera->cameraMoveForward(delta);
+	if (KeyBuffer::instance()->isKeyDown('W')) camera->cameraMoveForward(delta);
+
+	if (KeyBuffer::instance()->isKeyDown('q')) camera->cameraRollLeft(delta);
+	if (KeyBuffer::instance()->isKeyDown('Q')) camera->cameraRollLeft(delta);
+
+	if (KeyBuffer::instance()->isKeyDown('e')) camera->cameraRollRight(delta);
+	if (KeyBuffer::instance()->isKeyDown('E')) camera->cameraRollRight(delta);
+
+	if (KeyBuffer::instance()->isKeyDown('g')) camera->gimbalLockSwitch();
+	if (KeyBuffer::instance()->isKeyDown('G')) camera->gimbalLockSwitch();
+
+	if (KeyBuffer::instance()->isKeyDown('p') || KeyBuffer::instance()->isKeyDown('P')) {
 		mat4 temp = projectionMatrix;
 		projectionMatrix = otherProjectionMatrix;
 		otherProjectionMatrix = temp;
-		break;
 	}
 
 }
+
+//void keyboard_input(unsigned char key, int x, int y) {
+//
+//	switch (key) {
+//	case 'a':
+//	case 'A':
+//		camera->cameraMoveLeft(delta);
+//		break;
+//	case 's':
+//	case 'S':
+//		camera->cameraMoveBack(delta);
+//		break;
+//	case 'd':
+//	case 'D':
+//		camera->cameraMoveRight(delta);
+//		break;
+//	case 'w':
+//	case 'W':
+//		camera->cameraMoveForward(delta);
+//		break;
+//	case 'q':
+//	case 'Q':
+//		camera->cameraRollLeft(delta);
+//		break;
+//	case 'e':
+//	case 'E':
+//		camera->cameraRollRight(delta);
+//		break;
+//	case'g':
+//	case'G':
+//		camera->gimbalLockSwitch();
+//		break;
+//	case'p':
+//	case'P':
+//		mat4 temp = projectionMatrix;
+//		projectionMatrix = otherProjectionMatrix;
+//		otherProjectionMatrix = temp;
+//		break;
+//	}
+//
+//}
 
 static bool isOpenGLError() {
 	bool isError = false;
@@ -323,6 +369,7 @@ void drawScene()
 {
 
 	mat4 ViewMatrix = camera->ViewMatrix();
+
 	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
 
@@ -362,6 +409,64 @@ void drawOldScene() {
 	square->draw(mvp * sq78, yellow, prog);
 	parallelogram->draw(mvp * pl45, white, prog);
 }
+
+//reshape and reposition square to make a 1x1 cube
+const float cubeScale = 3.53553390593f;
+//const float cubeScale = 7.07106781186f;
+const mat4 cubeCommon = MatrixFactory::createScaleMatrix4(cubeScale, cubeScale, 1.0f) *
+						MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 0, 1, 1)) * //rotate 45 degrees on z axis
+						MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
+
+//front RED
+const mat4 cb1 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f,  0.5f) *
+				 cubeCommon;
+//back GREEN
+const mat4 cb2 = MatrixFactory::createTranslationMatrix(0.0, 0.0f, - 0.5f) *
+				 MatrixFactory::createRotationMatrix4(180.0f, vec4(0, 1, 0, 1)) *
+				 cubeCommon;
+//side right BLUE
+const mat4 cb3 = MatrixFactory::createTranslationMatrix( 0.5f, 0.0f, 0.0f) *
+				 MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1)) *
+				 cubeCommon;
+
+//side left CYAN
+const mat4 cb4 = MatrixFactory::createTranslationMatrix(- 0.5f, 0.0f, 0.0f) *
+				 MatrixFactory::createRotationMatrix4(-90.0f, vec4(0, 1, 0, 1)) *
+				 cubeCommon;
+
+//up MAGENTA
+const mat4 cb5 = MatrixFactory::createTranslationMatrix(0.0f,  0.5f, 0.0f) *
+				 MatrixFactory::createRotationMatrix4(-90.0f, vec4(1, 0, 0, 1)) *
+				 cubeCommon;
+
+//down YELLOW
+const mat4 cb6 = MatrixFactory::createTranslationMatrix(0.0f, - 0.5f, 0.0f) *
+				 MatrixFactory::createRotationMatrix4(90.0f, vec4(1, 0, 0, 1)) *
+				 cubeCommon;
+
+
+void drawCubeScene()
+{
+
+	mat4 ViewMatrix = camera->ViewMatrix();
+
+	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
+
+
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, camera->ViewMatrix().data());
+	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	square->draw(cb1, red, prog);
+	square->draw(cb2, green, prog);
+	square->draw(cb3, blue, prog);
+	square->draw(cb4, cyan, prog);
+	square->draw(cb5, magenta, prog);
+	square->draw(cb6, yellow, prog);
+
+	checkOpenGLError("ERROR: Could not draw scene.");
+}
 /////////////////////////////////////////////////////////////////////// CALLBACKS
 
 void cleanup()
@@ -374,13 +479,15 @@ void display()
 {
 	++FrameCount;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	drawScene();
+	//drawScene();
 	//drawOldScene();
+	drawCubeScene();
 	glutSwapBuffers();
 }
 
 void idle()
 {
+	update();
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME);
 	delta = ((float)currentFrame - (float)lastFrame) / 100;
 	lastFrame = (float)currentFrame;
@@ -412,7 +519,8 @@ void setupCallbacks()
 	glutCloseFunc(cleanup);
 	glutDisplayFunc(display);
 	glutIdleFunc(idle);
-	glutKeyboardFunc(keyboard_input);
+	glutKeyboardFunc(keyPress);
+	glutKeyboardUpFunc(keyRelease);
 	glutMotionFunc(mouse_input);
 	glutMouseWheelFunc(mouse_wheel_input);
 	glutReshapeFunc(reshape);
