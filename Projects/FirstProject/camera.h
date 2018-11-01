@@ -34,15 +34,20 @@ class Camera {
 };
 
 class FixedCamera : public Camera {
-	FixedCamera();
-	FixedCamera(const vec3 eye, const vec3 center, const vec3 up);
+	public:
+		bool gLock = true;
+		FixedCamera();
+		FixedCamera(const vec3 eye, const vec3 center, const vec3 up);
 
-	mat4 ViewMatrix();
-	void cameraLookAround(float x, float y, const float deltatime);
-	void cameraMoveRight(const float deltatime);
-	void cameraMoveLeft(const float deltatime);
-	void cameraMoveForward(const float deltatime);
-	void cameraMoveBack(const float deltatime);
+		void gimbalLockSwitch();
+		mat4 ViewMatrix();
+		void cameraLookAround(float x, float y, const float deltatime);
+		void cameraMoveRight(const float deltatime);
+		void cameraMoveLeft(const float deltatime);
+		void cameraMoveForward(const float deltatime);
+		void cameraMoveBack(const float deltatime);
+		void zoom(const int dir, const float deltatime);
+
 };
 
 #endif
