@@ -120,13 +120,13 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime)
 	qtrn qX, qY;
 	// GIMBAL LOCK ON
 	if (gLock) {
-		 qX = qtrn(sideX * mulX * deltatime * SPEED, vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		 qY = qtrn(sideY * mulY * deltatime * SPEED, vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		 qX = qtrn(sideX * mulX * SPEED * deltatime , vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		 qY = qtrn(sideY * mulY * SPEED * deltatime , vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	}
 	else {
 		// GIMBAL LOCK OFF
-		qX = qtrn(sideX * mulX * deltatime * SPEED, u);
-		qY = qtrn(sideY * mulY * deltatime * SPEED, s);
+		qX = qtrn(sideX * mulX * SPEED * deltatime , u);
+		qY = qtrn(sideY * mulY * SPEED * deltatime , s);
 	}
 	eye = qToMatrix(qX + qY) *  eye;
 
