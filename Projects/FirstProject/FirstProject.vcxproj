@@ -130,9 +130,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="2-Hello2dWorld.cpp" />
+    <ClCompile Include="3-Hello3dWorld.cpp" />
     <ClCompile Include="4-Quaternions.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="KeyBuffer.cpp" />
+    <ClCompile Include="mainH3dW.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="ModelViewer.cpp" />
     <ClCompile Include="program.cpp" />

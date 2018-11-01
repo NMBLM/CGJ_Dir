@@ -135,6 +135,13 @@ void mouse_input(int x, int y) {
 
 void keyPress(unsigned char key, int x, int y) {
 	KeyBuffer::instance()->pressKey(key);
+	if (KeyBuffer::instance()->isKeyDown('g') || KeyBuffer::instance()->isKeyDown('G')) camera->gimbalLockSwitch();
+	if (KeyBuffer::instance()->isKeyDown('p') || KeyBuffer::instance()->isKeyDown('P')) {
+		mat4 temp = projectionMatrix;
+		projectionMatrix = otherProjectionMatrix;
+		otherProjectionMatrix = temp;
+	}
+
 }
 
 void keyRelease(unsigned char key, int x, int y) {
@@ -160,57 +167,8 @@ void update() {
 	if (KeyBuffer::instance()->isKeyDown('e')) camera->cameraRollRight(delta);
 	if (KeyBuffer::instance()->isKeyDown('E')) camera->cameraRollRight(delta);
 
-	if (KeyBuffer::instance()->isKeyDown('g')) camera->gimbalLockSwitch();
-	if (KeyBuffer::instance()->isKeyDown('G')) camera->gimbalLockSwitch();
-
-	if (KeyBuffer::instance()->isKeyDown('p') || KeyBuffer::instance()->isKeyDown('P')) {
-		mat4 temp = projectionMatrix;
-		projectionMatrix = otherProjectionMatrix;
-		otherProjectionMatrix = temp;
-	}
-
 }
 
-//void keyboard_input(unsigned char key, int x, int y) {
-//
-//	switch (key) {
-//	case 'a':
-//	case 'A':
-//		camera->cameraMoveLeft(delta);
-//		break;
-//	case 's':
-//	case 'S':
-//		camera->cameraMoveBack(delta);
-//		break;
-//	case 'd':
-//	case 'D':
-//		camera->cameraMoveRight(delta);
-//		break;
-//	case 'w':
-//	case 'W':
-//		camera->cameraMoveForward(delta);
-//		break;
-//	case 'q':
-//	case 'Q':
-//		camera->cameraRollLeft(delta);
-//		break;
-//	case 'e':
-//	case 'E':
-//		camera->cameraRollRight(delta);
-//		break;
-//	case'g':
-//	case'G':
-//		camera->gimbalLockSwitch();
-//		break;
-//	case'p':
-//	case'P':
-//		mat4 temp = projectionMatrix;
-//		projectionMatrix = otherProjectionMatrix;
-//		otherProjectionMatrix = temp;
-//		break;
-//	}
-//
-//}
 
 static bool isOpenGLError() {
 	bool isError = false;
@@ -255,25 +213,6 @@ void createShaderProgram()
 	checkOpenGLError("ERROR: Could not create shaders.");
 
 }
-
-void createOldShaderProgram() {
-
-	vShader = VertexShader("VertexShader.glsl");
-	fShader = FragmentShader("FragmentShader.glsl");
-	prog = Program(glCreateProgram());
-
-	prog.attachShader(vShader);
-	prog.attachShader(fShader);
-
-	prog.bindAttribLocation(VERTICES, "in_Position");
-
-	prog.link();
-
-	prog.detachShader(vShader);
-	prog.detachShader(fShader);
-	checkOpenGLError("ERROR: Could not create shaders.");
-}
-
 void destroyShaderProgram()
 {
 	glUseProgram(0);
@@ -374,18 +313,9 @@ void drawScene()
 
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, camera->ViewMatrix().data());
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
 	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	//triangle->draw(tr1, ViewMatrix, projectionMatrix, red, prog);
-	//triangle->draw(tr2, ViewMatrix, projectionMatrix, green, prog);
-	//triangle->draw(tr3, ViewMatrix, projectionMatrix, blue, prog);
-	//triangle->draw(tr6, ViewMatrix, projectionMatrix, cyan, prog);
-	//triangle->draw(tr9, ViewMatrix, projectionMatrix, magenta, prog);
-	//square->draw(sq78, ViewMatrix, projectionMatrix, yellow, prog);
-	//parallelogram->draw(pl45, ViewMatrix, projectionMatrix, white, prog);
-
 
 	triangle->draw(tr1, red, prog);
 	triangle->draw(tr2, green, prog);
@@ -399,20 +329,9 @@ void drawScene()
 }
 
 
-void drawOldScene() {
-	mat4 mvp = projectionMatrix * camera->ViewMatrix();
-	triangle->draw(mvp * tr1, red, prog);
-	triangle->draw(mvp * tr2, green, prog);
-	triangle->draw(mvp * tr3, blue, prog);
-	triangle->draw(mvp * tr6, cyan, prog);
-	triangle->draw(mvp * tr9, magenta, prog);
-	square->draw(mvp * sq78, yellow, prog);
-	parallelogram->draw(mvp * pl45, white, prog);
-}
-
 //reshape and reposition square to make a 1x1 cube
-const float cubeScale = 3.53553390593f;
-//const float cubeScale = 7.07106781186f;
+const float cubeScale = 3.53553390593f
+;
 const mat4 cubeCommon = MatrixFactory::createScaleMatrix4(cubeScale, cubeScale, 1.0f) *
 						MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 0, 1, 1)) * //rotate 45 degrees on z axis
 						MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
@@ -454,7 +373,7 @@ void drawCubeScene()
 
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, camera->ViewMatrix().data());
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
 	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
@@ -480,7 +399,6 @@ void display()
 	++FrameCount;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	//drawScene();
-	//drawOldScene();
 	drawCubeScene();
 	glutSwapBuffers();
 }
@@ -586,7 +504,6 @@ void setupGLUT(int argc, char* argv[])
 
 void setupCamera() {
 	camera = new FixedCamera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
-	//camera = new Camera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
 
 }
 
@@ -599,7 +516,6 @@ void init(int argc, char* argv[])
 	setupCamera();
 	setupCallbacks();
 	createShaderProgram();
-	//createOldShaderProgram();
 	createBufferObjects();
 }
 
@@ -608,7 +524,6 @@ int main(int argc, char* argv[])
 	init(argc, argv);
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
-
 
 }
 

@@ -29,16 +29,16 @@ mat4 Camera::ViewMatrix()
 
 void Camera::cameraLookAround(float x, float y, const float deltatime)
 {
-	int sideX = (x >=0 )? 1 : -1 ;
+	int sideX = (x >= 0) ? 1 : -1;
 	int sideY = (y >= 0) ? 1 : -1;
 	float mulX = (x > 2 || x < -2) ? 3.0f : 1.5f;
 	float mulY = (y > 2 || y < -2) ? 3.0f : 1.5f;
 	mulX = (x < 1 && x > -1) ? 0.0f : mulX;
 	mulY = (y < 1 && y > -1) ? 0.0f : mulY;
-	mat3 rotU = MatrixFactory::createRotationMatrix3( mulX *  sideX *  deltatime * SPEED / 16, u);
+	mat3 rotU = MatrixFactory::createRotationMatrix3(mulX *  sideX *  deltatime * SPEED / 16, u);
 	v = rotU * v;
 	s = v.cross(u);
-	mat3 rotS = MatrixFactory::createRotationMatrix3( mulY * sideY * deltatime * SPEED / 16, s);
+	mat3 rotS = MatrixFactory::createRotationMatrix3(mulY * sideY * deltatime * SPEED / 16, s);
 	v = rotS * v;
 	u = s.cross(v);
 	v = normalize(v);
@@ -102,9 +102,8 @@ mat4 FixedCamera::ViewMatrix()
 	s = v.cross(u);
 	s = s * (1 / s.length());  // normalize
 	u = s.cross(v);
-	return MatrixFactory::createLookAt(eye,vec3(0.0f,0.0f,0.0f), u);
+	return MatrixFactory::createLookAt(eye, vec3(0.0f, 0.0f, 0.0f), u);
 	//return MatrixFactory::createLookAt(eye, eye + v, u);
-
 
 }
 
@@ -120,15 +119,15 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime)
 	qtrn qX, qY;
 	// GIMBAL LOCK ON
 	if (gLock) {
-		 qX = qtrn(sideX * mulX * SPEED * deltatime , vec4(0.0f, 1.0f, 0.0f, 1.0f));
-		 qY = qtrn(sideY * mulY * SPEED * deltatime , vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		qX = qtrn(sideX * mulX * SPEED * deltatime, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		qY = qtrn(sideY * mulY * SPEED * deltatime, vec4(1.0f, 0.0f, 0.0f, 1.0f));
 	}
 	else {
 		// GIMBAL LOCK OFF
-		qX = qtrn(sideX * mulX * SPEED * deltatime , u);
-		qY = qtrn(sideY * mulY * SPEED * deltatime , s);
+		qX = qtrn(sideX * mulX * SPEED * deltatime, u);
+		qY = qtrn(sideY * mulY * SPEED * deltatime, s);
 	}
-	eye = qToMatrix(qX + qY) *  eye;
+	eye = qToMatrix(qX * qY) *  eye;
 
 }
 

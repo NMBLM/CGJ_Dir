@@ -36,6 +36,7 @@ class Camera {
 class FixedCamera : public Camera {
 	public:
 		bool gLock = true;
+
 		FixedCamera();
 		FixedCamera(const vec3 eye, const vec3 center, const vec3 up);
 
