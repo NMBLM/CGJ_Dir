@@ -36,9 +36,6 @@ class Camera {
 class FixedCamera : public Camera {
 	public:
 		bool gLock = true;
-		vec3 WorldUp = vec3(0.0f, 1.0f, 0.0f);
-		vec3 WorldSide = vec3(1.0f, 0.0f, 0.0f);
-		vec3 WorldZ = vec3(0.0f, 0.0f, 1.0f);
 		int print = 0;
 		float pitch = 0.0f;
 		float yaw = 0.0f;
@@ -56,7 +53,6 @@ class FixedCamera : public Camera {
 		void cameraRollRight(const float deltatime);
 		void cameraRollLeft(const float deltatime);
 		void zoom(const int dir, const float deltatime);
-		void printWorlds();
 
 };
 
