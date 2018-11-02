@@ -659,10 +659,10 @@ namespace engine {
 		float d = 1 / tan(angle);
 
 		mat4 res = mat4(d / aspect, 0, 0, 0,
-			0, d, 0, 0,
-			0, 0, (near + far) / (near - far), (2 * far * near) / (near - far),
-			0, 0, -1, 0);
-			res.clean();
+						0, d, 0, 0,
+						0, 0, (near + far) / (near - far), (2 * far * near) / (near - far),
+						0, 0, -1, 0);
+						res.clean();
 		return res;
 	}
 
