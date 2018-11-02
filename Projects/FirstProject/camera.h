@@ -40,6 +40,8 @@ class FixedCamera : public Camera {
 		vec3 WorldSide = vec3(1.0f, 0.0f, 0.0f);
 		vec3 WorldZ = vec3(0.0f, 0.0f, 1.0f);
 		int print = 0;
+		float pitch = 0.0f;
+		float yaw = 0.0f;
 
 		FixedCamera();
 		FixedCamera(const vec3 eye, const vec3 center, const vec3 up);

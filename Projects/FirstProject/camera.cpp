@@ -102,10 +102,10 @@ mat4 FixedCamera::ViewMatrix()
 	u = s.cross(v);
 	u = normalize(u);
 	if (gLock) {
+		mat4 T = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -eye.z);
 		return MatrixFactory::createLookAt(eye, vec3(0.0f, 0.0f, 0.0f), WorldUp);
 	}
 	else {
-
 		return MatrixFactory::createLookAt(eye, vec3(0.0f, 0.0f, 0.0f), u);
 	}
 }
@@ -121,13 +121,19 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime)
 	// GIMBAL LOCK ON
 	if (gLock) {
 		qX = qtrn(sideX * mulX * SPEED  * deltatime, vec3(0.0f, 1.0f, 0.0f));
-		WorldZ = qToMatrix(qX) * WorldZ;
-		WorldSide = qToMatrix(qX) * WorldSide;
+		q = qtrn(0, WorldSide.x, WorldSide.y, WorldSide.z);
+		WorldSide = qToMatrix(qX * q * inverse(qX)) * WorldSide;
 		WorldSide = normalize(WorldSide);
+		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
+		WorldZ = qToMatrix(qX * q * inverse(qX)) * WorldZ;
 		WorldZ = normalize(WorldZ);
+
 		qY = qtrn(sideY * mulY * SPEED  * deltatime,WorldSide);
-		WorldZ = qToMatrix(qY) * WorldZ;
+		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
+		WorldZ = qToMatrix(qY * q * inverse(qY)) * WorldZ;
 		WorldZ = normalize(WorldZ);
+		//pitch += sideX * mulX * SPEED  * deltatime;
+		//yaw += sideY * mulY * SPEED  * deltatime;
 
 	}
 	else {
@@ -152,7 +158,7 @@ void FixedCamera::cameraMoveRight(const float deltatime)
 		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
 		WorldZ = qToMatrix(qX * q * inverse(qX)) * WorldZ;
 		WorldZ = normalize(WorldZ);
-
+		//yaw += 2.0f * deltatime * SPEED;
 	}
 	else {
 		qX = qtrn(2.0f * deltatime * SPEED, u);
