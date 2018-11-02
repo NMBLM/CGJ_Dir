@@ -103,7 +103,12 @@ mat4 FixedCamera::ViewMatrix()
 	u = normalize(u);
 	if (gLock) {
 		mat4 T = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -eye.z);
-		return MatrixFactory::createLookAt(eye, vec3(0.0f, 0.0f, 0.0f), WorldUp);
+		mat4 Rx, Ry,rot;
+		Rx = MatrixFactory::createRotationMatrix4(-pitch, vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		Ry = MatrixFactory::createRotationMatrix4(-yaw, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+		rot = Rx * Ry;
+		return T * rot;
+		//return MatrixFactory::createLookAt(eye, vec3(0.0f, 0.0f, 0.0f), WorldUp);
 	}
 	else {
 		return MatrixFactory::createLookAt(eye, vec3(0.0f, 0.0f, 0.0f), u);
@@ -120,104 +125,78 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime)
 	qtrn qX, qY,qZ,q, qV;
 	// GIMBAL LOCK ON
 	if (gLock) {
-		qX = qtrn(sideX * mulX * SPEED  * deltatime, vec3(0.0f, 1.0f, 0.0f));
-		q = qtrn(0, WorldSide.x, WorldSide.y, WorldSide.z);
-		WorldSide = qToMatrix(qX * q * inverse(qX)) * WorldSide;
-		WorldSide = normalize(WorldSide);
-		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
-		WorldZ = qToMatrix(qX * q * inverse(qX)) * WorldZ;
-		WorldZ = normalize(WorldZ);
-
-		qY = qtrn(sideY * mulY * SPEED  * deltatime,WorldSide);
-		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
-		WorldZ = qToMatrix(qY * q * inverse(qY)) * WorldZ;
-		WorldZ = normalize(WorldZ);
-		//pitch += sideX * mulX * SPEED  * deltatime;
-		//yaw += sideY * mulY * SPEED  * deltatime;
+		yaw += sideX * mulX * SPEED  * deltatime;
+		pitch += sideY * mulY * SPEED  * deltatime;
 
 	}
 	else {
 		// GIMBAL LOCK OFF
 		qX = qtrn(sideX * mulX * SPEED  * deltatime, u);
 		qY = qtrn(sideY * mulY * SPEED  * deltatime, s);
+		q = qtrn(0, eye.x, eye.y, eye.z);
+		qV = (normalize(qX * qY)) * q * inverse(normalize(qX*qY));
+		eye = qToMatrix(qV) * eye;
 	}
-	q = qtrn(0, eye.x, eye.y, eye.z);
-	qV = (normalize(qX * qY)) * q * inverse(normalize(qX*qY));
-	eye = qToMatrix(qV) * eye;
+
 }
 
 void FixedCamera::cameraMoveRight(const float deltatime)
 {
 	qtrn qX,q;
 	if (gLock) {
-		qX = qtrn(2.0f * deltatime * SPEED, WorldUp);
-		q = qtrn(0, WorldSide.x, WorldSide.y, WorldSide.z);
-		WorldSide = qToMatrix(qX * q * inverse(qX)) * WorldSide;
-		WorldSide = normalize(WorldSide);
-
-		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
-		WorldZ = qToMatrix(qX * q * inverse(qX)) * WorldZ;
-		WorldZ = normalize(WorldZ);
-		//yaw += 2.0f * deltatime * SPEED;
+		yaw += 2.0f * deltatime * SPEED;
 	}
 	else {
 		qX = qtrn(2.0f * deltatime * SPEED, u);
+		q = qtrn(0, eye.x, eye.y, eye.z);
+		eye = qToMatrix(qX * q * inverse(qX)) * eye;
 	}
-	q = qtrn(0, eye.x, eye.y, eye.z);
-	eye = qToMatrix(qX * q * inverse(qX)) * eye;
+
 }
 
 void FixedCamera::cameraMoveLeft(const float deltatime)
 {
 	qtrn qX, q;
 	if (gLock) {
-		qX = qtrn(-2.0f * deltatime * SPEED, WorldUp);
-		q = qtrn(0, WorldSide.x, WorldSide.y, WorldSide.z);
-		WorldSide = qToMatrix(qX * q * inverse(qX)) * WorldSide;
-		WorldSide = normalize(WorldSide);
-
-		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
-		WorldZ = qToMatrix(qX * q * inverse(qX)) * WorldZ;
-		WorldZ = normalize(WorldZ);
+		yaw += -2.0f * deltatime * SPEED;
 
 	}
 	else {
 		qX = qtrn(-2.0f * deltatime * SPEED, u);
+		q = qtrn(0, eye.x, eye.y, eye.z);
+		eye = qToMatrix(qX * q * inverse(qX)) * eye;
 	}
-	q = qtrn(0, eye.x, eye.y, eye.z);
-	eye = qToMatrix(qX * q * inverse(qX)) * eye;
+
 }
 
 void FixedCamera::cameraMoveForward(const float deltatime)
 {
 	qtrn qY,q;
 	if (gLock) {
-		qY = qtrn(-2.0f * deltatime * SPEED, WorldSide);
-		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
-		WorldZ = qToMatrix(qY * q * inverse(qY)) * WorldZ;
-		WorldZ = normalize(WorldZ);
+		pitch += -2.0f * deltatime * SPEED;
+
 	}
 	else {
 		qY = qtrn(-2.0f * deltatime * SPEED, s);
+		q = qtrn(0, eye.x, eye.y, eye.z);
+		eye = qToMatrix(qY * q * inverse(qY)) * eye;
 	}
-	q = qtrn(0, eye.x, eye.y, eye.z);
-	eye = qToMatrix(qY * q * inverse(qY)) * eye;
+
 }
 
 void FixedCamera::cameraMoveBack(const float deltatime)
 {
 	qtrn qY, q;
 	if (gLock) {
-		qY = qtrn(2.0f * deltatime * SPEED, WorldSide);
-		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
-		WorldZ = qToMatrix(qY * q * inverse(qY)) * WorldZ;
-		WorldZ = normalize(WorldZ);
+		pitch += 2.0f * deltatime * SPEED;
+
 	}
 	else {
 		qY = qtrn(2.0f * deltatime * SPEED, s);
+		q = qtrn(0, eye.x, eye.y, eye.z);
+		eye = qToMatrix(qY * q * inverse(qY)) * eye;
 	}
-	q = qtrn(0, eye.x, eye.y, eye.z);
-	eye = qToMatrix(qY * q * inverse(qY)) * eye;
+
 }
 
 void FixedCamera::cameraRollRight(const float deltatime)
