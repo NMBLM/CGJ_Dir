@@ -147,7 +147,15 @@ namespace engine {
 		data[1] = y;
 		data[2] = z;
 		return data;
-	}			
+	}
+
+	void vec3::clean()
+	{
+		x = fcmp(x, 0.0f) ? 0.0f : x;
+		y = fcmp(y, 0.0f) ? 0.0f : y;
+		z = fcmp(z, 0.0f) ? 0.0f : z;
+
+	}
 		
 	vec3 vec3::operator=(const vec3 & v)
 	{
@@ -211,7 +219,9 @@ namespace engine {
 
 	const vec3 normalize(const vec3 & v)
 	{
-		return v * (1 / v.length());
+		vec3 res = v * (1 / v.length());
+		res.clean();
+		return res;
 	}
 
 	const vec3 vec3::cross(const vec3& v2) const

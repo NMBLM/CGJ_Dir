@@ -196,13 +196,15 @@
 //
 //int main(int argc, char* argv[])
 //{
-//	qtest1();
-//	qtest2();
-//	qtest3();
-//	qtest4();
-//	qtest5();
-//	qtest6();
-//
+//	//qtest1();
+//	//qtest2();
+//	//qtest3();
+//	//qtest4();
+//	//qtest5();
+//	//qtest6();
+//	qtrn rotY180 = qtrn(180.0f, vec4(0.0f, 1.0f, 0.0f, 1.0f));
+//	vec4 XX = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+//	std::cout << "rotY180 * XX" <<qToMatrix(rotY180) * XX << std::endl;
 //	std::cout << std::endl << "Press <return>.";
 //	std::cin.ignore(1);
 //	exit(EXIT_SUCCESS);

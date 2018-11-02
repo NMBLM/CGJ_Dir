@@ -120,10 +120,15 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime)
 	qtrn qX, qY,qZ,q, qV;
 	// GIMBAL LOCK ON
 	if (gLock) {
-		qY = qtrn(sideY * mulY * SPEED  * deltatime, vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		WorldUp = qToMatrix(qY) * WorldUp;
-		qX = qtrn(sideX * mulX * SPEED  * deltatime, WorldUp);
+		qX = qtrn(sideX * mulX * SPEED  * deltatime, vec3(0.0f, 1.0f, 0.0f));
+		WorldZ = qToMatrix(qX) * WorldZ;
 		WorldSide = qToMatrix(qX) * WorldSide;
+		WorldSide = normalize(WorldSide);
+		WorldZ = normalize(WorldZ);
+		qY = qtrn(sideY * mulY * SPEED  * deltatime,WorldSide);
+		WorldZ = qToMatrix(qY) * WorldZ;
+		WorldZ = normalize(WorldZ);
+
 	}
 	else {
 		// GIMBAL LOCK OFF
@@ -140,7 +145,14 @@ void FixedCamera::cameraMoveRight(const float deltatime)
 	qtrn qX,q;
 	if (gLock) {
 		qX = qtrn(2.0f * deltatime * SPEED, WorldUp);
-		WorldSide = qToMatrix(qX) * WorldSide;
+		q = qtrn(0, WorldSide.x, WorldSide.y, WorldSide.z);
+		WorldSide = qToMatrix(qX * q * inverse(qX)) * WorldSide;
+		WorldSide = normalize(WorldSide);
+
+		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
+		WorldZ = qToMatrix(qX * q * inverse(qX)) * WorldZ;
+		WorldZ = normalize(WorldZ);
+
 	}
 	else {
 		qX = qtrn(2.0f * deltatime * SPEED, u);
@@ -154,7 +166,14 @@ void FixedCamera::cameraMoveLeft(const float deltatime)
 	qtrn qX, q;
 	if (gLock) {
 		qX = qtrn(-2.0f * deltatime * SPEED, WorldUp);
-		WorldSide = qToMatrix(qX) * WorldSide;
+		q = qtrn(0, WorldSide.x, WorldSide.y, WorldSide.z);
+		WorldSide = qToMatrix(qX * q * inverse(qX)) * WorldSide;
+		WorldSide = normalize(WorldSide);
+
+		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
+		WorldZ = qToMatrix(qX * q * inverse(qX)) * WorldZ;
+		WorldZ = normalize(WorldZ);
+
 	}
 	else {
 		qX = qtrn(-2.0f * deltatime * SPEED, u);
@@ -167,8 +186,10 @@ void FixedCamera::cameraMoveForward(const float deltatime)
 {
 	qtrn qY,q;
 	if (gLock) {
-		qY = qtrn(-2.0f * deltatime * SPEED, vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		WorldUp = qToMatrix(qY) * WorldUp;
+		qY = qtrn(-2.0f * deltatime * SPEED, WorldSide);
+		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
+		WorldZ = qToMatrix(qY * q * inverse(qY)) * WorldZ;
+		WorldZ = normalize(WorldZ);
 	}
 	else {
 		qY = qtrn(-2.0f * deltatime * SPEED, s);
@@ -181,8 +202,10 @@ void FixedCamera::cameraMoveBack(const float deltatime)
 {
 	qtrn qY, q;
 	if (gLock) {
-		qY = qtrn(2.0f * deltatime * SPEED, vec4(1.0f, 0.0f, 0.0f, 1.0f));
-		WorldUp = qToMatrix(qY) * WorldUp;
+		qY = qtrn(2.0f * deltatime * SPEED, WorldSide);
+		q = qtrn(0, WorldZ.x, WorldZ.y, WorldZ.z);
+		WorldZ = qToMatrix(qY * q * inverse(qY)) * WorldZ;
+		WorldZ = normalize(WorldZ);
 	}
 	else {
 		qY = qtrn(2.0f * deltatime * SPEED, s);
@@ -193,29 +216,39 @@ void FixedCamera::cameraMoveBack(const float deltatime)
 
 void FixedCamera::cameraRollRight(const float deltatime)
 {
-	qtrn qZ;
+	qtrn qZ,q;
 	if (gLock) {
-		qZ = qtrn(2.0f * deltatime * SPEED, WorldSide.cross(WorldUp));
+		qZ = qtrn(2.0f * deltatime * SPEED, WorldZ);
+		q = qtrn(0, WorldUp.x, WorldUp.y, WorldUp.z);
+		WorldUp = qToMatrix(qZ * q * inverse(qZ)) * WorldUp;
+		WorldUp = normalize(WorldUp);
+
 	}
 	else {
 		qZ = qtrn(2.0f * deltatime * SPEED, v);
+		q = qtrn(0, u.x, u.y, u.z);
+		u = qToMatrix(qZ * q * inverse(qZ)) * u;
+		u = normalize(u);
 	}
-	u = qToMatrix(qZ) * u;
-	u = normalize(u);
+
 
 }
 
 void FixedCamera::cameraRollLeft(const float deltatime)
 {
-	qtrn qZ;
+	qtrn qZ, q;
 	if (gLock) {
-		qZ = qtrn(-2.0f * deltatime * SPEED, WorldSide.cross(WorldUp));
+		qZ = qtrn(-2.0f * deltatime * SPEED, WorldZ);
+		q = qtrn(0, WorldUp.x, WorldUp.y, WorldUp.z);
+		WorldUp = qToMatrix(qZ * q * inverse(qZ)) * WorldUp;
+		WorldUp = normalize(WorldUp);
 	}
 	else {
 		qZ = qtrn(-2.0f * deltatime * SPEED, v);
+		q = qtrn(0, u.x, u.y, u.z);
+		u = qToMatrix(qZ * q * inverse(qZ)) * u;
+		u = normalize(u);
 	}
-	u = qToMatrix(qZ) * u;
-	u = normalize(u);
 }
 
 
@@ -227,4 +260,14 @@ void FixedCamera::zoom(const int dir, const float deltatime)
 	else {
 		eye = eye - v * vSPEED * deltatime;
 	}
+}
+
+void FixedCamera::printWorlds()
+{
+	print += 1;
+	std::cout << "Time: " << print << " WorldUp: " << WorldUp << std::endl;
+	std::cout << "Time: " << print << " WorldSide: " << WorldSide << std::endl;
+	std::cout << "Time: " << print << " WorldZ: " << WorldZ << std::endl;
+
+
 }

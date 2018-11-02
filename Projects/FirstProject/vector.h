@@ -60,7 +60,7 @@ namespace engine {
 		vec3(const vec4& v);
 
 		const float* data(vec3& v);
-
+		void clean();
 		
 		// assignment, Comparison
 		vec3 operator=( const vec3& v);

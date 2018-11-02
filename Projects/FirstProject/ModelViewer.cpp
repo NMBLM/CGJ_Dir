@@ -144,6 +144,9 @@ void keyPress(unsigned char key, int x, int y) {
 	}
 	if (KeyBuffer::instance()->isKeyDown('t') || KeyBuffer::instance()->isKeyDown('T')) tangram = !tangram;
 
+	if (KeyBuffer::instance()->isKeyDown('n') || KeyBuffer::instance()->isKeyDown('N')) camera->printWorlds();
+
+
 }
 
 void keyRelease(unsigned char key, int x, int y) {
