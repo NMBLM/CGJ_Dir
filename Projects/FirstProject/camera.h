@@ -10,11 +10,12 @@ using namespace engine;
 
 
 class Camera {
-
+private:
+	vec3 v;
+	vec3 s;
+	vec3 u;
 	protected:
-		vec3 v;
-		vec3 s;
-		vec3 u;
+
 		vec3 eye;
 		const float SPEED = 10.0f;
 		const float vSPEED = 0.5f;
@@ -39,6 +40,8 @@ class FixedCamera : public Camera {
 		int print = 0;
 		float pitch = 0.0f;
 		float yaw = 0.0f;
+		float roll = 0.0f;
+		qtrn qPos;
 
 		FixedCamera();
 		FixedCamera(const vec3 eye, const vec3 center, const vec3 up);

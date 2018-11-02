@@ -27,8 +27,6 @@ namespace engine {
 		const float quadrance() const;
 		const float length() const;
 
-
-
 		friend const mat4 qToMatrix(const qtrn q);
 		friend const qtrn conjugate(const qtrn& q);
 		friend const qtrn inverse(const qtrn& q);
