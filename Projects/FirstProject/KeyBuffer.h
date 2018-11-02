@@ -15,9 +15,6 @@ public:
 	void pressKey(unsigned char key);
 	void releaseKey(unsigned char key);
 	bool isKeyDown(unsigned char key);
-
-
-
 	
 };
 

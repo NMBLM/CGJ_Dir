@@ -36,6 +36,10 @@ class Camera {
 class FixedCamera : public Camera {
 	public:
 		bool gLock = true;
+		vec3 WorldUp = vec3(0.0f, 1.0f, 0.0f);
+		vec3 WorldSide = vec3(1.0f, 0.0f, 0.0f);
+		vec3 WorldZ = vec3(0.0f, 0.0f, 1.0f);
+
 
 		FixedCamera();
 		FixedCamera(const vec3 eye, const vec3 center, const vec3 up);

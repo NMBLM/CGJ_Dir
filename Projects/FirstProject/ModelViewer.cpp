@@ -55,6 +55,7 @@ float lastFrame = 0.0f;
 float delta = 0.0f;
 int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
+bool tangram = false;
 // Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
 // Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
@@ -141,6 +142,7 @@ void keyPress(unsigned char key, int x, int y) {
 		projectionMatrix = otherProjectionMatrix;
 		otherProjectionMatrix = temp;
 	}
+	if (KeyBuffer::instance()->isKeyDown('t') || KeyBuffer::instance()->isKeyDown('T')) tangram = !tangram;
 
 }
 
@@ -192,7 +194,6 @@ static void checkOpenGLError(std::string error)
 
 
 /////////////////////////////////////////////////////////////////////// SHADERs
-
 
 void createShaderProgram()
 {
@@ -330,8 +331,8 @@ void drawScene()
 
 
 //reshape and reposition square to make a 1x1 cube
-const float cubeScale = 3.53553390593f
-;
+
+const float cubeScale = 3.53553390593f;
 const mat4 cubeCommon = MatrixFactory::createScaleMatrix4(cubeScale, cubeScale, 1.0f) *
 						MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 0, 1, 1)) * //rotate 45 degrees on z axis
 						MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
@@ -398,8 +399,7 @@ void display()
 {
 	++FrameCount;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	//drawScene();
-	drawCubeScene();
+	(tangram)? drawScene() : drawCubeScene();
 	glutSwapBuffers();
 }
 
@@ -521,6 +521,7 @@ void init(int argc, char* argv[])
 
 int main(int argc, char* argv[])
 {
+
 	init(argc, argv);
 	glutMainLoop();
 	exit(EXIT_SUCCESS);
