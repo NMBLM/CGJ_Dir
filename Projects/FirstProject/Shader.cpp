@@ -45,7 +45,7 @@ FragmentShader::FragmentShader(const char * shaderFilename)
 	if (!success)
 	{
 		glGetShaderInfoLog(id, 512, NULL, log);
-		std::cout << "ERROR::SHADER::FRAGMENT:COMPILATION_FAILED\n" << log << std::endl;
+		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << log << std::endl;
 	};
 }
 

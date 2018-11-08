@@ -96,9 +96,6 @@ mat4 FixedCamera::ViewMatrix()
 		Rx = MatrixFactory::createRotationMatrix4(-pitch, vec4(1.0f, 0.0f, 0.0f, 1.0f));
 		Ry = MatrixFactory::createRotationMatrix4(-yaw, vec4(0.0f, 1.0f, 0.0f, 1.0f));
 		Rz = MatrixFactory::createRotationMatrix4(-roll, vec4(0.0f, 0.0f, 1.0f, 1.0f));
-		pitch = fmod(pitch,360);
-		yaw = fmod(yaw, 360);
-		roll = fmod(roll, 360);
 		rot = Rz * Rx * Ry ;
 		return T * rot;
 	}

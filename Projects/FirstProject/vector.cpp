@@ -13,6 +13,12 @@ namespace engine {
 		return fabs(a - b) < epsilon;
 	}
 
+	vec2::vec2()
+	{
+		x = 0.0f;
+		y = 0.0f;
+	}
+
 	vec2::vec2(const float k): x(k), y(k)
 	{
 	}

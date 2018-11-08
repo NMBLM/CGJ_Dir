@@ -121,7 +121,7 @@
 //
 //
 //void mouse_wheel_input(int button, int dir, int x, int y) {
-//	camera->zoom(dir,delta);
+//	camera->zoom(dir, delta);
 //}
 //void mouse_input(int x, int y) {
 //
@@ -334,35 +334,35 @@
 //
 //const float cubeScale = 3.53553390593f;
 //const mat4 cubeCommon = MatrixFactory::createScaleMatrix4(cubeScale, cubeScale, 1.0f) *
-//						MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 0, 1, 1)) * //rotate 45 degrees on z axis
-//						MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
+//MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 0, 1, 1)) * //rotate 45 degrees on z axis
+//MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
 //
 ////front RED
-//const mat4 cb1 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f,  0.5f) *
-//				 cubeCommon;
+//const mat4 cb1 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 0.5f) *
+//cubeCommon;
 ////back GREEN
-//const mat4 cb2 = MatrixFactory::createTranslationMatrix(0.0, 0.0f, - 0.5f) *
-//				 MatrixFactory::createRotationMatrix4(180.0f, vec4(0, 1, 0, 1)) *
-//				 cubeCommon;
+//const mat4 cb2 = MatrixFactory::createTranslationMatrix(0.0, 0.0f, -0.5f) *
+//MatrixFactory::createRotationMatrix4(180.0f, vec4(0, 1, 0, 1)) *
+//cubeCommon;
 ////side right BLUE
-//const mat4 cb3 = MatrixFactory::createTranslationMatrix( 0.5f, 0.0f, 0.0f) *
-//				 MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1)) *
-//				 cubeCommon;
+//const mat4 cb3 = MatrixFactory::createTranslationMatrix(0.5f, 0.0f, 0.0f) *
+//MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1)) *
+//cubeCommon;
 //
 ////side left CYAN
-//const mat4 cb4 = MatrixFactory::createTranslationMatrix(- 0.5f, 0.0f, 0.0f) *
-//				 MatrixFactory::createRotationMatrix4(-90.0f, vec4(0, 1, 0, 1)) *
-//				 cubeCommon;
+//const mat4 cb4 = MatrixFactory::createTranslationMatrix(-0.5f, 0.0f, 0.0f) *
+//MatrixFactory::createRotationMatrix4(-90.0f, vec4(0, 1, 0, 1)) *
+//cubeCommon;
 //
 ////up MAGENTA
-//const mat4 cb5 = MatrixFactory::createTranslationMatrix(0.0f,  0.5f, 0.0f) *
-//				 MatrixFactory::createRotationMatrix4(-90.0f, vec4(1, 0, 0, 1)) *
-//				 cubeCommon;
+//const mat4 cb5 = MatrixFactory::createTranslationMatrix(0.0f, 0.5f, 0.0f) *
+//MatrixFactory::createRotationMatrix4(-90.0f, vec4(1, 0, 0, 1)) *
+//cubeCommon;
 //
 ////down YELLOW
-//const mat4 cb6 = MatrixFactory::createTranslationMatrix(0.0f, - 0.5f, 0.0f) *
-//				 MatrixFactory::createRotationMatrix4(90.0f, vec4(1, 0, 0, 1)) *
-//				 cubeCommon;
+//const mat4 cb6 = MatrixFactory::createTranslationMatrix(0.0f, -0.5f, 0.0f) *
+//MatrixFactory::createRotationMatrix4(90.0f, vec4(1, 0, 0, 1)) *
+//cubeCommon;
 //
 //
 //void drawCubeScene()
@@ -399,7 +399,7 @@
 //{
 //	++FrameCount;
 //	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//	(tangram)? drawScene() : drawCubeScene();
+//	(tangram) ? drawScene() : drawCubeScene();
 //	glutSwapBuffers();
 //}
 //

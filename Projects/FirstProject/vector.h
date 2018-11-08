@@ -16,6 +16,7 @@ namespace engine {
 	{
 		float x, y;
 		// Constructor
+		vec2();
 		vec2(const float k);
 		vec2(const float x,const float y);
 		vec2(const vec2& v);

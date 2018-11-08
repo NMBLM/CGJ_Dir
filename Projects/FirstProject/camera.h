@@ -18,7 +18,7 @@ private:
 
 		vec3 eye;
 		const float SPEED = 10.0f;
-		const float vSPEED = 0.5f;
+		const float vSPEED = 5.0f;
 		float lastFrame = 0.0f;
 
 	public:
@@ -36,7 +36,7 @@ private:
 
 class FixedCamera : public Camera {
 	public:
-		bool gLock = true;
+		bool gLock = false;
 		int print = 0;
 		float pitch = 0.0f;
 		float yaw = 0.0f;

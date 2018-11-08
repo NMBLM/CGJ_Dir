@@ -18,9 +18,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\properties.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -48,9 +45,6 @@
     <ClCompile Include="4-Quaternions.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
-    <ClCompile Include="ModelViewer.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="KeyBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -61,6 +55,30 @@
       <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="mainH3dW.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="5-OBJ_loader.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="6-classicgl-teapot.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="7-MatrixStack.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="8-SceneManager.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelViewer.cpp">
+      <Filter>Resource Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FullScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TestingArea.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,6 +110,9 @@
     <ClInclude Include="KeyBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShader.glsl">
@@ -104,6 +125,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="FragmentShaderCamera.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="cube_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="cube_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
