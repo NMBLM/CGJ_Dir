@@ -69,7 +69,6 @@ Projects/.vs/Projects/v15/ipch/AutoPCH/ae4178b28c947195/SHADER.ipch
 Projects/.vs/Projects/v15/ipch/AutoPCH/cb9533af327e5c52/TEST.ipch
 *.ipch
 Projects/dragoon.png
-*.obj
 bin/x64/FirstProject.exe
 bin/x64/FirstProject.pdb
 Projects/FirstProject/x64/Debug/shape.obj
@@ -82,3 +81,19 @@ Projects/FirstProject/x64/Debug/shape.obj
 Projects/FirstProject/4-QuaternionsOld.cpp
 *.log
 *.zip
+Projects/FirstProject/x64/Debug/3-Hello3dWorld.obj
+Projects/FirstProject/x64/Debug/4-Quaternions.obj
+Projects/FirstProject/x64/Debug/4-QuaternionsOld.obj
+Projects/FirstProject/x64/Debug/5-OBJ_loader.obj
+Projects/FirstProject/x64/Debug/6-classicgl-teapot.obj
+Projects/FirstProject/x64/Debug/7-MatrixStack.obj
+Projects/FirstProject/x64/Debug/8-SceneManager.obj
+Projects/FirstProject/x64/Debug/camera.obj
+Projects/FirstProject/x64/Debug/FullScene.obj
+Projects/FirstProject/x64/Debug/KeyBuffer.obj
+Projects/FirstProject/x64/Debug/mainH3dW.obj
+Projects/FirstProject/x64/Debug/Mesh.obj
+Projects/FirstProject/x64/Debug/ModelViewer.obj
+Projects/FirstProject/x64/Debug/program.obj
+Projects/FirstProject/x64/Debug/quaternion.obj
+Projects/FirstProject/x64/Debug/TestingArea.obj
