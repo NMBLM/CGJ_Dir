@@ -5,9 +5,11 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-
 #include <vector>
+
 #include "vector.h"
+#include "matrix.h"
+#include "program.h"
 
 #include "GL/glew.h"
 
@@ -52,7 +54,7 @@ namespace engine {
 		void createMesh(std::string& filename);
 		void createBufferObjects();
 		void destroyBufferObjects();
-		void draw();
+		void draw(mat4 transform, Program* prog);
 
 	};
 

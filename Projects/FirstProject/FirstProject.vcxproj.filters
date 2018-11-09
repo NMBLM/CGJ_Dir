@@ -81,6 +81,9 @@
     <ClCompile Include="TestingArea.cpp">
       <Filter>Resource Files</Filter>
     </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.h">
@@ -113,6 +116,9 @@
     <ClInclude Include="Mesh.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="VertexShader.glsl">
@@ -131,6 +137,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="cube_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="cube_fs_extra.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="cube_vs _shared.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

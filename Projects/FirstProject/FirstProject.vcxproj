@@ -146,6 +146,7 @@
     <ClCompile Include="ModelViewer.cpp" />
     <ClCompile Include="program.cpp" />
     <ClCompile Include="quaternion.cpp" />
+    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="shader.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="test.cpp" />
@@ -160,12 +161,15 @@
     <ClInclude Include="program.h" />
     <ClInclude Include="quaternion.h" />
     <ClInclude Include="rgbtohsl.h" />
+    <ClInclude Include="Scene.h" />
     <ClInclude Include="shader.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="cube_fs.glsl" />
+    <None Include="cube_fs_extra.glsl" />
+    <None Include="cube_vs _shared.glsl" />
     <None Include="cube_vs.glsl" />
     <None Include="FragmentShader.glsl" />
     <None Include="FragmentShaderCamera.glsl" />

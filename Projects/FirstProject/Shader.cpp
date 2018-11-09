@@ -11,6 +11,7 @@ VertexShader::VertexShader(const char * shaderFilename)
 	data.assign((std::istreambuf_iterator<char>(v)),
 		std::istreambuf_iterator<char>());
 	const GLchar * VertexShader = data.c_str();
+	std::cout <<"HELP DATA" <<  data.c_str();
 	int success = 0;
 	char log[512];
 	id = glCreateShader(GL_VERTEX_SHADER);
@@ -42,7 +43,7 @@ FragmentShader::FragmentShader(const char * shaderFilename)
 	id = glCreateShader(GL_FRAGMENT_SHADER);
 	glShaderSource(id, 1, &FragmentShader, 0);
 	glCompileShader(id);
-	if (!success)
+	if (success)
 	{
 		glGetShaderInfoLog(id, 512, NULL, log);
 		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << log << std::endl;

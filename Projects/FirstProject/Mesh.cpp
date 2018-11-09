@@ -85,12 +85,6 @@ void Mesh::processMeshData()
 			Normals.push_back(n);
 		}
 	}
-	for (auto& i : Vertices) {
-		std::cout << "vertice " << i << std::endl;
-	}
-	for (auto& i : Normals) {
-		std::cout << "normal " << i << std::endl;
-	}
 }
 
 void Mesh::freeMeshData()
@@ -162,7 +156,15 @@ void Mesh::destroyBufferObjects()
 	glBindVertexArray(0);
 }
 
-void engine::Mesh::draw()
+void engine::Mesh::draw(mat4 transform, Program* prog)
 {
+
+	glBindVertexArray(VaoId);
+	glUseProgram(prog->id);
+
+	glUniformMatrix4fv(prog->UniformId("ModelMatrix"), 1, GL_FALSE, transform.data());
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
+
+	glUseProgram(0);
+	glBindVertexArray(0);
 }
