@@ -17,8 +17,8 @@ private:
 	protected:
 
 		vec3 eye;
-		const float SPEED = 10.0f;
-		const float vSPEED = 5.0f;
+		const float SPEED = 2.0f;
+		const float vSPEED = 1.0f;
 		float lastFrame = 0.0f;
 
 	public:

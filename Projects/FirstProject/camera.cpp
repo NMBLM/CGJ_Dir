@@ -132,11 +132,11 @@ void FixedCamera::cameraMoveRight(const float deltatime)
 	qtrn qX, q;
 	if (!gLock) {
 
-		qX = qtrn(-2.0f * deltatime * SPEED, vec3(0.0f, 1.0f, 0.0f));
+		qX = qtrn(-3.0f * deltatime * SPEED, vec3(0.0f, 1.0f, 0.0f));
 		qPos = qX  * qPos;
 	}
 	else {
-		yaw += 2.0f * deltatime * SPEED;
+		yaw += 3.0f * deltatime * SPEED;
 	}
 
 }
@@ -146,11 +146,11 @@ void FixedCamera::cameraMoveLeft(const float deltatime)
 	qtrn qX, q;
 	if (!gLock) {
 
-		qX = qtrn(2.0f * deltatime * SPEED, vec3(0.0f, 1.0f, 0.0f));
+		qX = qtrn(3.0f * deltatime * SPEED, vec3(0.0f, 1.0f, 0.0f));
 		qPos = qX * qPos;
 	}
 	else {
-		yaw += -2.0f * deltatime * SPEED;
+		yaw += -3.0f * deltatime * SPEED;
 	}
 
 }
@@ -160,11 +160,11 @@ void FixedCamera::cameraMoveForward(const float deltatime)
 	qtrn qY, q;
 
 	if (!gLock) {
-		qY = qtrn(2.0f * deltatime * SPEED, vec3(1.0f, 0.0f, 0.0f));
+		qY = qtrn(3.0f * deltatime * SPEED, vec3(1.0f, 0.0f, 0.0f));
 		qPos = qY * qPos;
 	}
 	else {
-		pitch += -2.0f * deltatime * SPEED;
+		pitch += -3.0f * deltatime * SPEED;
 	}
 
 }
@@ -173,11 +173,11 @@ void FixedCamera::cameraMoveBack(const float deltatime)
 {
 	qtrn qY, q;
 	if (!gLock) {
-		qY = qtrn(-2.0f * deltatime * SPEED, vec3(1.0f, 0.0f, 0.0f));
+		qY = qtrn(-3.0f * deltatime * SPEED, vec3(1.0f, 0.0f, 0.0f));
 		qPos = qY * qPos;
 	}
 	else {
-		pitch += 2.0f * deltatime * SPEED;
+		pitch += 3.0f * deltatime * SPEED;
 	}
 
 }
@@ -186,11 +186,11 @@ void FixedCamera::cameraRollRight(const float deltatime)
 {
 	qtrn qZ, q;
 	if (gLock) {
-		roll += 2.0f * deltatime * SPEED;
+		roll += 3.0f * deltatime * SPEED;
 
 	}
 	else {
-		qZ = qtrn(-2.0f * deltatime * SPEED, vec3(0.0f, 0.0f, -1.0f));
+		qZ = qtrn(-3.0f * deltatime * SPEED, vec3(0.0f, 0.0f, -1.0f));
 		qPos = qZ * qPos;
 	}
 
@@ -201,11 +201,11 @@ void FixedCamera::cameraRollLeft(const float deltatime)
 {
 	qtrn qZ, q;
 	if (gLock) {
-		roll += -2.0f * deltatime * SPEED;
+		roll += -3.0f * deltatime * SPEED;
 
 	}
 	else {
-		qZ = qtrn(2.0f * deltatime * SPEED, vec3(0.0f, 0.0f, -1.0f));
+		qZ = qtrn(3.0f * deltatime * SPEED, vec3(0.0f, 0.0f, -1.0f));
 		qPos = qZ * qPos;
 	}
 }

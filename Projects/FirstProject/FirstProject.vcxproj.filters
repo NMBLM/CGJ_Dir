@@ -142,7 +142,7 @@
     <None Include="cube_fs_extra.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="cube_vs _shared.glsl">
+    <None Include="cube_vs_shared.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

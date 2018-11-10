@@ -41,26 +41,27 @@ int WinX = 640, WinY = 640;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
+
+const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
+const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
-
+GLuint VboId[1]; // shared matrice
 FixedCamera* camera;
-
-GLuint VboId[1];
 Program* prog;
 Mesh* mesh;
 VertexShader vShader;
 FragmentShader fShader;
-const GLuint UBO_BP = 0;
+
+
 float lastFrame = 0.0f;
 float delta = 0.0f;
 int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
-bool tangram = false;
-// Orthographic LeftRight(-2,2) TopBottom(-2,2) NearFar(1,10)
-mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
-// Perspective Fovy(30) Aspect(640/480) NearZ(1) FarZ(10)
+float k = 0.0f;
+
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 10);
+mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -199,7 +200,7 @@ void createShaderProgram()
 {
 	prog = new Program(glCreateProgram());
 	vShader = VertexShader("cube_vs_shared.glsl");
-	fShader = FragmentShader("cube_fs.glsl");
+	fShader = FragmentShader("cube_fs_extra.glsl");
 
 	prog->attachShader(vShader);
 	prog->attachShader(fShader);
@@ -260,13 +261,14 @@ void drawScene()
 
 	mat4 ViewMatrix = camera->ViewMatrix();
 
-	GLsizeiptr matrixSize = sizeof(GLfloat[16]);
-
-
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
 	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	// uniforms
+	glUseProgram(prog->id);
+	glUniform1f(prog->UniformLocation("k"), k);
+	glUseProgram(0);
 
 	mesh->draw(MatrixFactory::createIdentityMatrix4(), prog);
 
@@ -296,6 +298,8 @@ void idle()
 	float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME);
 	delta = ((float)currentFrame - (float)lastFrame) / 100;
 	lastFrame = (float)currentFrame;
+	k = k + delta / 2;
+	//k = fmod(k + delta / 2, 6.29f);
 	glutPostRedisplay();
 }
 
@@ -395,11 +399,11 @@ void setupCamera() {
 }
 
 void createMesh() {
-	mesh = new Mesh( std::string("src/cubeT.obj"));
+	//mesh = new Mesh( std::string("src/cubeT.obj"));
 	//mesh = new Mesh( std::string("src/TangramPieceTriangle.obj"));
 	//mesh = new Mesh( std::string("src/TangramPieceSquare.obj"));
 	//mesh = new Mesh( std::string("src/TangramPieceParallelogram.obj"));
-	//mesh = new Mesh(std::string("src/duck.obj"));
+	mesh = new Mesh(std::string("src/duck.obj"));
 
 }
 void init(int argc, char* argv[])

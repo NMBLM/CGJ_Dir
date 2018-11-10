@@ -169,8 +169,8 @@
   <ItemGroup>
     <None Include="cube_fs.glsl" />
     <None Include="cube_fs_extra.glsl" />
-    <None Include="cube_vs _shared.glsl" />
     <None Include="cube_vs.glsl" />
+    <None Include="cube_vs_shared.glsl" />
     <None Include="FragmentShader.glsl" />
     <None Include="FragmentShaderCamera.glsl" />
     <None Include="VertexShader.glsl" />

@@ -11,7 +11,6 @@ VertexShader::VertexShader(const char * shaderFilename)
 	data.assign((std::istreambuf_iterator<char>(v)),
 		std::istreambuf_iterator<char>());
 	const GLchar * VertexShader = data.c_str();
-	std::cout <<"HELP DATA" <<  data.c_str();
 	int success = 0;
 	char log[512];
 	id = glCreateShader(GL_VERTEX_SHADER);
