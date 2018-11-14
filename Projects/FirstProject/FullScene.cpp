@@ -46,18 +46,17 @@ unsigned int FrameCount = 0;
 
 const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
-const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
-GLuint VboId[1]; // shared matrice
 FixedCamera* camera;
 ShaderProgram* dfault;
 ShaderProgram* prog;
 Mesh* mesh;
 Scene* scene;
+Scene* sceneOG;
 
 std::map<std::string, Mesh*> meshManager = std::map<std::string, Mesh*>();
 
-
+GLuint VboId[1];
 float lastFrame = 0.0f;
 float delta = 0.0f;
 int lastMouseY = WinX / 2;
@@ -66,7 +65,7 @@ float k = 0.0f;
 
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 10);
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
-
+bool OG = false;
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType(GLenum type)
@@ -142,17 +141,27 @@ void mouse_input(int x, int y) {
 
 void keyPress(unsigned char key, int x, int y) {
 	KeyBuffer::instance()->pressKey(key);
+}
+
+
+void keyRelease(unsigned char key, int x, int y) {
 	if (KeyBuffer::instance()->isKeyDown('g') || KeyBuffer::instance()->isKeyDown('G')) camera->gimbalLockSwitch();
 	if (KeyBuffer::instance()->isKeyDown('p') || KeyBuffer::instance()->isKeyDown('P')) {
 		mat4 temp = projectionMatrix;
 		projectionMatrix = otherProjectionMatrix;
 		otherProjectionMatrix = temp;
+		camera->ProjectionMatrix(projectionMatrix);
 	}
-
+	if (KeyBuffer::instance()->isKeyDown('o') || KeyBuffer::instance()->isKeyDown('O')) OG=!OG;
+	KeyBuffer::instance()->releaseKey(key);
 }
 
-void keyRelease(unsigned char key, int x, int y) {
-	KeyBuffer::instance()->releaseKey(key);
+void specialKeyPress(int key, int x, int y) {
+	KeyBuffer::instance()->pressSpecialKey(key);
+}
+
+void specialKeyRelease(int key, int x, int y) {
+	KeyBuffer::instance()->releaseSpecialKey(key);
 }
 
 void update() {
@@ -174,6 +183,22 @@ void update() {
 	if (KeyBuffer::instance()->isKeyDown('e')) camera->cameraRollRight(delta);
 	if (KeyBuffer::instance()->isKeyDown('E')) camera->cameraRollRight(delta);
 
+	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
+		scene->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
+		sceneOG->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
+	}
+	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_UP)) {
+		scene->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -1.0f * delta));
+		sceneOG->updateModel(MatrixFactory::createTranslationMatrix( 0.0f, 0.0f,-1.0f * delta));
+	}
+	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_RIGHT)) {
+		scene->updateModel(MatrixFactory::createTranslationMatrix(1.0f * delta, 0.0f, 0.0f));
+		sceneOG->updateModel(MatrixFactory::createTranslationMatrix(1.0f * delta, 0.0f, 0.0f));
+	}
+	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_DOWN)) {
+		scene->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 1.0f * delta));
+		sceneOG->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 1.0f * delta));
+	}
 }
 
 
@@ -249,7 +274,11 @@ void destroyShaderProgram()
 
 void createBufferObjects()
 {
-	//Shared matrice buffer
+	//meshs buffer
+	for (auto& m : meshManager) {
+		m.second->createBufferObjects();
+	}
+
 	glGenBuffers(1, VboId);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
@@ -258,11 +287,6 @@ void createBufferObjects()
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[0]);
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
-	//meshs buffer
-	for (auto& m : meshManager) {
-		m.second->createBufferObjects();
-	}
 
 
 	checkOpenGLError("ERROR: Could not create VAOs, VBOs and UBOs.");
@@ -278,19 +302,28 @@ void destroyBufferObjects()
 
 void drawScene()
 {
-
 	mat4 ViewMatrix = camera->ViewMatrix();
+	mat4 projectionMatrix = camera->ProjectionMatrix();
+
+	const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
 		glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+
 	// uniforms
 	glUseProgram(prog->id);
 		glUniform1f(prog->UniformLocation("k"), k);
 	glUseProgram(0);
 
-	scene->draw(delta);
+	if (OG) {
+		sceneOG->draw(delta);
+	}
+	else {
+		scene->draw(delta);
+	}
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -318,7 +351,6 @@ void idle()
 	delta = ((float)currentFrame - (float)lastFrame) / 100;
 	lastFrame = (float)currentFrame;
 	k = k + delta / 2;
-	//k = fmod(k + delta / 2, 6.29f);
 	glutPostRedisplay();
 }
 
@@ -349,6 +381,8 @@ void setupCallbacks()
 	glutIdleFunc(idle);
 	glutKeyboardFunc(keyPress);
 	glutKeyboardUpFunc(keyRelease);
+	glutSpecialFunc(specialKeyPress);
+	glutSpecialUpFunc(specialKeyRelease);
 	glutMotionFunc(mouse_input);
 	glutMouseWheelFunc(mouse_wheel_input);
 	glutReshapeFunc(reshape);
@@ -414,31 +448,107 @@ void setupGLUT(int argc, char* argv[])
 
 void setupCamera() {
 	camera = new FixedCamera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
-
+	camera->ProjectionMatrix(projectionMatrix);
 }
 
 void createMesh() {
-	//mesh = new Mesh( std::string("src/cubeT.obj"));
-	//mesh = new Mesh( std::string("src/TangramPieceTriangle.obj"));
-	//mesh = new Mesh( std::string("src/TangramPieceSquare.obj"));
-	//mesh = new Mesh( std::string("src/TangramPieceParallelogram.obj"));
-	//mesh = new Mesh(std::string("src/duck.obj"));
 	//meshManager.insert(std::make_pair("duck", new Mesh(std::string("src/duck.obj"))));
-	meshManager.insert(std::make_pair("triangle", new Mesh(std::string("src/TangramPieceTriangle.obj"))));
-	meshManager.insert(std::make_pair("square", new Mesh(std::string("src/TangramPieceSquare.obj"))));
-	meshManager.insert(std::make_pair("parallelogram", new Mesh(std::string("src/TangramPieceParallelogram.obj"))));
+	meshManager.insert(std::make_pair("triangle", new Mesh(std::string("src/Triangle.obj"))));
+	meshManager.insert(std::make_pair("square", new Mesh(std::string("src/Square.obj"))));
+	meshManager.insert(std::make_pair("parallelogram", new Mesh(std::string("src/Parallelogram.obj"))));
+	meshManager.insert(std::make_pair("table", new Mesh(std::string("src/Table.obj"))));
 
 }
+
+const mat4 tr1 = MatrixFactory::createTranslationMatrix(-0.2f, 0.0f,- 0.8f) *
+				MatrixFactory::createRotationMatrix4(-90.0f, vec4(0, 1, 0, 1));
+
+const mat4 tr2 = MatrixFactory::createTranslationMatrix(-0.4f, 0.0f, 0.2f);
+
+const mat4 tr3 = MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *
+				MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
+				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));
+
+const mat4 pl45 = MatrixFactory::createTranslationMatrix(0.2f, 0.0f, -0.4f) *
+				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));		
+
+const mat4 tr6 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -0.6f) *
+				MatrixFactory::createScaleMatrix4(0.5f, 1,0.5f) *
+				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));
+
+const mat4 sq78 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -(-0.14f - 0.2f)) * // '.14f is half the side of the square
+				MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 1, 0, 1)) * //rotate 45 degrees
+				MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
+
+const mat4 tr9 = MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, 0.0f, -(-0.2f - 0.28f)) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
+				MatrixFactory::createScaleMatrix4(0.707f, 1,       0.707f) *
+				MatrixFactory::createRotationMatrix4(-180.0f, vec4(0, 1, 0, 1));
+
+// Original Transform
+
+const mat4 otr1 = MatrixFactory::createTranslationMatrix(0.4f, 0.0f, -0.4f) *
+				MatrixFactory::createRotationMatrix4(180.0f, vec4(0, 1, 0, 1));
+
+const mat4 otr2 = MatrixFactory::createTranslationMatrix(-0.4f, 0.0f, -0.4f) *
+				MatrixFactory::createRotationMatrix4(-90.0f, vec4(0, 1, 0, 1));
+
+const mat4 otr3 = MatrixFactory::createTranslationMatrix(0.4f, 0.0f, 0.0f) *
+				MatrixFactory::createScaleMatrix4(0.707f, 1, 0.707f) *
+				MatrixFactory::createRotationMatrix4(-90.0f - 45.0f, vec4(0, 1, 0, 1)); // -90 degrees - 45 degrees
+
+const mat4 opl45 = MatrixFactory::createTranslationMatrix(-0.4f, 0.0f, 0.4f);
+
+const mat4 otr6 = MatrixFactory::createTranslationMatrix(0.4f, 0.0f, 0.0f) *
+				MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
+				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));
+
+const mat4 osq78 =MatrixFactory::createIdentityMatrix4();
+
+const mat4 otr9 = MatrixFactory::createTranslationMatrix(-0.8f * 0.5f / 2, 0.0f, 0.4f * 0.5f) *	// 0.8f * 0.5f / 2  is the center of the hypotenuse to the origin						   
+			MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f);								// and -0.4f * 0.5f is the height of the triangle
+
+
+const vec4 red = vec4(1.0f, 0.0f, 0.0f, 1.0f);
+const vec4 green = vec4(0.0f, 1.0f, 0.0f, 1.0f);
+const vec4 blue = vec4(0.0f, 0.0f, 1.0f, 1.0f);
+const vec4 cyan = vec4(0.0f, 1.0f, 1.0f, 1.0f);
+const vec4 magenta = vec4(1.0f, 0.0f, 1.0f, 1.0f);
+const vec4 yellow = vec4(1.0f, 1.0f, 0.0f, 1.0f);
+const vec4 white = vec4(1.0f, 1.0f, 1.0f, 1.0f);
+const vec4 orange = vec4(1.0f, 0.2f, 0.0f, 1.0f);
+const vec4 purple = vec4(0.4f, 0.0f, 0.4f, 1.0f);
+SceneNode* tangram;
+SceneNode* OGtangram;
 
 void createScene() {
-	scene = new Scene(dfault);
-	scene->addNode(new SceneNode(meshManager.find("triangle")->second, prog));
-	scene->addNode(new SceneNode(meshManager.find("square")->second));
-	scene->addNode(new SceneNode(meshManager.find("parallelogram")->second, prog));
-
-	//scene->addNode(new SceneNode(meshManager.find("cube")->second, prog,MatrixFactory::createTranslationMatrix(2,0,0)));
-
+	scene = new Scene(dfault,camera);
+	tangram = new SceneNode(nullptr,prog,MatrixFactory::createIdentityMatrix4());
+	tangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, tr1));
+	tangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, tr2));
+	tangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, tr3));
+	tangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, tr6));
+	tangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, tr9));
+	tangram->addNode(new SceneNode(meshManager.find("parallelogram")->second, prog, pl45));
+	tangram->addNode(new SceneNode(meshManager.find("square")->second, prog, sq78));
+	scene->addNode(new SceneNode(meshManager.find("table")->second));
+	scene->addNode(tangram);
 }
+void createSceneOG() {
+	sceneOG = new Scene(dfault, camera);
+	OGtangram = new SceneNode(nullptr, prog, MatrixFactory::createIdentityMatrix4());
+	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr1));
+	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr2));
+	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr3));
+	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr6));
+	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr9));
+	OGtangram->addNode(new SceneNode(meshManager.find("parallelogram")->second, prog, opl45));
+	OGtangram->addNode(new SceneNode(meshManager.find("square")->second, prog, osq78));
+	sceneOG->addNode(new SceneNode(meshManager.find("table")->second));
+	sceneOG->addNode(OGtangram);
+}
+
+
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
@@ -449,6 +559,7 @@ void init(int argc, char* argv[])
 	createMesh();
 	createShaderProgram();
 	createScene();
+	createSceneOG();
 	createBufferObjects();
 }
 

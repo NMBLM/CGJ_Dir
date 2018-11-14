@@ -26,6 +26,16 @@ mat4 Camera::ViewMatrix()
 
 }
 
+mat4 Camera::ProjectionMatrix()
+{
+	return projection;
+}
+
+void Camera::ProjectionMatrix(mat4 proj)
+{
+	projection = proj;
+}
+
 void Camera::cameraLookAround(float x, float y, const float deltatime)
 {
 	int sideX = (x >= 0) ? 1 : -1;
@@ -214,10 +224,10 @@ void FixedCamera::cameraRollLeft(const float deltatime)
 void FixedCamera::zoom(const int dir, const float deltatime)
 {
 	if (dir > 0) {
-		eye = eye + vec3(0.0f, 0.0f, -1.0f) * vSPEED * deltatime;
+		eye = eye + vec3(0.0f, 0.0f, -2.0f) * vSPEED * deltatime;
 	}
 	else {
-		eye = eye - vec3(0.0f, 0.0, -1.0f) * vSPEED * deltatime;
+		eye = eye - vec3(0.0f, 0.0, -2.0f) * vSPEED * deltatime;
 	}
 
 }

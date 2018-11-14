@@ -3,19 +3,44 @@
 using namespace engine;
 
 
-engine::Scene::Scene(ShaderProgram* shaders)
+engine::Scene::Scene(ShaderProgram* shaders,Camera* cam)
 {
 	root = new SceneNode(nullptr, shaders);
+	camera = cam;
+
+	//glGenBuffers(1, VboId);
+
+	//glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	//{
+	//	glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat[16]) * 2, 0, GL_STREAM_DRAW);
+	//	glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[0]);
+	//}
+	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 void engine::Scene::draw(float delta)
 {
+	//mat4 ViewMatrix = camera->ViewMatrix();
+	//mat4 projectionMatrix = camera->ProjectionMatrix();
+
+	//const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
+
+	//glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	//glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
+	//glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
+	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
 	root->draw(delta);
 }
 
 void engine::Scene::addNode(SceneNode * node)
 {
 	root->addNode(node);
+}
+
+void engine::Scene::updateModel(mat4 trs)
+{
+	root->updateModel(trs);
 }
 
 

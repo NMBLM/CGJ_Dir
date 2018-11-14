@@ -490,6 +490,7 @@ namespace engine {
 
 	std::ostream & operator<<(std::ostream & out, const mat4 & m)
 	{
+		out << std::endl;
 		out << "| " << m.mat[0] << "  " << m.mat[1] << "  " << m.mat[2] << "  " << m.mat[3] << " |" << std::endl;
 		out << "| " << m.mat[4] << "  " << m.mat[5] << "  " << m.mat[6] << "  " << m.mat[7] << " |" << std::endl;
 		out << "| " << m.mat[8] << "  " << m.mat[9] << "  " << m.mat[10] << "  " << m.mat[11] << " |" << std::endl;

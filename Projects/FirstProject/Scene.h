@@ -5,6 +5,7 @@
 #include <vector>
 #include "vector.h"
 #include "Mesh.h"
+#include "camera.h"
 #include "matrix.h"
 #include "ShaderProgram.h"
 
@@ -35,10 +36,15 @@ namespace engine {
 
 	class Scene {
 		SceneNode* root = nullptr;
+		Camera* camera;
+		ShaderProgram* dfault;
+		GLuint VboId[1];
+
 	public:
-		Scene(ShaderProgram* shaders);
+		Scene(ShaderProgram* shaders,Camera* cam);
 		void draw(float delta);
 		void addNode(SceneNode* node);
+		void updateModel(mat4 trs);
 	};
 
 }

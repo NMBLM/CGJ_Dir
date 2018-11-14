@@ -15,7 +15,7 @@ private:
 	vec3 s;
 	vec3 u;
 	protected:
-
+		mat4 projection;
 		vec3 eye;
 		const float SPEED = 2.0f;
 		const float vSPEED = 1.0f;
@@ -26,6 +26,9 @@ private:
 		Camera(const vec3 eye,const vec3 center,const vec3 up);
 
 		mat4 ViewMatrix();
+		mat4 ProjectionMatrix();
+
+		void ProjectionMatrix(mat4 proj);
 		void cameraLookAround(float x, float y, const float deltatime);
 		void cameraMoveRight(const float deltatime);
 		void cameraMoveLeft(const float deltatime);
