@@ -21,7 +21,7 @@
 class ShaderProgram {
 public:
 	GLuint id;
-	std::map<std::string, int> *shaderid = new std::map< std::string, int>();
+	std::map<std::string, int> shaderid = std::map< std::string, int>();
 	ShaderProgram();
 	ShaderProgram(GLuint i);
 

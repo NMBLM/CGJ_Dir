@@ -3,8 +3,9 @@
 using namespace engine;
 
 
-engine::Scene::Scene()
+engine::Scene::Scene(ShaderProgram* shaders)
 {
+	root = new SceneNode(nullptr, shaders);
 }
 
 void engine::Scene::draw(float delta)
@@ -21,6 +22,15 @@ void engine::Scene::addNode(SceneNode * node)
 
 engine::SceneNode::SceneNode()
 {
+	nodes = std::vector <SceneNode*>();
+}
+
+engine::SceneNode::SceneNode(Mesh * m, ShaderProgram * shaders, mat4 mat)
+{
+	mesh = m;
+	shaderProgram = shaders;
+	model = mat;
+	nodes = std::vector <SceneNode*>();
 }
 
 void engine::SceneNode::draw(float delta)
@@ -51,6 +61,7 @@ void engine::SceneNode::addNode(SceneNode * node)
 	if (!node->hasShaderProgram()) {
 		node->shaderProgram = this->shaderProgram;
 	}
+	nodes.push_back(node);
 }
 
 ShaderProgram * engine::SceneNode::getShaderProgram() {

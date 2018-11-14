@@ -20,6 +20,8 @@
 #include <iostream>
 #include <sstream>
 #include <string>
+#include <map>
+
 
 #include "vector.h"
 #include "matrix.h"
@@ -27,6 +29,8 @@
 #include "camera.h"
 #include "KeyBuffer.h"
 #include "Mesh.h"
+#include "Scene.h"
+
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
@@ -49,7 +53,9 @@ FixedCamera* camera;
 ShaderProgram* dfault;
 ShaderProgram* prog;
 Mesh* mesh;
+Scene* scene;
 
+std::map<std::string, Mesh*> meshManager = std::map<std::string, Mesh*>();
 
 
 float lastFrame = 0.0f;
@@ -196,14 +202,30 @@ static void checkOpenGLError(std::string error)
 
 void createShaderProgram()
 {
+	// DEFAULT SHADER
+	dfault = new ShaderProgram();
+	dfault->attachShader(GL_VERTEX_SHADER, "vertex", "default_vs.glsl");
+	dfault->attachShader(GL_FRAGMENT_SHADER, "fragment", "default_fs.glsl");
+
+	dfault->bindAttribLocation(VERTICES, "inPosition");
+	dfault->link();
+
+	dfault->uniformBlockBinding(dfault->uniformBlockIndex("SharedMatrices"), UBO_BP);
+
+	dfault->detachShader("vertex");
+	dfault->detachShader("fragment");
+
+	checkOpenGLError("ERROR: Could not create default shaders.");
+
+	// Non default
 	prog = new ShaderProgram();
 	prog->attachShader(GL_VERTEX_SHADER,"vertex","cube_vs_shared.glsl");
 	prog->attachShader(GL_FRAGMENT_SHADER, "fragment","cube_fs_extra.glsl");
 
 	prog->bindAttribLocation(VERTICES, "inPosition");
-	if (mesh->TexcoordsLoaded)
-		prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
-	if (mesh->NormalsLoaded)
+	//if (mesh->TexcoordsLoaded)
+	//	prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
+	//if (mesh->NormalsLoaded)
 		prog->bindAttribLocation(NORMALS, "inNormal");
 	prog->link();
 
@@ -211,7 +233,6 @@ void createShaderProgram()
 
 	prog->detachShader("vertex");
 	prog->detachShader("fragment");
-
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 
@@ -228,8 +249,7 @@ void destroyShaderProgram()
 
 void createBufferObjects()
 {
-	mesh->createBufferObjects();
-
+	//Shared matrice buffer
 	glGenBuffers(1, VboId);
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
@@ -238,6 +258,12 @@ void createBufferObjects()
 		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[0]);
 	}
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+	//meshs buffer
+	for (auto& m : meshManager) {
+		m.second->createBufferObjects();
+	}
+
 
 	checkOpenGLError("ERROR: Could not create VAOs, VBOs and UBOs.");
 }
@@ -256,16 +282,15 @@ void drawScene()
 	mat4 ViewMatrix = camera->ViewMatrix();
 
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
-	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
-	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
+		glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 	// uniforms
 	glUseProgram(prog->id);
-	glUniform1f(prog->UniformLocation("k"), k);
+		glUniform1f(prog->UniformLocation("k"), k);
 	glUseProgram(0);
 
-	mesh->draw(MatrixFactory::createIdentityMatrix4(), prog);
-
+	scene->draw(delta);
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -397,7 +422,21 @@ void createMesh() {
 	//mesh = new Mesh( std::string("src/TangramPieceTriangle.obj"));
 	//mesh = new Mesh( std::string("src/TangramPieceSquare.obj"));
 	//mesh = new Mesh( std::string("src/TangramPieceParallelogram.obj"));
-	mesh = new Mesh(std::string("src/duck.obj"));
+	//mesh = new Mesh(std::string("src/duck.obj"));
+	//meshManager.insert(std::make_pair("duck", new Mesh(std::string("src/duck.obj"))));
+	meshManager.insert(std::make_pair("triangle", new Mesh(std::string("src/TangramPieceTriangle.obj"))));
+	meshManager.insert(std::make_pair("square", new Mesh(std::string("src/TangramPieceSquare.obj"))));
+	meshManager.insert(std::make_pair("parallelogram", new Mesh(std::string("src/TangramPieceParallelogram.obj"))));
+
+}
+
+void createScene() {
+	scene = new Scene(dfault);
+	scene->addNode(new SceneNode(meshManager.find("triangle")->second, prog));
+	scene->addNode(new SceneNode(meshManager.find("square")->second));
+	scene->addNode(new SceneNode(meshManager.find("parallelogram")->second, prog));
+
+	//scene->addNode(new SceneNode(meshManager.find("cube")->second, prog,MatrixFactory::createTranslationMatrix(2,0,0)));
 
 }
 void init(int argc, char* argv[])
@@ -409,6 +448,7 @@ void init(int argc, char* argv[])
 	setupCallbacks();
 	createMesh();
 	createShaderProgram();
+	createScene();
 	createBufferObjects();
 }
 

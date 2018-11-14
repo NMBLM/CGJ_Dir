@@ -25,6 +25,7 @@ namespace engine {
 
 	public:
 		SceneNode();
+		SceneNode(Mesh* m = nullptr, ShaderProgram* shaders= nullptr, mat4 model = MatrixFactory::createIdentityMatrix4());
 		void draw(float delta);
 		void updateModel(mat4 trs);
 		bool hasShaderProgram();
@@ -35,7 +36,7 @@ namespace engine {
 	class Scene {
 		SceneNode* root = nullptr;
 	public:
-		Scene();
+		Scene(ShaderProgram* shaders);
 		void draw(float delta);
 		void addNode(SceneNode* node);
 	};

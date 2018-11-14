@@ -151,5 +151,11 @@
     <None Include="cube_vs_shared.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="default_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="default_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

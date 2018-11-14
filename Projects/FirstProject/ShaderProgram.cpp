@@ -20,7 +20,9 @@ void ShaderProgram::attachShader(GLuint type, const char * name, const char * fi
 	int success = 0;
 	char log[512];
 	GLuint tempid = glCreateShader(type);
-	shaderid->insert(std::make_pair(name, tempid));
+
+	shaderid.insert(std::make_pair(name, tempid));
+
 	glShaderSource(tempid, 1, &shader, 0);
 	glCompileShader(tempid);
 	glGetShaderiv(tempid, GL_COMPILE_STATUS, &success);
@@ -35,7 +37,7 @@ void ShaderProgram::attachShader(GLuint type, const char * name, const char * fi
 
 void ShaderProgram::detachShader(const char * name)
 {
-	GLuint sid = shaderid->find(name)->second;
+	GLuint sid = shaderid.find(name)->second;
 	glDetachShader(id,sid);
 	glDeleteShader(sid);
 }
