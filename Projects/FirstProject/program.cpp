@@ -49,10 +49,7 @@ void Program::uniformBlockBinding(GLint bid, GLuint bpo)
 
 GLint Program::UniformId(const char * uniformName)
 {
-
 	return glGetUniformLocation(id, uniformName);
-
-
 }
 
 GLint Program::UniformLocation(const char * uniformName)

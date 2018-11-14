@@ -23,11 +23,9 @@
 
 #include "vector.h"
 #include "matrix.h"
-#include "program.h"
-#include "shader.h"
+#include "ShaderProgram.h"
 #include "camera.h"
 #include "KeyBuffer.h"
-#include "shape.h"
 #include "Mesh.h"
 
 #include "GL/glew.h"
@@ -48,10 +46,10 @@ const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
 
 GLuint VboId[1]; // shared matrice
 FixedCamera* camera;
-Program* prog;
+ShaderProgram* dfault;
+ShaderProgram* prog;
 Mesh* mesh;
-VertexShader vShader;
-FragmentShader fShader;
+
 
 
 float lastFrame = 0.0f;
@@ -198,13 +196,9 @@ static void checkOpenGLError(std::string error)
 
 void createShaderProgram()
 {
-	prog = new Program(glCreateProgram());
-	vShader = VertexShader("cube_vs_shared.glsl");
-	fShader = FragmentShader("cube_fs_extra.glsl");
-
-	prog->attachShader(vShader);
-	prog->attachShader(fShader);
-
+	prog = new ShaderProgram();
+	prog->attachShader(GL_VERTEX_SHADER,"vertex","cube_vs_shared.glsl");
+	prog->attachShader(GL_FRAGMENT_SHADER, "fragment","cube_fs_extra.glsl");
 
 	prog->bindAttribLocation(VERTICES, "inPosition");
 	if (mesh->TexcoordsLoaded)
@@ -213,10 +207,10 @@ void createShaderProgram()
 		prog->bindAttribLocation(NORMALS, "inNormal");
 	prog->link();
 
-	glUniformBlockBinding(prog->id, prog->uniformBlockIndex("SharedMatrices"), UBO_BP);
+	prog->uniformBlockBinding(prog->uniformBlockIndex("SharedMatrices"), UBO_BP);
 
-	prog->detachShader(vShader);
-	prog->detachShader(fShader);
+	prog->detachShader("vertex");
+	prog->detachShader("fragment");
 
 
 	checkOpenGLError("ERROR: Could not create shaders.");

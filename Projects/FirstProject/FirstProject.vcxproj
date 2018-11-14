@@ -148,6 +148,7 @@
     <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="shader.cpp" />
+    <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="shape.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="TestingArea.cpp" />
@@ -163,6 +164,7 @@
     <ClInclude Include="rgbtohsl.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="shader.h" />
+    <ClInclude Include="ShaderProgram.h" />
     <ClInclude Include="shape.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>

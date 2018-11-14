@@ -9,7 +9,7 @@
 
 #include "vector.h"
 #include "matrix.h"
-#include "program.h"
+#include "ShaderProgram.h"
 
 #include "GL/glew.h"
 
@@ -54,7 +54,7 @@ namespace engine {
 		void createMesh(std::string& filename);
 		void createBufferObjects();
 		void destroyBufferObjects();
-		void draw(mat4 transform, Program* prog);
+		void draw(mat4 transform, ShaderProgram* prog);
 
 	};
 

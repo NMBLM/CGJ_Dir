@@ -1,6 +1,6 @@
 #pragma once
-#ifndef PROGRAM_H
-#define PROGRAM_H
+#ifndef SHADERPROGRAM_H
+#define SHADERPROGRAM_H
 
 #include <string>
 #include <fstream>
@@ -9,22 +9,24 @@
 #include <sstream>
 #include <string>
 
+#include <map>
+#include <iterator>
+
 #include "matrix.h"
 #include "shader.h"
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
-
-class Program {
+class ShaderProgram {
 public:
 	GLuint id;
+	std::map<std::string, int> *shaderid = new std::map< std::string, int>();
+	ShaderProgram();
+	ShaderProgram(GLuint i);
 
-	Program();
-	Program(GLuint i);
-	
-	void attachShader(Shader shader);
-	void detachShader(Shader shader);
+	void attachShader(GLuint type,const char* name, const char* filename);
+	void detachShader(const char* name);
 	void link();
 	void bindAttribLocation(const int atnum, const char* atname);
 	void uniformBlockBinding(GLint bid, GLuint bpo);
@@ -34,6 +36,5 @@ public:
 
 
 };
-
 
 #endif

@@ -156,7 +156,7 @@ void Mesh::destroyBufferObjects()
 	glBindVertexArray(0);
 }
 
-void engine::Mesh::draw(mat4 transform, Program* prog)
+void engine::Mesh::draw(mat4 transform, ShaderProgram* prog)
 {
 
 	glBindVertexArray(VaoId);

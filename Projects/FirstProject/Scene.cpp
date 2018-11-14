@@ -53,7 +53,7 @@ void engine::SceneNode::addNode(SceneNode * node)
 	}
 }
 
-Program * engine::SceneNode::getShaderProgram() {
+ShaderProgram * engine::SceneNode::getShaderProgram() {
 	if (shaderProgram != nullptr) {
 		return shaderProgram;
 	}

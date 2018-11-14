@@ -272,7 +272,7 @@
 //	//glUniformMatrix4fv(prog->UniformLocation("ModelMatrix"), 1, GL_FALSE, ModelMatrix);	
 //	glUniformMatrix4fv(prog->UniformLocation("ViewMatrix"), 1, GL_FALSE, camera->ViewMatrix().data());
 //	glUniformMatrix4fv(prog->UniformLocation("ProjectionMatrix"), 1, GL_FALSE, ProjectionMatrix2);
-//	glUniform1f(prog->UniformLocation("k"), k);
+//	//glUniform1f(prog->UniformLocation("k"), k);
 //
 //	mesh->draw( MatrixFactory::createIdentityMatrix4() , prog);
 //

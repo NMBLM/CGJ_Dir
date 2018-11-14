@@ -6,7 +6,7 @@
 #include "vector.h"
 #include "Mesh.h"
 #include "matrix.h"
-#include "program.h"
+#include "ShaderProgram.h"
 
 #include "GL/glew.h"
 
@@ -17,11 +17,11 @@ namespace engine {
 
 	class SceneNode {
 		Mesh* mesh = nullptr;
-		Program* shaderProgram = nullptr;
+		ShaderProgram* shaderProgram = nullptr;
 		mat4 model = MatrixFactory::createIdentityMatrix4();
 		std::vector <SceneNode*> nodes;
 
-		Program * getShaderProgram();
+		ShaderProgram * getShaderProgram();
 
 	public:
 		SceneNode();
