@@ -177,6 +177,7 @@
     <None Include="cube_vs_shared.glsl" />
     <None Include="default_fs.glsl" />
     <None Include="default_vs.glsl" />
+    <None Include="force_color_fs.glsl" />
     <None Include="FragmentShader.glsl" />
     <None Include="FragmentShaderCamera.glsl" />
     <None Include="VertexShader.glsl" />

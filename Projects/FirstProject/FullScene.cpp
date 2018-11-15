@@ -247,7 +247,8 @@ void createShaderProgram()
 	// Non default
 	prog = new ShaderProgram();
 	prog->attachShader(GL_VERTEX_SHADER,"vertex","cube_vs_shared.glsl");
-	prog->attachShader(GL_FRAGMENT_SHADER, "fragment","cube_fs_extra.glsl");
+	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment","cube_fs_extra.glsl");
+	prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_fs.glsl");
 
 	prog->bindAttribLocation(VERTICES, "inPosition");
 	//if (mesh->TexcoordsLoaded)
@@ -261,6 +262,10 @@ void createShaderProgram()
 
 	prog->detachShader("vertex");
 	prog->detachShader("fragment");
+	//DEFAULT COLOR = RED
+	glUseProgram(prog->id);
+		glUniform4fv(prog->UniformLocation("forcedColor"), 1, vec4(1,0,0,1).data());
+	glUseProgram(0);
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 
@@ -317,9 +322,9 @@ void drawScene()
 
 
 	// uniforms
-	glUseProgram(prog->id);
-		glUniform1f(prog->UniformLocation("k"), k);
-	glUseProgram(0);
+	//glUseProgram(prog->id);
+	//	glUniform1f(prog->UniformLocation("k"), k);
+	//glUseProgram(0);
 
 	scene->draw(delta);
 
@@ -504,8 +509,16 @@ void createScene() {
 	trpc6 = new SceneNode(meshManager.find("triangle")->second, prog, tr6);
 	trpc9 = new SceneNode(meshManager.find("triangle")->second, prog, tr9);
 
-	plpc45 = new SceneNode(meshManager.find("parallelogram")->second, prog, pl45);
 	sqpc78 = new SceneNode(meshManager.find("square")->second, prog, sq78);
+	plpc45 = new SceneNode(meshManager.find("parallelogram")->second, prog, pl45);
+
+	trpc1->setColor(red);
+	trpc2->setColor(green);
+	trpc3->setColor(blue);
+	trpc6->setColor(cyan);
+	trpc9->setColor(magenta);
+	sqpc78->setColor(yellow);
+	plpc45->setColor(white);
 
 	tangram->addNode(trpc1);
 	tangram->addNode(trpc2);
@@ -513,10 +526,11 @@ void createScene() {
 	tangram->addNode(trpc6);
 	tangram->addNode(trpc9);
 
-	tangram->addNode(plpc45);
 	tangram->addNode(sqpc78);
-
-	scene->addNode(new SceneNode(meshManager.find("table")->second));
+	tangram->addNode(plpc45);
+	SceneNode* table = new SceneNode(meshManager.find("table")->second, prog);
+	table->setColor(orange);
+	scene->addNode(table);
 	scene->addNode(tangram);
 }
 

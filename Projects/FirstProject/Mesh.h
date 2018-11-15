@@ -15,18 +15,6 @@
 
 namespace engine {
 
-	//typedef struct {
-	//	GLfloat x, y, z;
-	//} Vertex;
-
-	//typedef struct {
-	//	GLfloat u, v;
-	//} Texcoord;
-
-	//typedef struct {
-	//	GLfloat nx, ny, nz;
-	//} Normal;
-
 	class Mesh {
 		#define VERTICES 0
 		#define TEXCOORDS 1
@@ -55,6 +43,7 @@ namespace engine {
 		void createBufferObjects();
 		void destroyBufferObjects();
 		void draw(mat4 transform, ShaderProgram* prog);
+		void draw(mat4 transform, ShaderProgram* prog,vec4 color);
 
 	};
 

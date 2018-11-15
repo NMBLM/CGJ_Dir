@@ -74,7 +74,12 @@ void engine::SceneNode::draw(float delta)
 			//m =  (inverse(model) * anime->calcAnimation(model) * model) * model;
 
 		}
-		mesh->draw(m,this->getShaderProgram());
+		if (color.x != -1) {
+			mesh->draw(m, this->getShaderProgram(),color);
+		}
+		else {
+			mesh->draw(m, this->getShaderProgram());
+		}
 	}
 	for (auto& s : nodes) {
 		s->draw(delta);
@@ -103,6 +108,14 @@ void engine::SceneNode::addNode(SceneNode * node)
 		node->shaderProgram = this->shaderProgram;
 	}
 	nodes.push_back(node);
+}
+
+void engine::SceneNode::setColor(vec4 c)
+{
+	color.x = c.x;
+	color.y = c.y;
+	color.z = c.z;
+	color.w = c.w;
 }
 
 void engine::SceneNode::addAnimator(Animator* a)

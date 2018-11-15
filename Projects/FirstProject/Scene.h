@@ -22,7 +22,7 @@ namespace engine {
 		ShaderProgram* shaderProgram = nullptr;
 		mat4 model = MatrixFactory::createIdentityMatrix4();
 		std::vector <SceneNode*> nodes;
-
+		vec4 color = vec4(-1, 0, 0, 1);
 		Animator* anime = nullptr;
 
 	public:
@@ -33,7 +33,7 @@ namespace engine {
 		bool hasShaderProgram();
 		ShaderProgram * getShaderProgram();
 		void addNode(SceneNode* node);
-
+		void setColor(vec4 c);
 		void addAnimator(Animator* a);
 		Animator* getAnimator();
 		void resetAnimator();

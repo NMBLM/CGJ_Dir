@@ -86,7 +86,7 @@ FixedCamera::FixedCamera()
 
 FixedCamera::FixedCamera(const vec3 eye, const vec3 center, const vec3 up)
 {
-	qPos = qtrn(1, 0, 0, 0);
+	qPos = qtrn(1, 0.2f, 0.1f, 0);
 	this->eye = eye;
 }
 

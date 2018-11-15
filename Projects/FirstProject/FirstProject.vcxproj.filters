@@ -163,5 +163,8 @@
     <None Include="default_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="force_color_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

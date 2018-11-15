@@ -7,6 +7,7 @@ Animation::Animation(qtrn rs, vec4 ps, qtrn re, vec4 pe)
 
 mat4 Animation::animate(mat4 model, float delta)
 {
+	delta = (delta > 1)? 1 : delta;
 
 	vec4 lrp = (1-delta)*pStart + delta*pEnd;
 	mat4 lrpmat = MatrixFactory::createTranslationMatrix(lrp.x, lrp.y, lrp.z);

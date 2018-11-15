@@ -161,10 +161,22 @@ void engine::Mesh::draw(mat4 transform, ShaderProgram* prog)
 
 	glBindVertexArray(VaoId);
 	glUseProgram(prog->id);
-
 	glUniformMatrix4fv(prog->UniformId("ModelMatrix"), 1, GL_FALSE, transform.data());
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
 	
+	glUseProgram(0);
+	glBindVertexArray(0);
+}
+
+void engine::Mesh::draw(mat4 transform, ShaderProgram* prog,vec4 color)
+{
+
+	glBindVertexArray(VaoId);
+	glUseProgram(prog->id);
+	glUniform4fv(prog->UniformLocation("forcedColor"), 1, color.data());
+	glUniformMatrix4fv(prog->UniformId("ModelMatrix"), 1, GL_FALSE, transform.data());
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
+
 	glUseProgram(0);
 	glBindVertexArray(0);
 }
