@@ -136,8 +136,8 @@ namespace engine {
 	const qtrn slerp(const qtrn & q0, const qtrn & q1, float k)
 	{
 		float angle = acos(q0.x*q1.x + q0.y*q1.y + q0.z*q1.z + q0.t*q1.t);
-		if (fmod(angle, 0)) {
-			angle = 0.0001f;
+		if (fcmp(angle, 0)) {
+			return qtrn(1,0,0,0);
 		}
 		float k0 = sin((1 - k)*angle) / sin(angle);
 

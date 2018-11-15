@@ -9,11 +9,13 @@ mat4 Animation::animate(mat4 model, float delta)
 {
 
 	vec4 lrp = (1-delta)*pStart + delta*pEnd;
-	vec4 origin = vec4(0);
 	mat4 lrpmat = MatrixFactory::createTranslationMatrix(lrp.x, lrp.y, lrp.z);
-	qtrn qv = qtrn(0, lrp.x, lrp.y, lrp.z);
 	qtrn sl = slerp(rStart, rEnd, delta);
-	return lrpmat * qToMatrix(sl) ;
+	//qtrn qv = qtrn(0, lrp.x, lrp.y, lrp.z);
+	//qtrn qRot = sl * qv * inverse(sl);
+	//return lrpmat * qToMatrix(qRot);
+	return  lrpmat * model * qToMatrix(sl);
+
 }
 
 

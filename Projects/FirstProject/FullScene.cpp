@@ -52,7 +52,6 @@ ShaderProgram* dfault;
 ShaderProgram* prog;
 Mesh* mesh;
 Scene* scene;
-Scene* sceneOG;
 
 std::map<std::string, Mesh*> meshManager = std::map<std::string, Mesh*>();
 
@@ -156,7 +155,6 @@ void keyRelease(unsigned char key, int x, int y) {
 		otherProjectionMatrix = temp;
 		camera->ProjectionMatrix(projectionMatrix);
 	}
-	if (KeyBuffer::instance()->isKeyDown('o') || KeyBuffer::instance()->isKeyDown('O')) OG=!OG;
 	if (KeyBuffer::instance()->isKeyDown('r')) scene->resetAnimator();
 	if (KeyBuffer::instance()->isKeyDown('R')) scene->resetAnimator();
 	KeyBuffer::instance()->releaseKey(key);
@@ -192,19 +190,15 @@ void update() {
 
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
 		scene->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
-		sceneOG->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
 	}
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_UP)) {
 		scene->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -1.0f * delta));
-		sceneOG->updateModel(MatrixFactory::createTranslationMatrix( 0.0f, 0.0f,-1.0f * delta));
 	}
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_RIGHT)) {
 		scene->updateModel(MatrixFactory::createTranslationMatrix(1.0f * delta, 0.0f, 0.0f));
-		sceneOG->updateModel(MatrixFactory::createTranslationMatrix(1.0f * delta, 0.0f, 0.0f));
 	}
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_DOWN)) {
 		scene->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 1.0f * delta));
-		sceneOG->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 1.0f * delta));
 	}
 
 }
@@ -327,12 +321,7 @@ void drawScene()
 		glUniform1f(prog->UniformLocation("k"), k);
 	glUseProgram(0);
 
-	if (OG) {
-		sceneOG->draw(delta);
-	}
-	else {
-		scene->draw(delta);
-	}
+	scene->draw(delta);
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -469,53 +458,30 @@ void createMesh() {
 
 }
 
-const mat4 tr1 = MatrixFactory::createTranslationMatrix(-0.2f, 0.0f,- 0.8f) *
-				MatrixFactory::createRotationMatrix4(-90.0f, vec4(0, 1, 0, 1));
+vec4 YY = vec4(0, 1, 0, 1);
+const mat4 tr1 = MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, -0.8f) *
+MatrixFactory::createRotationMatrix4(-90.0f, YY);
 
 const mat4 tr2 = MatrixFactory::createTranslationMatrix(-0.4f, 0.0f, 0.2f);
 
 const mat4 tr3 = MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *
-				MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
-				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));
+MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
+MatrixFactory::createRotationMatrix4(90.0f, YY);
 
 const mat4 pl45 = MatrixFactory::createTranslationMatrix(0.2f, 0.0f, -0.4f) *
-				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));		
+MatrixFactory::createRotationMatrix4(90.0f, YY);
 
 const mat4 tr6 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -0.6f) *
-				MatrixFactory::createScaleMatrix4(0.5f, 1,0.5f) *
-				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));
+MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
+MatrixFactory::createRotationMatrix4(90.0f, YY);
 
-const mat4 sq78 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -(-0.14f - 0.2f)) * // '.14f is half the side of the square
-				MatrixFactory::createRotationMatrix4(45.0f, vec4(0, 1, 0, 1)) * //rotate 45 degrees
-				MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
+const mat4 sq78 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 0.34f) * // '.14f is half the side of the square
+MatrixFactory::createRotationMatrix4(45.0f, YY) * //rotate 45 degrees
+MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
 
-const mat4 tr9 = MatrixFactory::createTranslationMatrix(0.8f * 0.707f / 2, 0.0f, -(-0.2f - 0.28f)) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
-				MatrixFactory::createScaleMatrix4(0.707f, 1,       0.707f) *
-				MatrixFactory::createRotationMatrix4(-180.0f, vec4(0, 1, 0, 1));
-
-// Original Transform
-
-const mat4 otr1 = MatrixFactory::createTranslationMatrix(0.4f, 0.0f, -0.4f) *
-				MatrixFactory::createRotationMatrix4(180.0f, vec4(0, 1, 0, 1));
-
-const mat4 otr2 = MatrixFactory::createTranslationMatrix(-0.4f, 0.0f, -0.4f) *
-				MatrixFactory::createRotationMatrix4(-90.0f, vec4(0, 1, 0, 1));
-
-const mat4 otr3 = MatrixFactory::createTranslationMatrix(0.4f, 0.0f, 0.0f) *
-				MatrixFactory::createScaleMatrix4(0.707f, 1, 0.707f) *
-				MatrixFactory::createRotationMatrix4(-90.0f - 45.0f, vec4(0, 1, 0, 1)); // -90 degrees - 45 degrees
-
-const mat4 opl45 = MatrixFactory::createTranslationMatrix(-0.4f, 0.0f, 0.4f);
-
-const mat4 otr6 = MatrixFactory::createTranslationMatrix(0.4f, 0.0f, 0.0f) *
-				MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
-				MatrixFactory::createRotationMatrix4(90.0f, vec4(0, 1, 0, 1));
-
-const mat4 osq78 =MatrixFactory::createIdentityMatrix4();
-
-const mat4 otr9 = MatrixFactory::createTranslationMatrix(-0.8f * 0.5f / 2, 0.0f, 0.4f * 0.5f) *	// 0.8f * 0.5f / 2  is the center of the hypotenuse to the origin						   
-			MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f);								// and -0.4f * 0.5f is the height of the triangle
-
+const mat4 tr9 = MatrixFactory::createTranslationMatrix(0.4f * 0.707f, 0.0f, 0.48f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
+MatrixFactory::createScaleMatrix4(0.707f, 1, 0.707f) *
+MatrixFactory::createRotationMatrix4(-180.0f, YY);
 
 const vec4 red = vec4(1.0f, 0.0f, 0.0f, 1.0f);
 const vec4 green = vec4(0.0f, 1.0f, 0.0f, 1.0f);
@@ -527,7 +493,6 @@ const vec4 white = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 const vec4 orange = vec4(1.0f, 0.2f, 0.0f, 1.0f);
 const vec4 purple = vec4(0.4f, 0.0f, 0.4f, 1.0f);
 SceneNode* tangram;
-SceneNode* OGtangram;
 
 void createScene() {
 	scene = new Scene(dfault,camera);
@@ -538,17 +503,17 @@ void createScene() {
 	trpc3 = new SceneNode(meshManager.find("triangle")->second, prog, tr3);
 	trpc6 = new SceneNode(meshManager.find("triangle")->second, prog, tr6);
 	trpc9 = new SceneNode(meshManager.find("triangle")->second, prog, tr9);
+
+	plpc45 = new SceneNode(meshManager.find("parallelogram")->second, prog, pl45);
+	sqpc78 = new SceneNode(meshManager.find("square")->second, prog, sq78);
+
 	tangram->addNode(trpc1);
 	tangram->addNode(trpc2);
 	tangram->addNode(trpc3);
 	tangram->addNode(trpc6);
 	tangram->addNode(trpc9);
 
-	plpc45 = new SceneNode(meshManager.find("parallelogram")->second, prog, pl45);
 	tangram->addNode(plpc45);
-
-	sqpc78 = new SceneNode(meshManager.find("square")->second, prog, sq78);
-
 	tangram->addNode(sqpc78);
 
 	scene->addNode(new SceneNode(meshManager.find("table")->second));
@@ -561,68 +526,60 @@ void createAnimation() {
 	// TRIANGLE 1
 	Animator* tra1 = new Animator();
 	Animation* moveup1 = new Animation( qzero, vzero, qzero,  vec4(0, 1.0f, 0, 1));
-	Animation* moveside1 = new Animation(qzero, vec4(0, 1.0f, 0, 1), qtrn(-90,vec4(0,1,0,1)),MatrixFactory::createTranslationMatrix(0,0,-0.6f)* vzero);
+	Animation* moveside1 = new Animation(qzero, vec4(0, 1.0f, 0, 1), qzero , vec4(-0.2f, 0, 0.4f, 1));
 	tra1->addAnimation(moveup1);
 	tra1->addAnimation(moveside1);
 	trpc1->addAnimator(tra1);
+	/**/
 	// TRIANGLE 2
 	Animator* tra2 = new Animator();
 	Animation* moveup2 = new Animation(qzero, vzero, qzero, vec4(0, 1.2f, 0, 1));
-	Animation* moveside2 = new Animation(qzero, vec4(0, 1.2f, 0, 1), qtrn(90, vec4(0, 1, 0, 1)), MatrixFactory::createTranslationMatrix(0.8f, 0,-0.21f )* vzero);
+	Animation* moveside2 = new Animation(qzero, vec4(0, 1.2f, 0, 1), qzero, vec4(0.0f, 0, 0.2f, 1));
 	tra2->addAnimation(moveup2);
 	tra2->addAnimation(moveside2);
 	trpc2->addAnimator(tra2);
+	/**/
 	// TRIANGLE 3
 	Animator* tra3 = new Animator();
 	Animation* moveup3 = new Animation(qzero, vzero, qzero, vec4(0, 0.8f, 0, 1));
-	Animation* moveside3 = new Animation(qzero, vec4(0, 0.8f, 0, 1), qzero, vzero);
+	Animation* moveside3 = new Animation(qzero, vec4(0, 0.8f, 0, 1), qzero, vec4(0.0f, 0, 0.2f, 1));
 	tra3->addAnimation(moveup3);
 	tra3->addAnimation(moveside3);
 	trpc3->addAnimator(tra3);
+	/**/
 	// TRIANGLE 6
 	Animator* tra6 = new Animator();
 	Animation* moveup6 = new Animation(qzero, vzero, qzero, vec4(0, 0.6f, 0, 1));
-	Animation* moveside6 = new Animation(qzero, vec4(0, 0.6f, 0, 1), qzero, vzero);
+	Animation* moveside6 = new Animation(qzero, vec4(0, 0.6f, 0, 1), qtrn(90,YY), vec4(0.0f, 0, 0.2f, 1));
 	tra6->addAnimation(moveup6);
 	tra6->addAnimation(moveside6);
 	trpc6->addAnimator(tra6);
+	/**/
 	// TRIANGLE 9
 	Animator* tra9 = new Animator();
 	Animation* moveup9 = new Animation(qzero, vzero, qzero, vec4(0, 1.4f, 0, 1));
-	Animation* moveside9= new Animation(qzero, vec4(0, 1.4f, 0, 1), qzero, vzero);
+	Animation* moveside9= new Animation(qzero, vec4(0, 1.4f, 0, 1), qtrn(90+45, YY), vec4(-0.2828f, 0, -0.88f, 1));
 	tra9->addAnimation(moveup9);
 	tra9->addAnimation(moveside9);
 	trpc9->addAnimator(tra9);
+	/**/
 	// PARALLELOGRAM 45
 	Animator* pla45 = new Animator();
 	Animation* moveup45 = new Animation(qzero, vzero, qzero, vec4(0, 1.6f, 0, 1));
-	Animation* moveside45 = new Animation(qzero, vec4(0, 1.4f, 0, 1), qzero, vzero);
+	Animation* moveside45 = new Animation(qzero, vec4(0, 1.4f, 0, 1), qzero, vec4(0.2f, 0, 0.8f, 1));
 	pla45->addAnimation(moveup45);
 	pla45->addAnimation(moveside45);
 	plpc45->addAnimator(pla45);
+	/**/
 	// SQUARE 78
 	Animator* sqa78 = new Animator();
 	Animation* moveup78 = new Animation(qzero, vzero, qzero, vec4(0, 1.6f, 0, 1));
-	Animation* moveside78 = new Animation(qzero, vec4(0, 1.4f, 0, 1), qtrn(0, vec4(0, 1, 0, 1)), vzero);
+	Animation* moveside78 = new Animation(qzero, vec4(0, 1.4f, 0, 1), qtrn(45, YY), vec4(0.14f, 0, -0.48f, 1));
 	sqa78->addAnimation(moveup78);
 	sqa78->addAnimation(moveside78);
 	sqpc78->addAnimator(sqa78);
+	/**/
 }
-void createSceneOG() {
-	sceneOG = new Scene(dfault, camera);
-	OGtangram = new SceneNode(nullptr, prog, MatrixFactory::createIdentityMatrix4());
-	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr1));
-	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr2));
-	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr3));
-	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr6));
-	OGtangram->addNode(new SceneNode(meshManager.find("triangle")->second, prog, otr9));
-	OGtangram->addNode(new SceneNode(meshManager.find("parallelogram")->second, prog, opl45));
-	OGtangram->addNode(new SceneNode(meshManager.find("square")->second, prog, osq78));
-	sceneOG->addNode(new SceneNode(meshManager.find("table")->second));
-	sceneOG->addNode(OGtangram);
-}
-
-
 
 void init(int argc, char* argv[])
 {
@@ -635,7 +592,6 @@ void init(int argc, char* argv[])
 	createShaderProgram();
 	createScene();
 	createAnimation();
-	createSceneOG();
 	createBufferObjects();
 }
 

@@ -24,8 +24,8 @@ class Animator {
 	int index = 0;
 	float delta = 0.0f;
 	int refwrd = 0;
-	mat4 lastMatrix = MatrixFactory::createIdentityMatrix4();
 public:
+	mat4 lastMatrix = MatrixFactory::createIdentityMatrix4();
 	Animator();
 	void addAnimation(Animation* a);
 	mat4 calcAnimation(mat4 model);
