@@ -566,15 +566,15 @@ void createAnimation() {
 	// PARALLELOGRAM 45
 	Animator* pla45 = new Animator();
 	Animation* moveup45 = new Animation(qzero, vzero, qzero, vec4(0, 1.6f, 0, 1));
-	Animation* moveside45 = new Animation(qzero, vec4(0, 1.4f, 0, 1), qzero, vec4(0.2f, 0, 0.8f, 1));
+	Animation* moveside45 = new Animation(qzero, vec4(0, 1.6f, 0, 1), qzero, vec4(0.2f, 0, 0.8f, 1));
 	pla45->addAnimation(moveup45);
 	pla45->addAnimation(moveside45);
 	plpc45->addAnimator(pla45);
 	/**/
 	// SQUARE 78
 	Animator* sqa78 = new Animator();
-	Animation* moveup78 = new Animation(qzero, vzero, qzero, vec4(0, 1.6f, 0, 1));
-	Animation* moveside78 = new Animation(qzero, vec4(0, 1.4f, 0, 1), qtrn(45, YY), vec4(0.14f, 0, -0.48f, 1));
+	Animation* moveup78 = new Animation(qzero, vzero, qzero, vec4(0, 1.8f, 0, 1));
+	Animation* moveside78 = new Animation(qzero, vec4(0, 1.8f, 0, 1), qtrn(45, YY), vec4(0.14f, 0, -0.48f, 1));
 	sqa78->addAnimation(moveup78);
 	sqa78->addAnimation(moveside78);
 	sqpc78->addAnimator(sqa78);
