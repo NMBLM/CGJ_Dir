@@ -7,6 +7,7 @@
 #include "Mesh.h"
 #include "camera.h"
 #include "matrix.h"
+#include "Anime.h"
 #include "ShaderProgram.h"
 
 #include "GL/glew.h"
@@ -22,7 +23,7 @@ namespace engine {
 		mat4 model = MatrixFactory::createIdentityMatrix4();
 		std::vector <SceneNode*> nodes;
 
-		ShaderProgram * getShaderProgram();
+		Animator* anime = nullptr;
 
 	public:
 		SceneNode();
@@ -30,14 +31,20 @@ namespace engine {
 		void draw(float delta);
 		void updateModel(mat4 trs);
 		bool hasShaderProgram();
+		ShaderProgram * getShaderProgram();
 		void addNode(SceneNode* node);
+
+		void addAnimator(Animator* a);
+		Animator* getAnimator();
+		void resetAnimator();
 	};
 
 
 	class Scene {
 		SceneNode* root = nullptr;
-		Camera* camera;
 		ShaderProgram* dfault;
+		// nothing for now
+		Camera* camera;
 		GLuint VboId[1];
 
 	public:
@@ -45,8 +52,10 @@ namespace engine {
 		void draw(float delta);
 		void addNode(SceneNode* node);
 		void updateModel(mat4 trs);
+		void resetAnimator();
+
 	};
 
 }
 
-#endif // SCENE_H
+#endif

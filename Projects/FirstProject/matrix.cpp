@@ -300,16 +300,16 @@ namespace engine {
 			+ mat[3] * (mat[3] * mat[7] - mat[4] * mat[6]);
 	}
 
-	const mat3 mat3::inverse()
+	const mat3 inverse(mat3& m)
 	{
 		// first det != 0
-		float det = this->determinant();
+		float det = m.determinant();
 		if (fcmp(0, det)) {
 			throw std::overflow_error("Divide by zero");
 		}
 
 		// second transpose
-		mat3 t = this->transpose();
+		mat3 t = m.transpose();
 		mat3 co_f = mat3(t.mat[4] * t.mat[8] - t.mat[5] * t.mat[7], -(t.mat[3] * t.mat[8] - t.mat[5] * t.mat[6]), t.mat[3] * t.mat[7] - t.mat[4] * t.mat[6]
 			, -(t.mat[1] * t.mat[8] - t.mat[2] * t.mat[7]), t.mat[0] * t.mat[8] - t.mat[2] * t.mat[6], -(t.mat[0] * t.mat[7] - t.mat[1] * t.mat[6])
 			, t.mat[1] * t.mat[5] - t.mat[2] * t.mat[4], -(t.mat[0] * t.mat[5] - t.mat[2] * t.mat[3]), t.mat[0] * t.mat[4] - t.mat[1] * t.mat[3]);
@@ -488,6 +488,43 @@ namespace engine {
 
 	}
 
+	mat4 inverse(const mat4 & m)
+	{
+		mat4 res = mat4(1);
+		res.mat[0]  = m.mat[6] * m.mat[11]*m.mat[13] - m.mat[7] * m.mat[10]*m.mat[13] + m.mat[7] * m.mat[9]*m.mat[14] - m.mat[5] * m.mat[11]*m.mat[14] - m.mat[6] * m.mat[9]*m.mat[15] + m.mat[5] * m.mat[10]*m.mat[15];
+		res.mat[1]  = m.mat[3] * m.mat[10]*m.mat[13] - m.mat[2] * m.mat[11]*m.mat[13] - m.mat[3] * m.mat[9]*m.mat[14] + m.mat[1] * m.mat[11]*m.mat[14] + m.mat[2] * m.mat[9]*m.mat[15] - m.mat[1] * m.mat[10]*m.mat[15];
+		res.mat[2]  = m.mat[2] * m.mat[7]*m.mat[13] - m.mat[3] * m.mat[6]*m.mat[13] + m.mat[3] * m.mat[5]*m.mat[14] - m.mat[1] * m.mat[7]*m.mat[14] - m.mat[2] * m.mat[5]*m.mat[15] + m.mat[1] * m.mat[6]*m.mat[15];
+		res.mat[3]  = m.mat[3] * m.mat[6]*m.mat[9] - m.mat[2] * m.mat[7]*m.mat[9] - m.mat[3] * m.mat[5]*m.mat[10] + m.mat[1] * m.mat[7]*m.mat[10] + m.mat[2] * m.mat[5]*m.mat[11] - m.mat[1] * m.mat[6]*m.mat[11];
+		res.mat[4]  = m.mat[7] * m.mat[10]*m.mat[12] - m.mat[6] * m.mat[11]*m.mat[12] - m.mat[7] * m.mat[8]*m.mat[14] + m.mat[4] * m.mat[11]*m.mat[14] + m.mat[6] * m.mat[8]*m.mat[15] - m.mat[4] * m.mat[10]*m.mat[15];
+		res.mat[5]  = m.mat[2] * m.mat[11]*m.mat[12] - m.mat[3] * m.mat[10]*m.mat[12] + m.mat[3] * m.mat[8]*m.mat[14] - m.mat[0] * m.mat[11]*m.mat[14] - m.mat[2] * m.mat[8]*m.mat[15] + m.mat[0] * m.mat[10]*m.mat[15];
+		res.mat[6]  = m.mat[3] * m.mat[6]*m.mat[12] - m.mat[2] * m.mat[7]*m.mat[12] - m.mat[3] * m.mat[4]*m.mat[14] + m.mat[0] * m.mat[7]*m.mat[14] + m.mat[2] * m.mat[4]*m.mat[15] - m.mat[0] * m.mat[6]*m.mat[15];
+		res.mat[7]  = m.mat[2] * m.mat[7]*m.mat[8] - m.mat[3] * m.mat[6]*m.mat[8] + m.mat[3] * m.mat[4]*m.mat[10] - m.mat[0] * m.mat[7]*m.mat[10] - m.mat[2] * m.mat[4]*m.mat[11] + m.mat[0] * m.mat[6]*m.mat[11];
+		res.mat[8]  = m.mat[5] * m.mat[11]*m.mat[12] - m.mat[7] * m.mat[9]*m.mat[12] + m.mat[7] * m.mat[8]*m.mat[13] - m.mat[4] * m.mat[11]*m.mat[13] - m.mat[5] * m.mat[8]*m.mat[15] + m.mat[4] * m.mat[9]*m.mat[15];
+		res.mat[9]  = m.mat[3] * m.mat[9]*m.mat[12] - m.mat[1] * m.mat[11]*m.mat[12] - m.mat[3] * m.mat[8]*m.mat[13] + m.mat[0] * m.mat[11]*m.mat[13] + m.mat[1] * m.mat[8]*m.mat[15] - m.mat[0] * m.mat[9]*m.mat[15];
+		res.mat[10] = m.mat[1] * m.mat[7]*m.mat[12] - m.mat[3] * m.mat[5]*m.mat[12] + m.mat[3] * m.mat[4]*m.mat[13] - m.mat[0] * m.mat[7]*m.mat[13] - m.mat[1] * m.mat[4]*m.mat[15] + m.mat[0] * m.mat[5]*m.mat[15];
+		res.mat[11] = m.mat[3] * m.mat[5]*m.mat[8] - m.mat[1] * m.mat[7]*m.mat[8] - m.mat[3] * m.mat[4]*m.mat[9] + m.mat[0] * m.mat[7]*m.mat[9] + m.mat[1] * m.mat[4]*m.mat[11] - m.mat[0] * m.mat[5]*m.mat[11];
+		res.mat[12] = m.mat[6] * m.mat[9]*m.mat[12] - m.mat[5] * m.mat[10]*m.mat[12] - m.mat[6] * m.mat[8]*m.mat[13] + m.mat[4] * m.mat[10]*m.mat[13] + m.mat[5] * m.mat[8]*m.mat[14] - m.mat[4] * m.mat[9]*m.mat[14];
+		res.mat[13] = m.mat[1] * m.mat[10]*m.mat[12] - m.mat[2] * m.mat[9]*m.mat[12] + m.mat[2] * m.mat[8]*m.mat[13] - m.mat[0] * m.mat[10]*m.mat[13] - m.mat[1] * m.mat[8]*m.mat[14] + m.mat[0] * m.mat[9]*m.mat[14];
+		res.mat[14] = m.mat[2] * m.mat[5]*m.mat[12] - m.mat[1] * m.mat[6]*m.mat[12] - m.mat[2] * m.mat[4]*m.mat[13] + m.mat[0] * m.mat[6]*m.mat[13] + m.mat[1] * m.mat[4]*m.mat[14] - m.mat[0] * m.mat[5]*m.mat[14];
+		res.mat[15] = m.mat[1] * m.mat[6]*m.mat[8] - m.mat[2] * m.mat[5]*m.mat[8] + m.mat[2] * m.mat[4]*m.mat[9] - m.mat[0] * m.mat[6]* m.mat[9] - m.mat[1] * m.mat[4] * m.mat[10] + m.mat[0] * m.mat[5] *m.mat[10];
+		
+		res = res * (1 / determinant(res));
+		return res;
+	}
+
+	float determinant(const mat4 & m)
+	{
+		float value;
+		value =
+			m.mat[3] * m.mat[6]*m.mat[9]*m.mat[12] - m.mat[2] * m.mat[7]*m.mat[9]*m.mat[12] - m.mat[3] * m.mat[5]*m.mat[10]*m.mat[12] + m.mat[1] * m.mat[7]*m.mat[10]*m.mat[12] +
+			m.mat[2] * m.mat[5]*m.mat[11]*m.mat[12] - m.mat[1] * m.mat[6]*m.mat[11]*m.mat[12] - m.mat[3] * m.mat[6]*m.mat[8]*m.mat[13] + m.mat[2] * m.mat[7]*m.mat[8]*m.mat[13] +
+			m.mat[3] * m.mat[4]*m.mat[10]*m.mat[13] - m.mat[0] * m.mat[7]*m.mat[10]*m.mat[13] - m.mat[2] * m.mat[4]*m.mat[11]*m.mat[13] + m.mat[0] * m.mat[6]*m.mat[11]*m.mat[13] +
+			m.mat[3] * m.mat[5]*m.mat[8]*m.mat[14] - m.mat[1] * m.mat[7]*m.mat[8]*m.mat[14] - m.mat[3] * m.mat[4]*m.mat[9]*m.mat[14] + m.mat[0] * m.mat[7]*m.mat[9]*m.mat[14] +
+			m.mat[1] * m.mat[4]*m.mat[11]*m.mat[14] - m.mat[0] * m.mat[5]*m.mat[11]*m.mat[14] - m.mat[2] * m.mat[5]*m.mat[8]*m.mat[15] + m.mat[1] * m.mat[6]*m.mat[8]*m.mat[15] +
+			m.mat[2] * m.mat[4]*m.mat[9]*m.mat[15] - m.mat[0] * m.mat[6]*m.mat[9]*m.mat[15] - m.mat[1] * m.mat[4]*m.mat[10]*m.mat[15] + m.mat[0] * m.mat[5]*m.mat[10]*m.mat[15];
+		return value;
+	}
+
 	std::ostream & operator<<(std::ostream & out, const mat4 & m)
 	{
 		out << std::endl;
@@ -568,7 +605,7 @@ namespace engine {
 	const mat3 MatrixFactory::createNormalMatrix(const mat4 & m)
 	{
 		mat3 M = engine::MatrixFactory::transformMatrix4to3(m);
-		mat3 Q = M.inverse();
+		mat3 Q = inverse(M);
 		Q = Q.transpose();
 		return Q;
 	}

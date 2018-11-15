@@ -110,7 +110,8 @@ namespace engine {
 		friend const bool operator !=(const vec4& v1, const vec4& v2);
 		friend vec4 operator*(const vec4& v, const float alpha);
 		friend vec4 operator*(const float alpha, const vec4& v);
-
+		friend vec4 operator+(const vec4& v1, const vec4& v2);
+		friend vec4 operator-(const vec4& v1, const vec4& v2);
 		// input output
 		friend std::ostream & operator<< (std::ostream& out, const vec4& v);
 		friend std::istream & operator>> (std::istream& in, vec4& v);

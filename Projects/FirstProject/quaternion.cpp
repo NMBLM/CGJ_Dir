@@ -136,7 +136,11 @@ namespace engine {
 	const qtrn slerp(const qtrn & q0, const qtrn & q1, float k)
 	{
 		float angle = acos(q0.x*q1.x + q0.y*q1.y + q0.z*q1.z + q0.t*q1.t);
+		if (fmod(angle, 0)) {
+			angle = 0.0001f;
+		}
 		float k0 = sin((1 - k)*angle) / sin(angle);
+
 		float k1 = sin(k*angle) / sin(angle);
 		qtrn qi = (q0 * k0) + (q1 * k1);
 		return normalize(qi);
@@ -165,6 +169,16 @@ namespace engine {
 	}
 
 	qtrn operator*(const qtrn & q, const float s)
+	{
+		qtrn sq;
+		sq.t = s * q.t;
+		sq.x = s * q.x;
+		sq.y = s * q.y;
+		sq.z = s * q.z;
+		return qtrn(s * q.t, s * q.x, s * q.y, s * q.z);
+	}
+
+	qtrn operator*( const float s ,const qtrn & q )
 	{
 		qtrn sq;
 		sq.t = s * q.t;

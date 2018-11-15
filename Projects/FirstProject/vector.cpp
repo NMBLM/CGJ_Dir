@@ -330,6 +330,15 @@ namespace engine {
 		return vec4(v.x*alpha, v.y*alpha, v.z*alpha, v.w);
 	}
 
+	vec4 operator+(const vec4 & v1, const vec4 & v2)
+	{
+		return vec4(v1.x + v2.x, v1.y + v2.y, v1.z + v2.z,1);
+	}
+	vec4 operator-(const vec4& v1, const vec4& v2)
+	{
+		return vec4(v1.x - v2.x, v1.y - v2.y, v1.z - v2.z,1);
+	}
+
 
 	std::ostream& operator<<(std::ostream& out, const vec4 & v)
 	{

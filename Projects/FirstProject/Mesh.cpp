@@ -147,13 +147,13 @@ void Mesh::createBufferObjects()
 
 void Mesh::destroyBufferObjects()
 {
-	glBindVertexArray(VaoId);
-	glDisableVertexAttribArray(VERTICES);
-	glDisableVertexAttribArray(TEXCOORDS);
-	glDisableVertexAttribArray(NORMALS);
-	glDeleteVertexArrays(1, &VaoId);
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindVertexArray(0);
+	//glBindVertexArray(VaoId);
+	//glDisableVertexAttribArray(VERTICES);
+	//glDisableVertexAttribArray(TEXCOORDS);
+	//glDisableVertexAttribArray(NORMALS);
+	//glDeleteVertexArrays(1, &VaoId);
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindVertexArray(0);
 }
 
 void engine::Mesh::draw(mat4 transform, ShaderProgram* prog)
@@ -164,7 +164,7 @@ void engine::Mesh::draw(mat4 transform, ShaderProgram* prog)
 
 	glUniformMatrix4fv(prog->UniformId("ModelMatrix"), 1, GL_FALSE, transform.data());
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
-
+	
 	glUseProgram(0);
 	glBindVertexArray(0);
 }

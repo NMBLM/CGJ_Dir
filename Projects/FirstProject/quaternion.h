@@ -33,6 +33,7 @@ namespace engine {
 		friend qtrn operator+(const qtrn& q1, const qtrn& q2);
 		friend qtrn operator-(const qtrn& q1, const qtrn& q2);
 		friend qtrn operator*(const qtrn& q, const float s);
+		friend qtrn operator*( const float s, const qtrn& q);
 		friend qtrn operator*(const qtrn& q1, const qtrn& q2);
 		qtrn operator=(const qtrn& q);
 		friend const bool operator==(const qtrn& q1, const qtrn& q2);

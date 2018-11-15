@@ -137,6 +137,7 @@
     <ClCompile Include="6-classicgl-teapot.cpp" />
     <ClCompile Include="7-MatrixStack.cpp" />
     <ClCompile Include="8-SceneManager.cpp" />
+    <ClCompile Include="Anime.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="FullScene.cpp" />
     <ClCompile Include="KeyBuffer.cpp" />
@@ -155,6 +156,7 @@
     <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Anime.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="KeyBuffer.h" />
     <ClInclude Include="matrix.h" />

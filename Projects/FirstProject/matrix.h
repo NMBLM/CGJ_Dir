@@ -96,7 +96,7 @@ namespace engine {
 	   //transpose, determinant and inverse (except for 4x4 matrices)
 		const mat3 transpose();
 		const float determinant();
-		const mat3 inverse();
+		friend const mat3 inverse(mat3& m);
 
 		//input/output
 		friend std::ostream& operator<< (std::ostream& out, const mat3& m);
@@ -135,7 +135,8 @@ namespace engine {
 		friend mat4 operator* (const mat4& m, const float alpha);
 		friend mat4 operator* (const float alpha, const mat4& m);
 		friend vec4 operator* (const mat4& m, const vec4& v);
-
+		friend mat4 inverse(const mat4& m);
+		friend float determinant(const mat4& m);
 		friend std::ostream& operator<< (std::ostream& out, const mat4& m);
 		friend std::istream& operator>> (std::istream& in, mat4& m);
 		

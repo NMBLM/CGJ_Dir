@@ -43,6 +43,11 @@ void engine::Scene::updateModel(mat4 trs)
 	root->updateModel(trs);
 }
 
+void engine::Scene::resetAnimator()
+{
+	root->resetAnimator();
+}
+
 
 
 engine::SceneNode::SceneNode()
@@ -60,8 +65,14 @@ engine::SceneNode::SceneNode(Mesh * m, ShaderProgram * shaders, mat4 mat)
 
 void engine::SceneNode::draw(float delta)
 {
+	mat4 m = model;
 	if (mesh != nullptr) {
-		mesh->draw(model,this->getShaderProgram());
+		if (anime != nullptr) {
+			anime->update(delta);
+			//m =   model *  inverse(model) * anime->calcAnimation(model) * model;
+			m =  model * anime->calcAnimation(model);
+		}
+		mesh->draw(m,this->getShaderProgram());
 	}
 	for (auto& s : nodes) {
 		s->draw(delta);
@@ -87,6 +98,26 @@ void engine::SceneNode::addNode(SceneNode * node)
 		node->shaderProgram = this->shaderProgram;
 	}
 	nodes.push_back(node);
+}
+
+void engine::SceneNode::addAnimator(Animator* a)
+{
+	anime = a;
+}
+
+Animator* engine::SceneNode::getAnimator()
+{
+	return anime;
+}
+
+void engine::SceneNode::resetAnimator()
+{
+	if (anime != nullptr) {
+		anime->reset();
+	}
+	for (auto& s : nodes) {
+		s->resetAnimator();
+	}
 }
 
 ShaderProgram * engine::SceneNode::getShaderProgram() {
