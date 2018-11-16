@@ -12,9 +12,7 @@ mat4 Animation::animate(mat4 model, float delta)
 	vec4 lrp = (1-delta)*pStart + delta*pEnd;
 	mat4 lrpmat = MatrixFactory::createTranslationMatrix(lrp.x, lrp.y, lrp.z);
 	qtrn sl = slerp(rStart, rEnd, delta);
-	//qtrn qv = qtrn(0, lrp.x, lrp.y, lrp.z);
-	//qtrn qRot = sl * qv * inverse(sl);
-	//return lrpmat * qToMatrix(qRot);
+
 	return  lrpmat * model * qToMatrix(sl);
 
 }
@@ -37,7 +35,7 @@ mat4 Animator::calcAnimation(mat4 model)
 			lastMatrix = sequence[index - 1]->animate(model, 1);
 		}
 		else {
-			lastMatrix = sequence[index]->animate(model, delta - index);
+			lastMatrix = sequence[index]->animate(model, valueK - index);
 		}
 	}
 	return lastMatrix;
@@ -45,39 +43,44 @@ mat4 Animator::calcAnimation(mat4 model)
 
 void Animator::update(float deltatime)
 {
-
-	if (delta - index > 1) {
+	valueK += (float)refwrd * deltatime / 10;
+	//Verify if its needed to go to next animation in sequence
+	if (valueK - index > 1) {
 		index++;
+		//if last animation, stop animation
 		if (index >= sequence.size()) {
 			index = (int) sequence.size();
 			refwrd = 0;
 		}
 	}
-	if (delta - index < 0) {
+	//Verify if its needed to go to next animation in sequence but while going reverse
+	else if (valueK - index < 0) {
 		index--;
+		//if back to the end of first animation, stop animation
 		if (index < 0) {
 			index = 0;
 			refwrd = 0;
 		}
 	}
-	if (refwrd != 0) {
-		delta += (float)refwrd * deltatime /10;
-	}
 }
 
-void Animator::reset()
+void Animator::activate()
 {
+	//If animation is stopped check to see if its to go forward or reverse
 	if (refwrd == 0) {
+		//Forward
 		if (index == 0) {
-			delta = 0;
+			valueK = 0;
 			refwrd = 1;
 		}
+		//Reverse
 		else {
-			delta = (float) sequence.size();
+			valueK = (float) sequence.size();
 			index = sequence.size() - 1;
 			refwrd = -1;
 		}
 	}
+	//if its going, start animating the opposite way
 	else {
 		refwrd = -refwrd;
 	}

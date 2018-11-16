@@ -13,6 +13,7 @@
 #include <iterator>
 
 #include "matrix.h"
+#include "vector.h"
 #include "shader.h"
 
 #include "GL/glew.h"
@@ -25,6 +26,7 @@ public:
 	ShaderProgram();
 	ShaderProgram(GLuint i);
 
+
 	void attachShader(GLuint type,const char* name, const char* filename);
 	void detachShader(const char* name);
 	void link();
@@ -33,6 +35,10 @@ public:
 	GLint UniformId(const char* uniformName);
 	GLint UniformLocation(const char* uniformName);
 	GLint uniformBlockIndex(const char* uniformName);
+	//void applyUniforms();
+	//void addUniformVec(const char* name, vec4 v);
+	//void addUniformVec(const char* name, vec3 v);
+	//void addUniformMat(const char* name, mat4 v);
 
 
 };

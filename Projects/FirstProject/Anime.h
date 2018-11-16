@@ -17,7 +17,7 @@ public:
 class Animator {
 	std::vector<Animation*> sequence;
 	int index = 0;
-	float delta = 0.0f;
+	float valueK = 0.0f;
 	int refwrd = 0;
 public:
 	mat4 lastMatrix = MatrixFactory::createIdentityMatrix4();
@@ -26,6 +26,6 @@ public:
 	void addAnimation(Animation* a);
 	mat4 calcAnimation(mat4 model);
 	void update(float deltatime);
-	void reset();
+	void activate();
 };
 #endif

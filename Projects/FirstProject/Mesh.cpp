@@ -163,8 +163,14 @@ void engine::Mesh::draw(mat4 transform, ShaderProgram* prog)
 	glUseProgram(prog->id);
 	glUniformMatrix4fv(prog->UniformId("ModelMatrix"), 1, GL_FALSE, transform.data());
 	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
-	
+
 	glUseProgram(0);
+	glBindVertexArray(0);
+}
+void engine::Mesh::draw()
+{
+	glBindVertexArray(VaoId);
+	glDrawArrays(GL_TRIANGLES, 0, (GLsizei)Vertices.size());
 	glBindVertexArray(0);
 }
 

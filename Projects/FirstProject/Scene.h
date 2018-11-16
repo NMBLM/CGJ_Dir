@@ -29,32 +29,34 @@ namespace engine {
 	public:
 		SceneNode();
 		SceneNode(Mesh* m = nullptr, ShaderProgram* shaders= nullptr, mat4 model = MatrixFactory::createIdentityMatrix4());
-		void draw(float delta, mat4 fm);
+		void draw( mat4 fm);
 		void updateModel(mat4 trs);
 		bool hasShaderProgram();
 		ShaderProgram * getShaderProgram();
 		void addNode(SceneNode* node);
 		void setColor(vec4 c);
 
+		void update(float deltatime);
+
 		void addAnimator(Animator* a);
 		Animator* getAnimator();
-		void resetAnimator();
+		void actOnAnimator();
 	};
 
 
 	class Scene {
 		SceneNode* root = nullptr;
 		ShaderProgram* dfault;
-		// nothing for now
-		Camera* camera;
-		GLuint VboId[1];
+
 
 	public:
 		Scene(ShaderProgram* shaders,Camera* cam);
-		void draw(float delta);
+		void draw();
 		void addNode(SceneNode* node);
 		void updateModel(mat4 trs);
-		void resetAnimator();
+		void actOnAnimator();
+		void update(float deltatime);
+
 
 	};
 

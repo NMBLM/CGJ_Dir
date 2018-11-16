@@ -42,6 +42,7 @@ namespace engine {
 		void createMesh(std::string& filename);
 		void createBufferObjects();
 		void destroyBufferObjects();
+		void draw();
 		void draw(mat4 transform, ShaderProgram* prog);
 		void draw(mat4 transform, ShaderProgram* prog,vec4 color);
 

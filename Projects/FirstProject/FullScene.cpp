@@ -1,22 +1,3 @@
-///////////////////////////////////////////////////////////////////////
-//
-// Using quaternions to rotate in 3D.
-//
-// Assignment: 1. Create a class for Quaternions.
-//             2. Create a scene with a camera rotating around an 
-//                object at the origin and pointing towards it. 
-//                Do NOT use "gluLookAt" to create the ViewMatrix, 
-//                use rotation matrices!
-//             3. Gimbal lock mode ON: use Translation + Rotation 
-//                matrices (e.g. Euler angles, Rodrigues’ formula).
-//             4. Gimbal lock mode OFF: use Quaternions to produce a 
-//                transformation matrix and avoid gimbal lock.
-//             5. Switch between modes by pressing the 'g' key.
-//
-// (c) 2013-18 by Carlos Martinho
-//
-///////////////////////////////////////////////////////////////////////
-
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -155,8 +136,8 @@ void keyRelease(unsigned char key, int x, int y) {
 		otherProjectionMatrix = temp;
 		camera->ProjectionMatrix(projectionMatrix);
 	}
-	if (KeyBuffer::instance()->isKeyDown('r')) scene->resetAnimator();
-	if (KeyBuffer::instance()->isKeyDown('R')) scene->resetAnimator();
+	if (KeyBuffer::instance()->isKeyDown('r')) scene->actOnAnimator();
+	if (KeyBuffer::instance()->isKeyDown('R')) scene->actOnAnimator();
 	KeyBuffer::instance()->releaseKey(key);
 
 }
@@ -247,16 +228,14 @@ void createShaderProgram()
 	// Non default
 	prog = new ShaderProgram();
 	//prog->attachShader(GL_VERTEX_SHADER, "vertex", "cube_vs_shared.glsl");
-	prog->attachShader(GL_VERTEX_SHADER, "vertex", "force_color_vs.glsl");
 	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment","cube_fs_extra.glsl");
 	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_fs.glsl");
+	prog->attachShader(GL_VERTEX_SHADER, "vertex", "force_color_vs.glsl");
 	prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_rcv_fs.glsl");
 
 	prog->bindAttribLocation(VERTICES, "inPosition");
-	//if (mesh->TexcoordsLoaded)
-		prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
-	//if (mesh->NormalsLoaded)
-		prog->bindAttribLocation(NORMALS, "inNormal");
+	prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
+	prog->bindAttribLocation(NORMALS, "inNormal");
 
 	prog->link();
 
@@ -264,10 +243,6 @@ void createShaderProgram()
 
 	prog->detachShader("vertex");
 	prog->detachShader("fragment");
-	//DEFAULT COLOR = RED
-	glUseProgram(prog->id);
-		glUniform4fv(prog->UniformLocation("forcedColor"), 1, vec4(1,0,0,1).data());
-	glUseProgram(0);
 
 	checkOpenGLError("ERROR: Could not create shaders.");
 
@@ -284,7 +259,6 @@ void destroyShaderProgram()
 
 void createBufferObjects()
 {
-	//meshs buffer
 	for (auto& m : meshManager) {
 		m.second->createBufferObjects();
 	}
@@ -304,7 +278,6 @@ void createBufferObjects()
 
 void destroyBufferObjects()
 {
-	//meshs buffer
 	for (auto& m : meshManager) {
 		m.second->destroyBufferObjects();
 	}
@@ -325,13 +298,7 @@ void drawScene()
 		glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
 	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-
-	// uniforms
-	//glUseProgram(prog->id);
-	//	glUniform1f(prog->UniformLocation("k"), k);
-	//glUseProgram(0);
-
-	scene->draw(delta);
+	scene->draw();
 
 	checkOpenGLError("ERROR: Could not draw scene.");
 }
@@ -359,6 +326,9 @@ void idle()
 	delta = ((float)currentFrame - (float)lastFrame) / 100;
 	lastFrame = (float)currentFrame;
 	k = k + delta / 2;
+
+	scene->update(delta);
+
 	glutPostRedisplay();
 }
 
@@ -540,68 +510,6 @@ void createScene() {
 	table->setColor(orange);
 	table->addNode(tangram);
 	scene->addNode(table);
-	//scene->addNode(tangram);
-}
-
-void createAnimation() {
-	qtrn qzero = qtrn();
-	vec4 vzero = vec4(0);
-	// TRIANGLE 1
-	Animator* tra1 = new Animator();
-	Animation* moveup1 = new Animation( qzero, vzero, qzero,  vec4(0, 1.0f, 0, 1));
-	Animation* moveside1 = new Animation(qzero, vec4(0, 1.0f, 0, 1), qzero , vec4(-0.2f, 0, 0.4f, 1));
-	tra1->addAnimation(moveup1);
-	tra1->addAnimation(moveside1);
-	trpc1->addAnimator(tra1);
-	/**/
-	// TRIANGLE 2
-	Animator* tra2 = new Animator();
-	Animation* moveup2 = new Animation(qzero, vzero, qzero, vec4(0, 1.2f, 0, 1));
-	Animation* moveside2 = new Animation(qzero, vec4(0, 1.2f, 0, 1), qzero, vec4(0.0f, 0, 0.2f, 1));
-	tra2->addAnimation(moveup2);
-	tra2->addAnimation(moveside2);
-	trpc2->addAnimator(tra2);
-	/**/
-	// TRIANGLE 3
-	Animator* tra3 = new Animator();
-	Animation* moveup3 = new Animation(qzero, vzero, qzero, vec4(0, 0.8f, 0, 1));
-	Animation* moveside3 = new Animation(qzero, vec4(0, 0.8f, 0, 1), qzero, vec4(0.0f, 0, 0.2f, 1));
-	tra3->addAnimation(moveup3);
-	tra3->addAnimation(moveside3);
-	trpc3->addAnimator(tra3);
-	/**/
-	// TRIANGLE 6
-	Animator* tra6 = new Animator();
-	Animation* moveup6 = new Animation(qzero, vzero, qzero, vec4(0, 0.6f, 0, 1));
-	Animation* moveside6 = new Animation(qzero, vec4(0, 0.6f, 0, 1), qtrn(90,YY), vec4(0.0f, 0, 0.2f, 1));
-	tra6->addAnimation(moveup6);
-	tra6->addAnimation(moveside6);
-	trpc6->addAnimator(tra6);
-	/**/
-	// TRIANGLE 9
-	Animator* tra9 = new Animator();
-	Animation* moveup9 = new Animation(qzero, vzero, qzero, vec4(0, 1.4f, 0, 1));
-	Animation* moveside9= new Animation(qzero, vec4(0, 1.4f, 0, 1), qtrn(90+45, YY), vec4(-0.2828f, 0, -0.88f, 1));
-	tra9->addAnimation(moveup9);
-	tra9->addAnimation(moveside9);
-	trpc9->addAnimator(tra9);
-	/**/
-	// PARALLELOGRAM 45
-	Animator* pla45 = new Animator();
-	Animation* moveup45 = new Animation(qzero, vzero, qzero, vec4(0, 1.6f, 0, 1));
-	Animation* moveside45 = new Animation(qzero, vec4(0, 1.6f, 0, 1), qzero, vec4(0.2f, 0, 0.8f, 1));
-	pla45->addAnimation(moveup45);
-	pla45->addAnimation(moveside45);
-	plpc45->addAnimator(pla45);
-	/**/
-	// SQUARE 78
-	Animator* sqa78 = new Animator();
-	Animation* moveup78 = new Animation(qzero, vzero, qzero, vec4(0, 1.8f, 0, 1));
-	Animation* moveside78 = new Animation(qzero, vec4(0, 1.8f, 0, 1), qtrn(45, YY), vec4(0.14f, 0, -0.48f, 1));
-	sqa78->addAnimation(moveup78);
-	sqa78->addAnimation(moveside78);
-	sqpc78->addAnimator(sqa78);
-	/**/
 }
 
 void createAnimationThreeStep() {
@@ -696,7 +604,6 @@ void init(int argc, char* argv[])
 	createMesh();
 	createShaderProgram();
 	createScene();
-	//createAnimation();
 	createAnimationThreeStep();
 	createBufferObjects();
 }

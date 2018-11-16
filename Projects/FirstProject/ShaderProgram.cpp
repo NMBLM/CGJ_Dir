@@ -80,3 +80,5 @@ GLint ShaderProgram::uniformBlockIndex(const char * uniformName)
 {
 	return glGetUniformBlockIndex(id, uniformName);
 }
+
+
