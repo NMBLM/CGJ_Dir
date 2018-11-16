@@ -18,19 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="shape.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="camera.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="program.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="vector.cpp">
@@ -42,44 +30,14 @@
     <ClCompile Include="quaternion.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="4-Quaternions.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
     <ClCompile Include="KeyBuffer.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="3-Hello3dWorld.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="2-Hello2dWorld.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="mainH3dW.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="5-OBJ_loader.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="6-classicgl-teapot.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="7-MatrixStack.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="8-SceneManager.cpp">
-      <Filter>Resource Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelViewer.cpp">
-      <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="FullScene.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestingArea.cpp">
-      <Filter>Resource Files</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp">
       <Filter>Source Files</Filter>
@@ -98,19 +56,7 @@
     <ClInclude Include="matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="program.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shape.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="camera.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="rgbtohsl.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="quaternion.h">
@@ -133,43 +79,43 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="VertexShader.glsl">
+    <None Include="Shader\cube_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="FragmentShader.glsl">
+    <None Include="Shader\cube_fs_extra.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="VertexShaderCamera.glsl">
+    <None Include="Shader\cube_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="FragmentShaderCamera.glsl">
+    <None Include="Shader\cube_vs_shared.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="cube_fs.glsl">
+    <None Include="Shader\default_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="cube_vs.glsl">
+    <None Include="Shader\default_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="cube_fs_extra.glsl">
+    <None Include="Shader\force_color_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="cube_vs_shared.glsl">
+    <None Include="Shader\force_color_rcv_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="default_vs.glsl">
+    <None Include="Shader\force_color_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="default_fs.glsl">
+    <None Include="Shader\FragmentShader.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="force_color_fs.glsl">
+    <None Include="Shader\FragmentShaderCamera.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="force_color_vs.glsl">
+    <None Include="Shader\VertexShader.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="force_color_rcv_fs.glsl">
+    <None Include="Shader\VertexShaderCamera.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

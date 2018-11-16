@@ -136,6 +136,8 @@ ShaderProgram * engine::SceneNode::getShaderProgram() {
 	if (shaderProgram != nullptr) {
 		return shaderProgram;
 	}
+	std::cerr << "No ShaderProgram found in SceneNode";
+	exit(1);
 }
 
 

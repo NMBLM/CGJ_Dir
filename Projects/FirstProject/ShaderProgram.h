@@ -10,11 +10,9 @@
 #include <string>
 
 #include <map>
-#include <iterator>
 
 #include "matrix.h"
 #include "vector.h"
-#include "shader.h"
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"

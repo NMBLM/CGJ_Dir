@@ -212,8 +212,8 @@ void createShaderProgram()
 {
 	// DEFAULT SHADER
 	dfault = new ShaderProgram();
-	dfault->attachShader(GL_VERTEX_SHADER, "vertex", "default_vs.glsl");
-	dfault->attachShader(GL_FRAGMENT_SHADER, "fragment", "default_fs.glsl");
+	dfault->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/default_vs.glsl");
+	dfault->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/default_fs.glsl");
 
 	dfault->bindAttribLocation(VERTICES, "inPosition");
 	dfault->link();
@@ -227,11 +227,11 @@ void createShaderProgram()
 
 	// Non default
 	prog = new ShaderProgram();
-	//prog->attachShader(GL_VERTEX_SHADER, "vertex", "cube_vs_shared.glsl");
-	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment","cube_fs_extra.glsl");
-	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_fs.glsl");
-	prog->attachShader(GL_VERTEX_SHADER, "vertex", "force_color_vs.glsl");
-	prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_rcv_fs.glsl");
+	//prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/cube_vs_shared.glsl");
+	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment","Shaders/cube_fs_extra.glsl");
+	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/force_color_fs.glsl");
+	prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/force_color_vs.glsl");
+	prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/force_color_rcv_fs.glsl");
 
 	prog->bindAttribLocation(VERTICES, "inPosition");
 	prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
@@ -430,11 +430,11 @@ void setupCamera() {
 }
 
 void createMesh() {
-	//meshManager.insert(std::make_pair("duck", new Mesh(std::string("src/duck.obj"))));
-	meshManager.insert(std::make_pair("triangle", new Mesh(std::string("src/Triangle.obj"))));
-	meshManager.insert(std::make_pair("square", new Mesh(std::string("src/Square.obj"))));
-	meshManager.insert(std::make_pair("parallelogram", new Mesh(std::string("src/Parallelogram.obj"))));
-	meshManager.insert(std::make_pair("table", new Mesh(std::string("src/Table.obj"))));
+	//meshManager.insert(std::make_pair("duck", new Mesh(std::string("Mesh/duck.obj"))));
+	meshManager.insert(std::make_pair("triangle", new Mesh(std::string("Mesh/Triangle.obj"))));
+	meshManager.insert(std::make_pair("square", new Mesh(std::string("Mesh/Square.obj"))));
+	meshManager.insert(std::make_pair("parallelogram", new Mesh(std::string("Mesh/Parallelogram.obj"))));
+	meshManager.insert(std::make_pair("table", new Mesh(std::string("Mesh/Table.obj"))));
 
 }
 

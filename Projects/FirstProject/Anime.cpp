@@ -76,7 +76,7 @@ void Animator::activate()
 		//Reverse
 		else {
 			valueK = (float) sequence.size();
-			index = sequence.size() - 1;
+			index = (int) sequence.size() - 1;
 			refwrd = -1;
 		}
 	}

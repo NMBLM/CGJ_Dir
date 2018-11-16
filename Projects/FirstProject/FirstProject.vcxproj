@@ -130,29 +130,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="2-Hello2dWorld.cpp" />
-    <ClCompile Include="3-Hello3dWorld.cpp" />
-    <ClCompile Include="4-Quaternions.cpp" />
-    <ClCompile Include="5-OBJ_loader.cpp" />
-    <ClCompile Include="6-classicgl-teapot.cpp" />
-    <ClCompile Include="7-MatrixStack.cpp" />
-    <ClCompile Include="8-SceneManager.cpp" />
     <ClCompile Include="Anime.cpp" />
     <ClCompile Include="camera.cpp" />
     <ClCompile Include="FullScene.cpp" />
     <ClCompile Include="KeyBuffer.cpp" />
-    <ClCompile Include="mainH3dW.cpp" />
     <ClCompile Include="matrix.cpp" />
     <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="ModelViewer.cpp" />
-    <ClCompile Include="program.cpp" />
     <ClCompile Include="quaternion.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="shader.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="shape.cpp" />
-    <ClCompile Include="test.cpp" />
-    <ClCompile Include="TestingArea.cpp" />
     <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -161,29 +147,25 @@
     <ClInclude Include="KeyBuffer.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="Mesh.h" />
-    <ClInclude Include="program.h" />
     <ClInclude Include="quaternion.h" />
-    <ClInclude Include="rgbtohsl.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="shader.h" />
     <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="shape.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="cube_fs.glsl" />
-    <None Include="cube_fs_extra.glsl" />
-    <None Include="cube_vs.glsl" />
-    <None Include="cube_vs_shared.glsl" />
-    <None Include="default_fs.glsl" />
-    <None Include="default_vs.glsl" />
-    <None Include="force_color_fs.glsl" />
-    <None Include="force_color_rcv_fs.glsl" />
-    <None Include="force_color_vs.glsl" />
-    <None Include="FragmentShader.glsl" />
-    <None Include="FragmentShaderCamera.glsl" />
-    <None Include="VertexShader.glsl" />
-    <None Include="VertexShaderCamera.glsl" />
+    <None Include="Shader\cube_fs.glsl" />
+    <None Include="Shader\cube_fs_extra.glsl" />
+    <None Include="Shader\cube_vs.glsl" />
+    <None Include="Shader\cube_vs_shared.glsl" />
+    <None Include="Shader\default_fs.glsl" />
+    <None Include="Shader\default_vs.glsl" />
+    <None Include="Shader\force_color_fs.glsl" />
+    <None Include="Shader\force_color_rcv_fs.glsl" />
+    <None Include="Shader\force_color_vs.glsl" />
+    <None Include="Shader\FragmentShader.glsl" />
+    <None Include="Shader\FragmentShaderCamera.glsl" />
+    <None Include="Shader\VertexShader.glsl" />
+    <None Include="Shader\VertexShaderCamera.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
