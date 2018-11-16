@@ -21,6 +21,7 @@ class Animator {
 	int refwrd = 0;
 public:
 	mat4 lastMatrix = MatrixFactory::createIdentityMatrix4();
+
 	Animator();
 	void addAnimation(Animation* a);
 	mat4 calcAnimation(mat4 model);

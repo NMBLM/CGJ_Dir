@@ -73,7 +73,8 @@ void Animator::reset()
 			refwrd = 1;
 		}
 		else {
-			delta = (float) index;
+			delta = (float) sequence.size();
+			index = sequence.size() - 1;
 			refwrd = -1;
 		}
 	}
