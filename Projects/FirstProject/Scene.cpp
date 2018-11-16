@@ -74,7 +74,7 @@ void engine::SceneNode::draw(float delta)
 			//m =  (inverse(model) * anime->calcAnimation(model) * model) * model;
 
 		}
-		if (color.x != -1) {
+		if (!fcmp(color.x ,-1)) {
 			mesh->draw(m, this->getShaderProgram(),color);
 		}
 		else {

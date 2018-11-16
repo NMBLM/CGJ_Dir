@@ -304,7 +304,10 @@ void createBufferObjects()
 
 void destroyBufferObjects()
 {
-	mesh->destroyBufferObjects();
+	//meshs buffer
+	for (auto& m : meshManager) {
+		m.second->destroyBufferObjects();
+	}
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
 }
 
