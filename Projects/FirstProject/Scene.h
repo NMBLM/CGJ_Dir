@@ -20,6 +20,7 @@ namespace engine {
 	class SceneNode {
 		Mesh* mesh = nullptr;
 		ShaderProgram* shaderProgram = nullptr;
+		qtrn qDir = qtrn();
 		mat4 model = MatrixFactory::createIdentityMatrix4();
 		std::vector <SceneNode*> nodes;
 		vec4 color = vec4(-1, 0, 0, 1);
@@ -34,6 +35,7 @@ namespace engine {
 		ShaderProgram * getShaderProgram();
 		void addNode(SceneNode* node);
 		void setColor(vec4 c);
+
 		void addAnimator(Animator* a);
 		Animator* getAnimator();
 		void resetAnimator();

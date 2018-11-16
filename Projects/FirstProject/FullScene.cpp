@@ -62,12 +62,12 @@ int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
 float k = 0.0f;
 
-mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 10);
-mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 10);
+mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 30);
+mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 30);
 bool OG = false;
 
 
-SceneNode *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78;
+SceneNode *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78, *table;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -189,16 +189,16 @@ void update() {
 	if (KeyBuffer::instance()->isKeyDown('E')) camera->cameraRollRight(delta);
 
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
-		scene->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
+		table->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
 	}
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_UP)) {
-		scene->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -1.0f * delta));
+		table->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -1.0f * delta));
 	}
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_RIGHT)) {
-		scene->updateModel(MatrixFactory::createTranslationMatrix(1.0f * delta, 0.0f, 0.0f));
+		table->updateModel(MatrixFactory::createTranslationMatrix(1.0f * delta, 0.0f, 0.0f));
 	}
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_DOWN)) {
-		scene->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 1.0f * delta));
+		table->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 1.0f * delta));
 	}
 
 }
@@ -246,9 +246,11 @@ void createShaderProgram()
 
 	// Non default
 	prog = new ShaderProgram();
-	prog->attachShader(GL_VERTEX_SHADER,"vertex","cube_vs_shared.glsl");
+	//prog->attachShader(GL_VERTEX_SHADER, "vertex", "cube_vs_shared.glsl");
+	prog->attachShader(GL_VERTEX_SHADER, "vertex", "force_color_vs.glsl");
 	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment","cube_fs_extra.glsl");
-	prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_fs.glsl");
+	//prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_fs.glsl");
+	prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "force_color_rcv_fs.glsl");
 
 	prog->bindAttribLocation(VERTICES, "inPosition");
 	//if (mesh->TexcoordsLoaded)
@@ -528,10 +530,13 @@ void createScene() {
 
 	tangram->addNode(sqpc78);
 	tangram->addNode(plpc45);
-	SceneNode* table = new SceneNode(meshManager.find("table")->second, prog);
+
+	//TABLE SETUP
+	table = new SceneNode(meshManager.find("table")->second, prog);
 	table->setColor(orange);
+	table->addNode(tangram);
 	scene->addNode(table);
-	scene->addNode(tangram);
+	//scene->addNode(tangram);
 }
 
 void createAnimation() {
@@ -595,6 +600,88 @@ void createAnimation() {
 	/**/
 }
 
+void createAnimationThreeStep() {
+	qtrn qzero = qtrn();
+	vec4 vzero = vec4(0);
+	/**/
+	// TRIANGLE 1
+	Animator* tra1 = new Animator();
+	Animation* moveup1 = new Animation(qzero, vzero, qzero, vec4(0, 1.0f, 0, 1));
+	Animation* moveside1 = new Animation(qzero, vec4(0, 1.0f, 0, 1), qzero, vec4(-0.2f, 1.0f, 0.4f, 1));
+	Animation* movedown1 = new Animation(qzero, vec4(-0.2f, 1.0f, 0.4f, 1), qzero, vec4(-0.2f, 0.0f, 0.4f, 1));
+
+	tra1->addAnimation(moveup1);
+	tra1->addAnimation(moveside1);
+	tra1->addAnimation(movedown1);
+	trpc1->addAnimator(tra1);
+	/**/
+	// TRIANGLE 2
+	Animator* tra2 = new Animator();
+	Animation* moveup2 = new Animation(qzero, vzero, qzero, vec4(0, 1.2f, 0, 1));
+	Animation* moveside2 = new Animation(qzero, vec4(0, 1.2f, 0, 1), qzero, vec4(0.0f, 1.2f, 0.2f, 1));
+	Animation* movedown2 = new Animation(qzero, vec4(0.0f, 1.2f, 0.2f, 1), qzero, vec4(0.0f, 0.0f, 0.2f, 1));
+
+	tra2->addAnimation(moveup2);
+	tra2->addAnimation(moveside2);
+	tra2->addAnimation(movedown2);
+	trpc2->addAnimator(tra2);
+	/**/
+	// TRIANGLE 3
+	Animator* tra3 = new Animator();
+	Animation* moveup3 = new Animation(qzero, vzero, qzero, vec4(0, 0.8f, 0, 1));
+	Animation* moveside3 = new Animation(qzero, vec4(0, 0.8f, 0, 1), qzero, vec4(0.0f, 0.8f, 0.2f, 1));
+	Animation* movedown3 = new Animation(qzero, vec4(0, 0.8f, 0.2f, 1), qzero, vec4(0.0f, 0, 0.2f, 1));
+
+	tra3->addAnimation(moveup3);
+	tra3->addAnimation(moveside3);
+	tra3->addAnimation(movedown3);
+	trpc3->addAnimator(tra3);
+	/**/
+	// TRIANGLE 6
+	Animator* tra6 = new Animator();
+	Animation* moveup6 = new Animation(qzero, vzero, qzero, vec4(0, 0.6f, 0, 1));
+	Animation* moveside6 = new Animation(qzero, vec4(0, 0.6f, 0, 1), qtrn(90, YY), vec4(0.0f, 0.6f, 0.2f, 1));
+	Animation* movedown6 = new Animation(qtrn(90, YY), vec4(0.0f, 0.6f, 0.2f, 1), qtrn(90, YY), vec4(0.0f, 0, 0.2f, 1));
+
+	tra6->addAnimation(moveup6);
+	tra6->addAnimation(moveside6);
+	tra6->addAnimation(movedown6);
+	trpc6->addAnimator(tra6);
+	/**/
+	// TRIANGLE 9
+	Animator* tra9 = new Animator();
+	Animation* moveup9 = new Animation(qzero, vzero, qzero, vec4(0, 1.4f, 0, 1));
+	Animation* moveside9 = new Animation(qzero, vec4(0, 1.4f, 0, 1), qtrn(90 + 45, YY), vec4(-0.2828f, 1.4f, -0.88f, 1));
+	Animation* movedown9 = new Animation(qtrn(90 + 45, YY), vec4(-0.2828f, 1.4f, -0.88f, 1), qtrn(90 + 45, YY), vec4(-0.2828f, 0, -0.88f, 1));
+
+	tra9->addAnimation(moveup9);
+	tra9->addAnimation(moveside9);
+	tra9->addAnimation(movedown9);
+	trpc9->addAnimator(tra9);
+	/**/
+	// PARALLELOGRAM 45
+	Animator* pla45 = new Animator();
+	Animation* moveup45 = new Animation(qzero, vzero, qzero, vec4(0, 1.6f, 0, 1));
+	Animation* moveside45 = new Animation(qzero, vec4(0, 1.6f, 0, 1), qzero, vec4(0.2f, 1.6f, 0.8f, 1));
+	Animation* movedown45 = new Animation(qzero, vec4(0.2f, 1.6f, 0.8f, 1), qzero, vec4(0.2f, 0, 0.8f, 1));
+
+	pla45->addAnimation(moveup45);
+	pla45->addAnimation(moveside45);
+	pla45->addAnimation(movedown45);
+	plpc45->addAnimator(pla45);
+	/**/
+	// SQUARE 78
+	Animator* sqa78 = new Animator();
+	Animation* moveup78 = new Animation(qzero, vzero, qzero, vec4(0, 1.8f, 0, 1));
+	Animation* moveside78 = new Animation(qzero, vec4(0, 1.8f, 0, 1), qtrn(45, YY), vec4(0.14f, 1.8f, -0.48f, 1));
+	Animation* movedown78 = new Animation(qtrn(45, YY), vec4(0.14f, 1.8f, -0.48f, 1), qtrn(45, YY), vec4(0.14f, 0, -0.48f, 1));
+	sqa78->addAnimation(moveup78);
+	sqa78->addAnimation(moveside78);
+	sqa78->addAnimation(movedown78);
+	sqpc78->addAnimator(sqa78);
+	/**/
+}
+
 void init(int argc, char* argv[])
 {
 	setupGLUT(argc, argv);
@@ -605,7 +692,8 @@ void init(int argc, char* argv[])
 	createMesh();
 	createShaderProgram();
 	createScene();
-	createAnimation();
+	//createAnimation();
+	createAnimationThreeStep();
 	createBufferObjects();
 }
 
