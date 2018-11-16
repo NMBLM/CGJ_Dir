@@ -92,9 +92,10 @@ void engine::SceneNode::updateModel(mat4 trs)
 	if (anime != nullptr) {
 		anime->lastMatrix = trs * anime->lastMatrix;
 	}
-	for (auto& s : nodes) {
-		s->updateModel(trs);
-	}
+
+	//for (auto& s : nodes) {
+	//	s->updateModel(trs);
+	//}
 }
 
 bool engine::SceneNode::hasShaderProgram()

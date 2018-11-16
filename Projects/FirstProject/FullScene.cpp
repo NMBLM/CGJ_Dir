@@ -535,8 +535,8 @@ void createScene() {
 	tangram->addNode(plpc45);
 
 	//TABLE SETUP
-	//table = new SceneNode(meshManager.find("table")->second, prog,MatrixFactory::createScaleMatrix4(0.8f,2.0f,0.3f));
-	table = new SceneNode(meshManager.find("table")->second, prog);
+	table = new SceneNode(meshManager.find("table")->second, prog,MatrixFactory::createScaleMatrix4(0.8f,2.0f,0.3f));
+	//table = new SceneNode(meshManager.find("table")->second, prog);
 	table->setColor(orange);
 	table->addNode(tangram);
 	scene->addNode(table);
