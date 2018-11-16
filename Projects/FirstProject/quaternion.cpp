@@ -140,9 +140,6 @@ namespace engine {
 			return qtrn(q0);
 		}
 		float angle = acos(cosine);
-		std::cout << "angle: " << angle << std::endl;
-		std::cout << "calc: " << cosine << std::endl;
-		std::cout << "acos: " << acos(q0.x*q1.x + q0.y*q1.y + q0.z*q1.z + q0.t*q1.t) << std::endl;
 		if (fcmp(angle, 0)) {
 			return qtrn(1,0,0,0);
 		}
