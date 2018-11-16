@@ -29,7 +29,7 @@ namespace engine {
 	public:
 		SceneNode();
 		SceneNode(Mesh* m = nullptr, ShaderProgram* shaders= nullptr, mat4 model = MatrixFactory::createIdentityMatrix4());
-		void draw(float delta);
+		void draw(float delta, mat4 fm);
 		void updateModel(mat4 trs);
 		bool hasShaderProgram();
 		ShaderProgram * getShaderProgram();

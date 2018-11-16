@@ -30,7 +30,7 @@ void engine::Scene::draw(float delta)
 	//glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
 	//glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
-	root->draw(delta);
+	root->draw(delta,MatrixFactory::createIdentityMatrix4());
 }
 
 void engine::Scene::addNode(SceneNode * node)
@@ -63,14 +63,14 @@ engine::SceneNode::SceneNode(Mesh * m, ShaderProgram * shaders, mat4 mat)
 	nodes = std::vector <SceneNode*>();
 }
 
-void engine::SceneNode::draw(float delta)
+void engine::SceneNode::draw(float delta,mat4 fm)
 {
+	mat4 m = fm * model;
 	if (mesh != nullptr) {
-		mat4 m = model;
 		if (anime != nullptr) {
 			anime->update(delta);
 			//m =   model *  inverse(model) * anime->calcAnimation(model) * model;
-			m = anime->calcAnimation(model);// *model;
+			m = fm * anime->calcAnimation(model);// *model;
 			//m =  (inverse(model) * anime->calcAnimation(model) * model) * model;
 
 		}
@@ -82,7 +82,7 @@ void engine::SceneNode::draw(float delta)
 		}
 	}
 	for (auto& s : nodes) {
-		s->draw(delta);
+		s->draw(delta, m);
 	}
 }
 
