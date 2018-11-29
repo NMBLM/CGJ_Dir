@@ -47,6 +47,7 @@ namespace engine {
 	class Scene {
 		SceneNode* root = nullptr;
 		ShaderProgram* dfault;
+		Camera * camera = nullptr;
 
 
 	public:
@@ -56,7 +57,6 @@ namespace engine {
 		void updateModel(mat4 trs);
 		void actOnAnimator();
 		void update(float deltatime);
-
 
 	};
 

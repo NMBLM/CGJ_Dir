@@ -7,6 +7,7 @@ using namespace engine;
 
 Camera::Camera()
 {
+	initalizeVbo();
 }
 
 Camera::Camera(const vec3 eye, const vec3 center, const vec3 up)
@@ -21,7 +22,7 @@ Camera::Camera(const vec3 eye, const vec3 center, const vec3 up)
 
 mat4 Camera::ViewMatrix()
 {
-
+	std::cout << "HELLO";
 	return MatrixFactory::createLookAt(eye, eye + v, u);
 
 }
@@ -78,6 +79,27 @@ void Camera::cameraMoveBack(const float deltatime)
 	eye = eye - v * vSPEED * deltatime;
 }
 
+void Camera::initalizeVbo() {
+	glGenBuffers(1, VboId);
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	{
+		glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat[16]) * 2, 0, GL_STREAM_DRAW);
+		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[0]);
+	}
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+	glBindVertexArray(0);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+void Camera::setMatrix()
+{
+	const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
+
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix().data());
+	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, ProjectionMatrix().data());
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
 // FIXED CAMERA
 
 FixedCamera::FixedCamera()
@@ -86,7 +108,8 @@ FixedCamera::FixedCamera()
 
 FixedCamera::FixedCamera(const vec3 eye, const vec3 center, const vec3 up)
 {
-	qPos = qtrn(1, 0.2f, 0.1f, 0);
+	initalizeVbo();
+	qPos = qtrn(1, 0.0f, 0.0f, 0.0f);
 	this->eye = eye;
 }
 
@@ -232,3 +255,11 @@ void FixedCamera::zoom(const int dir, const float deltatime)
 
 }
 
+void FixedCamera::setMatrix()
+{
+	const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
+	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
+	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix().data());
+	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, ProjectionMatrix().data());
+	glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}

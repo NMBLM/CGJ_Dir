@@ -10,6 +10,7 @@
 #include "camera.h"
 #include "KeyBuffer.h"
 #include "Mesh.h"
+#include "MeshLoader.h"
 #include "Scene.h"
 
 
@@ -31,12 +32,12 @@ const float PI = 3.14159265f;
 FixedCamera* camera;
 ShaderProgram* dfault;
 ShaderProgram* prog;
-Mesh* mesh;
+MeshLoader meshLoader;
+
 Scene* scene;
 
-std::map<std::string, Mesh*> meshManager = std::map<std::string, Mesh*>();
+std::map<std::string, Mesh> meshManager = std::map<std::string, Mesh>();
 
-GLuint VboId[1];
 float lastFrame = 0.0f;
 float delta = 0.0f;
 int lastMouseY = WinX / 2;
@@ -259,28 +260,18 @@ void destroyShaderProgram()
 
 void createBufferObjects()
 {
-	for (auto& m : meshManager) {
-		m.second->createBufferObjects();
-	}
-
-	glGenBuffers(1, VboId);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
-	{
-		glBufferData(GL_UNIFORM_BUFFER, sizeof(GLfloat[16]) * 2, 0, GL_STREAM_DRAW);
-		glBindBufferBase(GL_UNIFORM_BUFFER, 0, VboId[0]);
-	}
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
-
+	//for (auto& m : meshManager) {
+	//	m.second->createBufferObjects();
+	//}
 
 	checkOpenGLError("ERROR: Could not create VAOs, VBOs and UBOs.");
 }
 
 void destroyBufferObjects()
 {
-	for (auto& m : meshManager) {
-		m.second->destroyBufferObjects();
-	}
+	//for (auto& m : meshManager) {
+	//	m.second->destroyBufferObjects();
+	//}
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
 }
 
@@ -288,15 +279,6 @@ void destroyBufferObjects()
 
 void drawScene()
 {
-	mat4 ViewMatrix = camera->ViewMatrix();
-	mat4 projectionMatrix = camera->ProjectionMatrix();
-
-	const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
-
-	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix.data());
-		glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, projectionMatrix.data());
-	glBindBuffer(GL_UNIFORM_BUFFER, 0);
 
 	scene->draw();
 
@@ -431,10 +413,15 @@ void setupCamera() {
 
 void createMesh() {
 	//meshManager.insert(std::make_pair("duck", new Mesh(std::string("Mesh/duck.obj"))));
-	meshManager.insert(std::make_pair("triangle", new Mesh(std::string("Mesh/Triangle.obj"))));
-	meshManager.insert(std::make_pair("square", new Mesh(std::string("Mesh/Square.obj"))));
-	meshManager.insert(std::make_pair("parallelogram", new Mesh(std::string("Mesh/Parallelogram.obj"))));
-	meshManager.insert(std::make_pair("table", new Mesh(std::string("Mesh/Table.obj"))));
+	//meshManager.insert(std::make_pair("triangle", new Mesh(std::string("Mesh/Triangle.obj"))));
+	//meshManager.insert(std::make_pair("square", new Mesh(std::string("Mesh/Square.obj"))));
+	//meshManager.insert(std::make_pair("parallelogram", new Mesh(std::string("Mesh/Parallelogram.obj"))));
+	//meshManager.insert(std::make_pair("table", new Mesh(std::string("Mesh/Table.obj"))));
+
+	meshManager.insert(std::make_pair("triangle", meshLoader.createMesh(std::string("Mesh/Triangle.obj"))));
+	meshManager.insert(std::make_pair("square", meshLoader.createMesh(std::string("Mesh/Square.obj"))));
+	meshManager.insert(std::make_pair("parallelogram", meshLoader.createMesh(std::string("Mesh/Parallelogram.obj"))));
+	meshManager.insert(std::make_pair("table", meshLoader.createMesh(std::string("Mesh/Table.obj"))));
 
 }
 
@@ -478,14 +465,14 @@ void createScene() {
 	scene = new Scene(dfault,camera);
 	tangram = new SceneNode(nullptr,prog,MatrixFactory::createIdentityMatrix4());
 
-	trpc1 = new SceneNode(meshManager.find("triangle")->second, prog, tr1);
-	trpc2 = new SceneNode(meshManager.find("triangle")->second, prog, tr2);
-	trpc3 = new SceneNode(meshManager.find("triangle")->second, prog, tr3);
-	trpc6 = new SceneNode(meshManager.find("triangle")->second, prog, tr6);
-	trpc9 = new SceneNode(meshManager.find("triangle")->second, prog, tr9);
+	trpc1 = new SceneNode(&meshManager.find("triangle")->second, prog, tr1);
+	trpc2 = new SceneNode(&meshManager.find("triangle")->second, prog, tr2);
+	trpc3 = new SceneNode(&meshManager.find("triangle")->second, prog, tr3);
+	trpc6 = new SceneNode(&meshManager.find("triangle")->second, prog, tr6);
+	trpc9 = new SceneNode(&meshManager.find("triangle")->second, prog, tr9);
 
-	sqpc78 = new SceneNode(meshManager.find("square")->second, prog, sq78);
-	plpc45 = new SceneNode(meshManager.find("parallelogram")->second, prog, pl45);
+	sqpc78 = new SceneNode(&meshManager.find("square")->second, prog, sq78);
+	plpc45 = new SceneNode(&meshManager.find("parallelogram")->second, prog, pl45);
 
 	trpc1->setColor(red);
 	trpc2->setColor(green);
@@ -506,7 +493,7 @@ void createScene() {
 
 	//TABLE SETUP
 	//table = new SceneNode(meshManager.find("table")->second, prog,MatrixFactory::createScaleMatrix4(0.8f,2.0f,0.3f));
-	table = new SceneNode(meshManager.find("table")->second, prog);
+	table = new SceneNode(&meshManager.find("table")->second, prog);
 	table->setColor(orange);
 	table->addNode(tangram);
 	scene->addNode(table);

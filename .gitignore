@@ -109,3 +109,12 @@ bin/x64/Lab1.iobj
 bin/x64/Lab1.exe
 bin/x64/FirstProject.pdb
 bin/x64/FirstProject.exe
+Projects/FirstProject/x64/Debug/MeshLoader.obj
+Projects/FirstProject/x64/Release/Anime.obj
+Projects/FirstProject/x64/Release/camera.obj
+Projects/FirstProject/x64/Release/FullScene.obj
+Projects/FirstProject/x64/Release/KeyBuffer.obj
+Projects/FirstProject/x64/Release/Mesh.obj
+Projects/FirstProject/x64/Release/quaternion.obj
+Projects/FirstProject/x64/Release/Scene.obj
+Projects/FirstProject/x64/Release/ShaderProgram.obj

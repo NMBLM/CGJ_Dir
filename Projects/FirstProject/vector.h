@@ -53,12 +53,13 @@ namespace engine {
 		float x, y, z;
 
 		// Constructor
-		vec3();
+		vec3(); // all zero
 		vec3(const float k); // all values equal
 		vec3(const float x, const float y, const float z);
 		vec3(const float x, const float y, const float z, const float w); //vec4 to vec3 except all values, w = 1 means real world point w=0 means vector
 		vec3(const vec3& v);
 		vec3(const vec4& v);
+
 
 		const float* data(vec3& v);
 		void clean();

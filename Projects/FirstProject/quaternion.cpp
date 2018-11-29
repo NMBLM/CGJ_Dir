@@ -141,7 +141,7 @@ namespace engine {
 		}
 		float angle = acos(cosine);
 		if (fcmp(angle, 0)) {
-			return qtrn(1,0,0,0);
+			return qtrn(q0);
 		}
 		float k0 = sin((1 - k)*angle) / sin(angle);
 

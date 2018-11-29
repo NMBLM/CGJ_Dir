@@ -5,6 +5,8 @@
 #include "vector.h"
 #include "matrix.h"
 #include "quaternion.h"
+#include "GL/glew.h"
+
 
 using namespace engine;
 
@@ -15,6 +17,7 @@ private:
 	vec3 s;
 	vec3 u;
 	protected:
+		GLuint VboId[1];
 		mat4 projection;
 		vec3 eye;
 		const float SPEED = 2.0f;
@@ -34,6 +37,8 @@ private:
 		void cameraMoveLeft(const float deltatime);
 		void cameraMoveForward(const float deltatime);
 		void cameraMoveBack(const float deltatime);
+		void initalizeVbo();
+		virtual void setMatrix();
 
 };
 
@@ -59,6 +64,7 @@ class FixedCamera : public Camera {
 		void cameraRollRight(const float deltatime);
 		void cameraRollLeft(const float deltatime);
 		void zoom(const int dir, const float deltatime);
+		virtual void setMatrix();
 
 };
 

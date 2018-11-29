@@ -1,4 +1,4 @@
-#include "Scene.h"
+ #include "Scene.h"
 
 using namespace engine;
 
@@ -6,10 +6,12 @@ using namespace engine;
 engine::Scene::Scene(ShaderProgram* shaders,Camera* cam)
 {
 	root = new SceneNode(nullptr, shaders);
+	camera = cam;
 }
 
 void engine::Scene::draw()
 {
+	camera->setMatrix();
 	root->draw(MatrixFactory::createIdentityMatrix4());
 }
 
@@ -62,9 +64,7 @@ void engine::SceneNode::draw(mat4 fm)
 		if (!fcmp(color.x ,-1)) {
 			glUniform4fv(shaderProgram->UniformLocation("forcedColor"), 1, color.data());			
 		}
-
 		mesh->draw();
-
 		glUseProgram(0);
 	}
 	for (auto& s : nodes) {
