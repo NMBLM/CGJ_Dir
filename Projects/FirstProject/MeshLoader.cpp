@@ -111,9 +111,9 @@ namespace engine {
 	MeshLoader::~MeshLoader() {
 	}
 
-	Mesh MeshLoader::createMesh(const std::string& filename) {
+	Mesh* MeshLoader::createMesh(const std::string& filename) {
 		loadMeshData(filename);
-		Mesh m = processMeshData();
+		Mesh* m = processMeshData();
 		freeMeshData();
 
 		return m;
@@ -169,7 +169,7 @@ namespace engine {
 		}
 	}
 
-	Mesh MeshLoader::processMeshData() {
+	Mesh* MeshLoader::processMeshData() {
 		//TODO fazer de forma mais eficiente
 		std::vector <vec3> Vertices;
 		std::vector <vec2> Texcoords;
@@ -190,7 +190,7 @@ namespace engine {
 				Normals.push_back(n);
 			}
 		}
-		return Mesh(Vertices, Texcoords, Normals, TexcoordsLoaded, NormalsLoaded);
+		return new Mesh(Vertices, Texcoords, Normals, TexcoordsLoaded, NormalsLoaded);
 	}
 
 	void MeshLoader::freeMeshData() {

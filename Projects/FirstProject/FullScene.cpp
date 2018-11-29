@@ -36,7 +36,7 @@ MeshLoader meshLoader;
 
 Scene* scene;
 
-std::map<std::string, Mesh> meshManager = std::map<std::string, Mesh>();
+std::map<std::string, Mesh*> meshManager = std::map<std::string, Mesh*>();
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -465,14 +465,14 @@ void createScene() {
 	scene = new Scene(dfault,camera);
 	tangram = new SceneNode(nullptr,prog,MatrixFactory::createIdentityMatrix4());
 
-	trpc1 = new SceneNode(&meshManager.find("triangle")->second, prog, tr1);
-	trpc2 = new SceneNode(&meshManager.find("triangle")->second, prog, tr2);
-	trpc3 = new SceneNode(&meshManager.find("triangle")->second, prog, tr3);
-	trpc6 = new SceneNode(&meshManager.find("triangle")->second, prog, tr6);
-	trpc9 = new SceneNode(&meshManager.find("triangle")->second, prog, tr9);
+	trpc1 = new SceneNode(meshManager.find("triangle")->second, prog, tr1);
+	trpc2 = new SceneNode(meshManager.find("triangle")->second, prog, tr2);
+	trpc3 = new SceneNode(meshManager.find("triangle")->second, prog, tr3);
+	trpc6 = new SceneNode(meshManager.find("triangle")->second, prog, tr6);
+	trpc9 = new SceneNode(meshManager.find("triangle")->second, prog, tr9);
 
-	sqpc78 = new SceneNode(&meshManager.find("square")->second, prog, sq78);
-	plpc45 = new SceneNode(&meshManager.find("parallelogram")->second, prog, pl45);
+	sqpc78 = new SceneNode(meshManager.find("square")->second, prog, sq78);
+	plpc45 = new SceneNode(meshManager.find("parallelogram")->second, prog, pl45);
 
 	trpc1->setColor(red);
 	trpc2->setColor(green);
@@ -493,7 +493,7 @@ void createScene() {
 
 	//TABLE SETUP
 	//table = new SceneNode(meshManager.find("table")->second, prog,MatrixFactory::createScaleMatrix4(0.8f,2.0f,0.3f));
-	table = new SceneNode(&meshManager.find("table")->second, prog);
+	table = new SceneNode(meshManager.find("table")->second, prog);
 	table->setColor(orange);
 	table->addNode(tangram);
 	scene->addNode(table);

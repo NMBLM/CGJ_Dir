@@ -26,7 +26,7 @@ namespace engine {
 		MeshLoader();
 		~MeshLoader();
 
-		Mesh createMesh(const std::string& filename);
+		Mesh* createMesh(const std::string& filename);
 
 	private:
 		void parseVertex(std::stringstream& sin);
@@ -41,7 +41,7 @@ namespace engine {
 
 		void loadMeshData(const std::string& filename);
 
-		Mesh processMeshData();
+		Mesh* processMeshData();
 
 		void freeMeshData();
 
