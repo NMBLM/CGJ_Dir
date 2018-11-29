@@ -146,7 +146,7 @@ namespace engine {
 		z = v.z / v.w;
 
 	}
-	const float * vec3::data(vec3 & v)
+	const float * vec3::data() const
 	{
 		float *data = new float[3]();
 		data[0] = x;

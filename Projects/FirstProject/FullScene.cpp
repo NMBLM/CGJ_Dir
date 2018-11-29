@@ -31,8 +31,7 @@ const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
 
 FixedCamera* camera;
-ShaderProgram* dfault;
-ShaderProgram* prog;
+
 MeshLoader meshLoader;
 
 Scene* scene;
@@ -48,7 +47,7 @@ mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2
 bool OG = false;
 
 
-SceneNode *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78, *table;
+SceneNode  *table;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -211,6 +210,9 @@ static void checkOpenGLError(std::string error)
 void createShaderProgram()
 {
 	// DEFAULT SHADER
+	Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+	ShaderProgram* dfault;
+	ShaderProgram* prog;
 	dfault = new ShaderProgram();
 	dfault->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/default_vs.glsl");
 	dfault->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/default_fs.glsl");
@@ -218,11 +220,10 @@ void createShaderProgram()
 	dfault->bindAttribLocation(VERTICES, "inPosition");
 	dfault->link();
 
-	dfault->uniformBlockBinding(dfault->uniformBlockIndex("SharedMatrices"), UBO_BP);
-
 	dfault->detachShader("vertex");
 	dfault->detachShader("fragment");
 
+	shaderProgramManager->insert("default",dfault);
 	checkOpenGLError("ERROR: Could not create default shaders.");
 
 	// Non default
@@ -239,18 +240,20 @@ void createShaderProgram()
 
 	prog->link();
 
-	prog->uniformBlockBinding(prog->uniformBlockIndex("SharedMatrices"), UBO_BP);
-
 	prog->detachShader("vertex");
 	prog->detachShader("fragment");
 
+	shaderProgramManager->insert("ColorProgram", prog);
 	checkOpenGLError("ERROR: Could not create shaders.");
 
 }
 void destroyShaderProgram()
 {
+	Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+
 	glUseProgram(0);
-	glDeleteProgram(prog->id);
+	glDeleteProgram(shaderProgramManager->get("default")->id);
+	glDeleteProgram(shaderProgramManager->get("ColorProgram")->id);
 
 	checkOpenGLError("ERROR: Could not destroy shaders.");
 }
@@ -259,18 +262,11 @@ void destroyShaderProgram()
 
 void createBufferObjects()
 {
-	//for (auto& m : meshManager) {
-	//	m.second->createBufferObjects();
-	//}
-
 	checkOpenGLError("ERROR: Could not create VAOs, VBOs and UBOs.");
 }
 
 void destroyBufferObjects()
 {
-	//for (auto& m : meshManager) {
-	//	m.second->destroyBufferObjects();
-	//}
 	checkOpenGLError("ERROR: Could not destroy VAOs and VBOs.");
 }
 
@@ -460,10 +456,13 @@ const vec4 white = vec4(1.0f, 1.0f, 1.0f, 1.0f);
 const vec4 orange = vec4(1.0f, 0.2f, 0.0f, 1.0f);
 const vec4 purple = vec4(0.4f, 0.0f, 0.4f, 1.0f);
 SceneNode* tangram;
+SceneNode  *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78;
 
 void createScene() {
 	Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
-
+	Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+	ShaderProgram* dfault = shaderProgramManager->get("default");
+	ShaderProgram* prog = shaderProgramManager->get("ColorProgram");
 	scene = new Scene(dfault,camera);
 	tangram = new SceneNode(nullptr,prog,MatrixFactory::createIdentityMatrix4());
 
@@ -499,6 +498,61 @@ void createScene() {
 	table->setColor(orange);
 	table->addNode(tangram);
 	scene->addNode(table);
+}
+SceneNode* bat;
+void createStupidBat() {
+	SceneNode *b1_triangle, *b2_triangle, *s1_triangle, *s2_triangle, *m_triangle, *square, *parallelogram;
+	Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
+	Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+	ShaderProgram* dfault = shaderProgramManager->get("default");
+	ShaderProgram* prog = shaderProgramManager->get("ColorProgram");
+	bat = new SceneNode(nullptr, prog, MatrixFactory::createIdentityMatrix4());
+
+	/*mat4 btr1 = MatrixFactory::create
+	b1_triangle = new SceneNode(initiateAnimator(new keyframe(vec3(0.2f, 0.0f, -0.2f), R180y, 0.0f),
+		new keyframe(vec3(0.0f, 0.0f, 0.0f), qtrn(), 2000.0f));
+
+	b2_triangle->initiateAnimator(new keyframe(vec3(-0.2f, 0.0f, -0.2f), R_90y, 0.0f),
+		new keyframe(vec3(-0.4f, 0.0f, 0.0f), qtrn(), 2000.0f));
+
+	s1_triangle->initiateAnimator(new keyframe(vec3(-0.2f, 0.0f, 0.2f), qtrn(), 0.0f),
+		new keyframe(vec3(0.2f, 0.0f, -0.2f), R90y, 2000.0f));
+
+	s2_triangle->initiateAnimator(new keyframe(vec3(0.4f, 0.0f, -0.0f), R90y, 0.0f),
+		new keyframe(vec3(-0.2f, 0.0f, -0.6f), R_90y, 2000.0f));
+
+	m_triangle->initiateAnimator(new keyframe(vec3(0.28f, 0.0f, 0.0f), R_135y, 0.0f),
+		new keyframe(vec3(0.3f, 0.0f, 0.0f), R180y, 2000.0f));
+
+
+	square->initiateAnimator(new keyframe(vec3(0.2f, 0.0f, 0.0f), qtrn(), 0.0f),
+		new keyframe(vec3(0.0f, 0.0f, -0.2f), qtrn(), 2000.0f));
+
+
+
+	parallelogram->initiateAnimator(new keyframe(vec3(-0.4f, 0.0f, 0.4f), qtrn(), 0.0f),
+		new keyframe(vec3(-0.43f, 0.0f, 0.0f), R_45y, 2000.0f));
+*/
+	b1_triangle->setColor(red);
+	b2_triangle->setColor(green);
+	s1_triangle->setColor(blue);
+	s2_triangle->setColor(orange);
+	m_triangle->setColor(purple);
+	square->setColor(yellow);
+	parallelogram->setColor(cyan);
+
+	bat->addNode(b1_triangle);
+	bat->addNode(b2_triangle);
+	bat->addNode(s1_triangle);
+	bat->addNode(s2_triangle);
+	bat->addNode(m_triangle);
+
+	bat->addNode(square);
+	bat->addNode(parallelogram);
+
+
+	bat->updateModel(MatrixFactory::createTranslationMatrix(2,0,0));
+	table->addNode(bat);
 }
 
 void createAnimationThreeStep() {

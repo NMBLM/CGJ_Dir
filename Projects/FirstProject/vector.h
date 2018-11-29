@@ -61,7 +61,7 @@ namespace engine {
 		vec3(const vec4& v);
 
 
-		const float* data(vec3& v);
+		const float* data() const;
 		void clean();
 		
 		// assignment, Comparison

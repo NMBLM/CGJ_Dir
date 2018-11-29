@@ -58,14 +58,14 @@ void engine::SceneNode::draw(mat4 fm)
 			m = fm * anime->calcAnimation(model);
 
 		}
-
-		glUseProgram(shaderProgram->id);
+		shaderProgram->use();
 		glUniformMatrix4fv(shaderProgram->UniformId("ModelMatrix"), 1, GL_FALSE, m.data());
-		if (!fcmp(color.x ,-1)) {
-			glUniform4fv(shaderProgram->UniformLocation("forcedColor"), 1, color.data());			
+		if (!fcmp(color.x, -1)) {
+			glUniform4fv(shaderProgram->UniformLocation("forcedColor"), 1, color.data());
 		}
 		mesh->draw();
-		glUseProgram(0);
+		shaderProgram->stop();
+
 	}
 	for (auto& s : nodes) {
 		s->draw( m);

@@ -156,19 +156,19 @@
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shader\cube_fs.glsl" />
-    <None Include="Shader\cube_fs_extra.glsl" />
-    <None Include="Shader\cube_vs.glsl" />
-    <None Include="Shader\cube_vs_shared.glsl" />
-    <None Include="Shader\default_fs.glsl" />
-    <None Include="Shader\default_vs.glsl" />
-    <None Include="Shader\force_color_fs.glsl" />
-    <None Include="Shader\force_color_rcv_fs.glsl" />
-    <None Include="Shader\force_color_vs.glsl" />
-    <None Include="Shader\FragmentShader.glsl" />
-    <None Include="Shader\FragmentShaderCamera.glsl" />
-    <None Include="Shader\VertexShader.glsl" />
-    <None Include="Shader\VertexShaderCamera.glsl" />
+    <None Include="Shaders\cube_fs.glsl" />
+    <None Include="Shaders\cube_fs_extra.glsl" />
+    <None Include="Shaders\cube_vs.glsl" />
+    <None Include="Shaders\cube_vs_shared.glsl" />
+    <None Include="Shaders\default_fs.glsl" />
+    <None Include="Shaders\default_vs.glsl" />
+    <None Include="Shaders\force_color_fs.glsl" />
+    <None Include="Shaders\force_color_rcv_fs.glsl" />
+    <None Include="Shaders\force_color_vs.glsl" />
+    <None Include="Shaders\FragmentShader.glsl" />
+    <None Include="Shaders\FragmentShaderCamera.glsl" />
+    <None Include="Shaders\VertexShader.glsl" />
+    <None Include="Shaders\VertexShaderCamera.glsl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
