@@ -109,7 +109,7 @@ FixedCamera::FixedCamera()
 FixedCamera::FixedCamera(const vec3 eye, const vec3 center, const vec3 up)
 {
 	initalizeVbo();
-	qPos = qtrn(1, 0.0f, 0.0f, 0.0f);
+	qPos = qtrn(1, 0.2f, 0.1f, 0);
 	this->eye = eye;
 }
 
@@ -258,6 +258,7 @@ void FixedCamera::zoom(const int dir, const float deltatime)
 void FixedCamera::setMatrix()
 {
 	const GLsizeiptr matrixSize = sizeof(GLfloat[16]);
+
 	glBindBuffer(GL_UNIFORM_BUFFER, VboId[0]);
 	glBufferSubData(GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix().data());
 	glBufferSubData(GL_UNIFORM_BUFFER, matrixSize, matrixSize, ProjectionMatrix().data());
