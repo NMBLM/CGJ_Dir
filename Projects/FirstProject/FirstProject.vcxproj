@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\..\dependecies\freeglut\lib\x64;$(SolutionDir)\..\dependecies\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -119,7 +119,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -129,36 +129,6 @@
       <SubSystem>Console</SubSystem>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="Anime.cpp" />
-    <ClCompile Include="camera.cpp" />
-    <ClCompile Include="FullScene.cpp" />
-    <ClCompile Include="KeyBuffer.cpp" />
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="Mesh.cpp" />
-    <ClCompile Include="quaternion.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="ShaderProgram.cpp" />
-    <ClCompile Include="MeshLoader.cpp" />
-    <ClCompile Include="Texture.cpp" />
-    <ClCompile Include="TextureLoader.cpp" />
-    <ClCompile Include="vector.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Anime.h" />
-    <ClInclude Include="camera.h" />
-    <ClInclude Include="Catalog.h" />
-    <ClInclude Include="KeyBuffer.h" />
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="Mesh.h" />
-    <ClInclude Include="MeshLoader.h" />
-    <ClInclude Include="quaternion.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="ShaderProgram.h" />
-    <ClInclude Include="stb_image.h" />
-    <ClInclude Include="Texture.h" />
-    <ClInclude Include="vector.h" />
-  </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\cube_fs.glsl" />
     <None Include="Shaders\cube_fs_extra.glsl" />
@@ -175,6 +145,35 @@
     <None Include="Shaders\texShader_vs.glsl" />
     <None Include="Shaders\VertexShader.glsl" />
     <None Include="Shaders\VertexShaderCamera.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Anime.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\KeyBuffer.cpp" />
+    <ClCompile Include="src\Matrix.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshLoader.cpp" />
+    <ClCompile Include="src\Qtrn.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\ShaderProgram.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\TextureLoader.cpp" />
+    <ClCompile Include="src\Vector.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Anime.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Catalog.h" />
+    <ClInclude Include="include\KeyBuffer.h" />
+    <ClInclude Include="include\Mesh.h" />
+    <ClInclude Include="include\MeshLoader.h" />
+    <ClInclude Include="include\Qtrn.h" />
+    <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\ShaderProgram.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="include\Vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

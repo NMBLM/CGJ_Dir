@@ -12,7 +12,7 @@ void ShaderProgram::attachShader( GLuint type, const char * name, const char * f
     std::ifstream v( filename );
     std::string data;
     data.assign( ( std::istreambuf_iterator<char>( v ) ),
-        std::istreambuf_iterator<char>() );
+                 std::istreambuf_iterator<char>() );
     const GLchar * shader = data.c_str();
     int success = 0;
     char log[512];

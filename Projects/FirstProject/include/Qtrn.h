@@ -3,8 +3,8 @@
 #define QUATERNION_H
 
 
-#include "matrix.h"
-#include "vector.h"
+#include "Matrix.h"
+#include "Vector.h"
 #include <iostream>
 #include <string>
 

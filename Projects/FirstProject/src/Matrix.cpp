@@ -58,12 +58,12 @@ namespace engine{
 
     mat2 operator+( const mat2 & m1, const mat2 & m2 ){
         return mat2( m1.mat[0] + m2.mat[0], m1.mat[1] + m2.mat[1],
-            m1.mat[2] + m2.mat[2], m1.mat[3] + m2.mat[3] );
+                     m1.mat[2] + m2.mat[2], m1.mat[3] + m2.mat[3] );
     }
 
     mat2 operator-( const mat2 & m1, const mat2 & m2 ){
         return mat2( m1.mat[0] - m2.mat[0], m1.mat[1] - m2.mat[1],
-            m1.mat[2] - m2.mat[2], m1.mat[3] - m2.mat[3] );
+                     m1.mat[2] - m2.mat[2], m1.mat[3] - m2.mat[3] );
     }
 
     mat2 operator*( const mat2 & m1, const mat2 & m2 ){
@@ -73,19 +73,19 @@ namespace engine{
         */
 
         return mat2( m1.mat[0] * m2.mat[0] + m1.mat[1] * m2.mat[2],	//m11
-            m1.mat[0] * m2.mat[1] + m1.mat[1] * m2.mat[3],	//m12
-            m1.mat[2] * m2.mat[0] + m1.mat[3] * m2.mat[2],	//m21
-            m1.mat[2] * m2.mat[1] + m1.mat[3] * m2.mat[3] );	//m22
+                     m1.mat[0] * m2.mat[1] + m1.mat[1] * m2.mat[3],	//m12
+                     m1.mat[2] * m2.mat[0] + m1.mat[3] * m2.mat[2],	//m21
+                     m1.mat[2] * m2.mat[1] + m1.mat[3] * m2.mat[3] );	//m22
     }
 
     mat2 operator*( const mat2 & m, const float alpha ){
         return mat2( m.mat[0] * alpha, m.mat[1] * alpha,
-            m.mat[2] * alpha, m.mat[3] * alpha );
+                     m.mat[2] * alpha, m.mat[3] * alpha );
     }
 
     mat2 operator*( const float alpha, const mat2 & m ){
         return mat2( m.mat[0] * alpha, m.mat[1] * alpha,
-            m.mat[2] * alpha, m.mat[3] * alpha );
+                     m.mat[2] * alpha, m.mat[3] * alpha );
     }
 
     vec2 operator*( const mat2 & m, const vec2 & v ){
@@ -97,7 +97,7 @@ namespace engine{
 
     const mat2 mat2::transpose(){
         return mat2( mat[0], mat[2],
-            mat[1], mat[3] );
+                     mat[1], mat[3] );
     }
 
     const float mat2::determinant(){
@@ -130,8 +130,8 @@ namespace engine{
         mat[0] = mat[4] = mat[8] = k;
     }
     mat3::mat3( const float m11, const float m12, const float m13,
-        const float m21, const float m22, const float m23,
-        const float m31, const float m32, const float m33 ){
+                const float m21, const float m22, const float m23,
+                const float m31, const float m32, const float m33 ){
         mat[0] = m11;	mat[1] = m12;	mat[2] = m13;
         mat[3] = m21;	mat[4] = m22;	mat[5] = m23;
         mat[6] = m31;	mat[7] = m32;	mat[8] = m33;
@@ -197,14 +197,14 @@ namespace engine{
 
     mat3 operator+( const mat3 & m1, const mat3 & m2 ){
         return mat3( m1.mat[0] + m2.mat[0], m1.mat[1] + m2.mat[1], m1.mat[2] + m2.mat[2],
-            m1.mat[3] + m2.mat[3], m1.mat[4] + m2.mat[4], m1.mat[5] + m2.mat[5],
-            m1.mat[6] + m2.mat[6], m1.mat[7] + m2.mat[7], m1.mat[8] + m2.mat[8] );
+                     m1.mat[3] + m2.mat[3], m1.mat[4] + m2.mat[4], m1.mat[5] + m2.mat[5],
+                     m1.mat[6] + m2.mat[6], m1.mat[7] + m2.mat[7], m1.mat[8] + m2.mat[8] );
     }
 
     mat3 operator-( const mat3 & m1, const mat3 & m2 ){
         return mat3( m1.mat[0] - m2.mat[0], m1.mat[1] - m2.mat[1], m1.mat[2] - m2.mat[2],
-            m1.mat[3] - m2.mat[3], m1.mat[4] - m2.mat[4], m1.mat[5] - m2.mat[5],
-            m1.mat[6] - m2.mat[6], m1.mat[7] - m2.mat[7], m1.mat[8] - m2.mat[8] );
+                     m1.mat[3] - m2.mat[3], m1.mat[4] - m2.mat[4], m1.mat[5] - m2.mat[5],
+                     m1.mat[6] - m2.mat[6], m1.mat[7] - m2.mat[7], m1.mat[8] - m2.mat[8] );
     }
 
     mat3 operator*( const mat3 & m1, const mat3 & m2 ){
@@ -214,26 +214,26 @@ namespace engine{
         |	6	7	8	|		|	g	h	i	|		|	6*a+7*d+8*g		6*b+7*e+8*h		6*c+7*f+8*i		|
         */
         return mat3( m1.mat[0] * m2.mat[0] + m1.mat[1] * m2.mat[3] + m1.mat[2] * m2.mat[6],	//m11
-            m1.mat[0] * m2.mat[1] + m1.mat[1] * m2.mat[4] + m1.mat[2] * m2.mat[7],	//m12
-            m1.mat[0] * m2.mat[2] + m1.mat[1] * m2.mat[5] + m1.mat[2] * m2.mat[8],	//m13
-            m1.mat[3] * m2.mat[0] + m1.mat[4] * m2.mat[3] + m1.mat[5] * m2.mat[6],	//m21
-            m1.mat[3] * m2.mat[1] + m1.mat[4] * m2.mat[4] + m1.mat[5] * m2.mat[7],	//m22 
-            m1.mat[3] * m2.mat[2] + m1.mat[4] * m2.mat[5] + m1.mat[5] * m2.mat[8],	//m23
-            m1.mat[6] * m2.mat[0] + m1.mat[7] * m2.mat[3] + m1.mat[8] * m2.mat[6],	//m31
-            m1.mat[6] * m2.mat[1] + m1.mat[7] * m2.mat[4] + m1.mat[8] * m2.mat[7],	//m32 
-            m1.mat[6] * m2.mat[2] + m1.mat[7] * m2.mat[5] + m1.mat[8] * m2.mat[8] );	//m33
+                     m1.mat[0] * m2.mat[1] + m1.mat[1] * m2.mat[4] + m1.mat[2] * m2.mat[7],	//m12
+                     m1.mat[0] * m2.mat[2] + m1.mat[1] * m2.mat[5] + m1.mat[2] * m2.mat[8],	//m13
+                     m1.mat[3] * m2.mat[0] + m1.mat[4] * m2.mat[3] + m1.mat[5] * m2.mat[6],	//m21
+                     m1.mat[3] * m2.mat[1] + m1.mat[4] * m2.mat[4] + m1.mat[5] * m2.mat[7],	//m22 
+                     m1.mat[3] * m2.mat[2] + m1.mat[4] * m2.mat[5] + m1.mat[5] * m2.mat[8],	//m23
+                     m1.mat[6] * m2.mat[0] + m1.mat[7] * m2.mat[3] + m1.mat[8] * m2.mat[6],	//m31
+                     m1.mat[6] * m2.mat[1] + m1.mat[7] * m2.mat[4] + m1.mat[8] * m2.mat[7],	//m32 
+                     m1.mat[6] * m2.mat[2] + m1.mat[7] * m2.mat[5] + m1.mat[8] * m2.mat[8] );	//m33
     }
 
     mat3 operator*( const mat3 & m, const float alpha ){
         return mat3( m.mat[0] * alpha, m.mat[1] * alpha, m.mat[2] * alpha,
-            m.mat[3] * alpha, m.mat[4] * alpha, m.mat[5] * alpha,
-            m.mat[6] * alpha, m.mat[7] * alpha, m.mat[8] * alpha );
+                     m.mat[3] * alpha, m.mat[4] * alpha, m.mat[5] * alpha,
+                     m.mat[6] * alpha, m.mat[7] * alpha, m.mat[8] * alpha );
     }
 
     mat3 operator*( const float alpha, const mat3 & m ){
         return mat3( m.mat[0] * alpha, m.mat[1] * alpha, m.mat[2] * alpha,
-            m.mat[3] * alpha, m.mat[4] * alpha, m.mat[5] * alpha,
-            m.mat[6] * alpha, m.mat[7] * alpha, m.mat[8] * alpha );
+                     m.mat[3] * alpha, m.mat[4] * alpha, m.mat[5] * alpha,
+                     m.mat[6] * alpha, m.mat[7] * alpha, m.mat[8] * alpha );
     }
 
     vec3 operator*( const mat3 & m, const vec3 & v ){
@@ -253,8 +253,8 @@ namespace engine{
         // [0,1,2,3,4,5,6,7,8]T = [0,3,6,1,4,7,2,5,8]
 
         return mat3( mat[0], mat[3], mat[6],
-            mat[1], mat[4], mat[7],
-            mat[2], mat[5], mat[8] );
+                     mat[1], mat[4], mat[7],
+                     mat[2], mat[5], mat[8] );
     }
 
     const float mat3::determinant(){
@@ -278,8 +278,8 @@ namespace engine{
         // second transpose
         mat3 t = m.transpose();
         mat3 co_f = mat3( t.mat[4] * t.mat[8] - t.mat[5] * t.mat[7], -( t.mat[3] * t.mat[8] - t.mat[5] * t.mat[6] ), t.mat[3] * t.mat[7] - t.mat[4] * t.mat[6]
-            , -( t.mat[1] * t.mat[8] - t.mat[2] * t.mat[7] ), t.mat[0] * t.mat[8] - t.mat[2] * t.mat[6], -( t.mat[0] * t.mat[7] - t.mat[1] * t.mat[6] )
-            , t.mat[1] * t.mat[5] - t.mat[2] * t.mat[4], -( t.mat[0] * t.mat[5] - t.mat[2] * t.mat[3] ), t.mat[0] * t.mat[4] - t.mat[1] * t.mat[3] );
+                          , -( t.mat[1] * t.mat[8] - t.mat[2] * t.mat[7] ), t.mat[0] * t.mat[8] - t.mat[2] * t.mat[6], -( t.mat[0] * t.mat[7] - t.mat[1] * t.mat[6] )
+                          , t.mat[1] * t.mat[5] - t.mat[2] * t.mat[4], -( t.mat[0] * t.mat[5] - t.mat[2] * t.mat[3] ), t.mat[0] * t.mat[4] - t.mat[1] * t.mat[3] );
         // third and fourth , determinant of minor matrices, create co-factor matrix and adjugate
         return ( 1 / det )*co_f;
     }
@@ -311,9 +311,9 @@ namespace engine{
     }
 
     mat4::mat4( const float m11, const float m12, const float m13, const float m14,
-        const float m21, const float m22, const float m23, const float m24,
-        const float m31, const float m32, const float m33, const float m34,
-        const float m41, const float m42, const float m43, const float m44 ){
+                const float m21, const float m22, const float m23, const float m24,
+                const float m31, const float m32, const float m33, const float m34,
+                const float m41, const float m42, const float m43, const float m44 ){
         mat[0] = m11;	mat[1] = m12;	mat[2] = m13;	mat[3] = m14;
         mat[4] = m21;	mat[5] = m22;	mat[6] = m23;	mat[7] = m24;
         mat[8] = m31;	mat[9] = m32;	mat[10] = m33;	mat[11] = m34;
@@ -519,14 +519,14 @@ namespace engine{
 
     const mat3 MatrixFactory::createDualMatrix( const vec3& v ){
         return mat3( 0, -v.z, v.y,
-            v.z, 0, -v.x,
-            -v.y, v.x, 0 );
+                     v.z, 0, -v.x,
+                     -v.y, v.x, 0 );
     }
 
     const mat3 MatrixFactory::createSquareDualMatrix( const vec3 & v ){
         return mat3( ( -v.z*v.z ) - v.y*v.y, v.x*v.y, v.x * v.z,
-            v.x*v.y, ( -v.z*v.z ) - v.x*v.x, v.y * v.z,
-            v.x*v.z, v.y * v.z, ( -v.y*v.y ) - v.x*v.x );
+                     v.x*v.y, ( -v.z*v.z ) - v.x*v.x, v.y * v.z,
+                     v.x*v.z, v.y * v.z, ( -v.y*v.y ) - v.x*v.x );
     }
 
     const mat3 MatrixFactory::createScaleMatrix3( const float x, const float y, const float z ){
@@ -588,9 +588,9 @@ namespace engine{
 
     const mat4 MatrixFactory::createLookAt( const vec3 eye, const vec3 v, const vec3 u, const vec3 s ){
         mat4 res = mat4( s.x, s.y, s.z, -s.dot( eye ),
-            u.x, u.y, u.z, -u.dot( eye ),
-            -v.x, -v.y, -v.z, v.dot( eye ),
-            0, 0, 0, 1 );
+                         u.x, u.y, u.z, -u.dot( eye ),
+                         -v.x, -v.y, -v.z, v.dot( eye ),
+                         0, 0, 0, 1 );
         res.clean();
         return res;
     }
@@ -603,18 +603,18 @@ namespace engine{
         vec3 u = s.cross( v ); //is a unit vector only because s and v are perpendicular to each other and are unit vectors |s x v| = |s||v|*sin(angle)
 
         mat4 res = mat4( s.x, s.y, s.z, -s.dot( eye ),
-            u.x, u.y, u.z, -u.dot( eye ),
-            -v.x, -v.y, -v.z, v.dot( eye ),
-            0, 0, 0, 1 );
+                         u.x, u.y, u.z, -u.dot( eye ),
+                         -v.x, -v.y, -v.z, v.dot( eye ),
+                         0, 0, 0, 1 );
         res.clean();
         return res;
     }
 
     const mat4 MatrixFactory::createOrtographicProjectionMatrix( const float left, const float right, const float bottom, const float top, const float near, const float far ){
         mat4 res = mat4( 2 / ( right - left ), 0, 0, ( left + right ) / ( left - right ),
-            0, 2 / ( top - bottom ), 0, ( top + bottom ) / ( bottom - top ),
-            0, 0, -2 / ( far - near ), ( far + near ) / ( near - far ),
-            0, 0, 0, 1 );
+                         0, 2 / ( top - bottom ), 0, ( top + bottom ) / ( bottom - top ),
+                         0, 0, -2 / ( far - near ), ( far + near ) / ( near - far ),
+                         0, 0, 0, 1 );
         res.clean();
         return res;
     }
@@ -625,9 +625,9 @@ namespace engine{
         float d = 1 / tan( angle );
 
         mat4 res = mat4( d / aspect, 0, 0, 0,
-            0, d, 0, 0,
-            0, 0, ( near + far ) / ( near - far ), ( 2 * far * near ) / ( near - far ),
-            0, 0, -1, 0 );
+                         0, d, 0, 0,
+                         0, 0, ( near + far ) / ( near - far ), ( 2 * far * near ) / ( near - far ),
+                         0, 0, -1, 0 );
         res.clean();
         return res;
     }

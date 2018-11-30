@@ -1,6 +1,4 @@
 #include "camera.h"
-#include "vector.h"
-#include "matrix.h"
 
 using namespace engine;
 

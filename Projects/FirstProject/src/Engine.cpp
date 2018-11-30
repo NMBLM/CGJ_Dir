@@ -90,7 +90,7 @@ static std::string errorSeverity( GLenum severity ){
 }
 
 static void error( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-    const GLchar *message, const void *userParam ){
+                   const GLchar *message, const void *userParam ){
     std::cerr << "ERROR:" << std::endl;
     std::cerr << "  source:     " << errorSource( source ) << std::endl;
     std::cerr << "  type:       " << errorType( type ) << std::endl;
@@ -256,9 +256,6 @@ void createShaderProgram(){
 
     // Non default
     prog = new ShaderProgram();
-    //prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/cube_vs_shared.glsl");
-    //prog->attachShader(GL_FRAGMENT_SHADER, "fragment","Shaders/cube_fs_extra.glsl");
-    //prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/force_color_fs.glsl");
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/force_color_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/force_color_rcv_fs.glsl" );
 
@@ -499,41 +496,41 @@ void createScene(){
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
     ShaderProgram* prog = shaderProgramManager->get( "ColorProgram" );
     scene = new Scene( dfault, camera );
-    tangram = new SceneNode(nullptr,prog,MatrixFactory::createIdentityMatrix4());
+    tangram = new SceneNode( nullptr, prog, MatrixFactory::createIdentityMatrix4() );
 
-    trpc1 = new SceneNode(meshManager->get("triangle"), prog, tr1);
-    trpc2 = new SceneNode(meshManager->get("triangle"), prog, tr2);
-    trpc3 = new SceneNode(meshManager->get("triangle"), prog, tr3);
-    trpc6 = new SceneNode(meshManager->get("triangle"), prog, tr6);
-    trpc9 = new SceneNode(meshManager->get("triangle"), prog, tr9);
+    trpc1 = new SceneNode( meshManager->get( "triangle" ), prog, tr1 );
+    trpc2 = new SceneNode( meshManager->get( "triangle" ), prog, tr2 );
+    trpc3 = new SceneNode( meshManager->get( "triangle" ), prog, tr3 );
+    trpc6 = new SceneNode( meshManager->get( "triangle" ), prog, tr6 );
+    trpc9 = new SceneNode( meshManager->get( "triangle" ), prog, tr9 );
 
-    sqpc78 = new SceneNode( meshManager->get( "square" ), shaderProgramManager->get("TextureProgram"), sq78 );
+    sqpc78 = new SceneNode( meshManager->get( "square" ), shaderProgramManager->get( "TextureProgram" ), sq78 );
     sqpc78->addTexture( "wood" );
     sqpc78->addTexture( "error2" );
-    plpc45 = new SceneNode(meshManager->get("parallelogram"), prog, pl45);
+    plpc45 = new SceneNode( meshManager->get( "parallelogram" ), prog, pl45 );
 
-    trpc1->setColor(red);
-    trpc2->setColor(green);
-    trpc3->setColor(blue);
-    trpc6->setColor(cyan);
-    trpc9->setColor(magenta);
-    sqpc78->setColor(yellow);
-    plpc45->setColor(white);
+    trpc1->setColor( red );
+    trpc2->setColor( green );
+    trpc3->setColor( blue );
+    trpc6->setColor( cyan );
+    trpc9->setColor( magenta );
+    sqpc78->setColor( yellow );
+    plpc45->setColor( white );
 
-    tangram->addNode(trpc1);
-    tangram->addNode(trpc2);
-    tangram->addNode(trpc3);
-    tangram->addNode(trpc6);
-    tangram->addNode(trpc9);
+    tangram->addNode( trpc1 );
+    tangram->addNode( trpc2 );
+    tangram->addNode( trpc3 );
+    tangram->addNode( trpc6 );
+    tangram->addNode( trpc9 );
 
-    tangram->addNode(sqpc78);
-    tangram->addNode(plpc45);
+    tangram->addNode( sqpc78 );
+    tangram->addNode( plpc45 );
 
     //TABLE SETUP
-    table = new SceneNode(meshManager->get("table"), prog);
-    table->setColor(orange);
-    table->addNode(tangram);
-    scene->addNode(table);
+    table = new SceneNode( meshManager->get( "table" ), prog );
+    table->setColor( orange );
+    table->addNode( tangram );
+    scene->addNode( table );
 }
 
 void createAnimationThreeStep(){

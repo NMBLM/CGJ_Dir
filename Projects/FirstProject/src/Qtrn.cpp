@@ -1,4 +1,4 @@
-#include "quaternion.h"
+#include "Qtrn.h"
 #include "vector.h"
 #include "matrix.h"
 
@@ -105,9 +105,9 @@ namespace engine{
         float zt = qn.z * qn.t;
 
         mat4 res = mat4( 1.0f - 2.0f * ( yy + zz ), 2.0f * ( xy - zt ), 2.0f * ( xz + yt ), 0.0f,
-            2.0f * ( xy + zt ), 1.0f - 2.0f * ( xx + zz ), 2.0f * ( yz - xt ), 0.0f,
-            2.0f * ( xz - yt ), 2.0f * ( yz + xt ), 1.0f - 2.0f * ( xx + yy ),
-            0.0f, 0.0f, 0.0f, 0.0f, 1.0f );
+                         2.0f * ( xy + zt ), 1.0f - 2.0f * ( xx + zz ), 2.0f * ( yz - xt ), 0.0f,
+                         2.0f * ( xz - yt ), 2.0f * ( yz + xt ), 1.0f - 2.0f * ( xx + yy ),
+                         0.0f, 0.0f, 0.0f, 0.0f, 1.0f );
         res.clean();
         return res;
     }

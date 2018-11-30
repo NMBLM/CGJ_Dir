@@ -60,10 +60,10 @@ void engine::SceneNode::draw( mat4 fm ){
         }
         unsigned int i = 0;
 
-        std::string t = std::string("texture");
+        std::string t = std::string( "texture" );
         for( auto& texName : textures ){
-            glUniform1i( shaderProgram->UniformId((t + std::to_string( i )).c_str() ), i );
-            Catalog<Texture*>::instance()->get( texName )->activate(GL_TEXTURE0 + i);
+            glUniform1i( shaderProgram->UniformId( ( t + std::to_string( i ) ).c_str() ), i );
+            Catalog<Texture*>::instance()->get( texName )->activate( GL_TEXTURE0 + i );
             i++;
         }
         mesh->draw();
@@ -113,7 +113,7 @@ void engine::SceneNode::addAnimator( Animator* a ){
     anime = a;
 }
 
-void engine::SceneNode::addTexture(const std::string & texName ){
+void engine::SceneNode::addTexture( const std::string & texName ){
     textures.push_back( texName );
 }
 

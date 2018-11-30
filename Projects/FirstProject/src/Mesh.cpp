@@ -7,9 +7,9 @@ Mesh::Mesh(){
 }
 
 Mesh::Mesh( std::vector<vec3> vertices,
-    std::vector<vec2> texcoords,
-    std::vector<vec3> normals,
-    bool tcLoaded, bool nLoaded ){
+            std::vector<vec2> texcoords,
+            std::vector<vec3> normals,
+            bool tcLoaded, bool nLoaded ){
 
     this->Vertices = std::vector<vec3>( vertices );
     this->Texcoords = std::vector<vec2>( texcoords );

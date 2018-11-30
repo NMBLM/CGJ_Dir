@@ -2,9 +2,9 @@
 #ifndef ANIME_H
 #define ANIME_H
 #include <vector>
-#include "vector.h"
-#include "matrix.h"
-#include "quaternion.h"
+#include "Vector.h"
+#include "Matrix.h"
+#include "Qtrn.h"
 using namespace engine;
 class Animation{
     qtrn rStart, rEnd;

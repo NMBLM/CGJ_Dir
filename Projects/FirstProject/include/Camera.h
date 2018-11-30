@@ -2,9 +2,9 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-#include "vector.h"
-#include "matrix.h"
-#include "quaternion.h"
+#include "Vector.h"
+#include "Matrix.h"
+#include "Qtrn.h"
 #include "GL/glew.h"
 
 

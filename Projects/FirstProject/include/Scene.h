@@ -5,8 +5,8 @@
 #include <vector>
 #include "vector.h"
 #include "Mesh.h"
-#include "camera.h"
-#include "matrix.h"
+#include "Camera.h"
+#include "Matrix.h"
 #include "Anime.h"
 #include "ShaderProgram.h"
 #include "Texture.h"
