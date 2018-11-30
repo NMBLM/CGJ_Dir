@@ -110,8 +110,9 @@ void setupErrors()
 }
 
 void mouse_wheel_input(int button, int dir, int x, int y) {
-	camera->zoom(dir, delta);
-	//freeCamera->zoom(dir, delta);
+	if (!freecam) {
+		camera->zoom(dir, delta);
+	}
 }
 
 void mouse_input(int x, int y) {
