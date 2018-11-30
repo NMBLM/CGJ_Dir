@@ -1,115 +1,97 @@
 #include "ShaderProgram.h"
 
-ShaderProgram::ShaderProgram()
-{
+ShaderProgram::ShaderProgram(){
 	id = glCreateProgram();
 }
 
-ShaderProgram::ShaderProgram(GLuint i)
-{
+ShaderProgram::ShaderProgram( GLuint i ){
 	id = i;
 }
 
-void ShaderProgram::attachShader(GLuint type, const char * name, const char * filename)
-{
-	std::ifstream v(filename);
+void ShaderProgram::attachShader( GLuint type, const char * name, const char * filename ){
+	std::ifstream v( filename );
 	std::string data;
-	data.assign((std::istreambuf_iterator<char>(v)),
-		std::istreambuf_iterator<char>());
+	data.assign( ( std::istreambuf_iterator<char>( v ) ),
+		std::istreambuf_iterator<char>() );
 	const GLchar * shader = data.c_str();
 	int success = 0;
 	char log[512];
-	GLuint tempid = glCreateShader(type);
+	GLuint tempid = glCreateShader( type );
 
-	shaderid.insert(std::make_pair(name, tempid));
+	shaderid.insert( std::make_pair( name, tempid ) );
 
-	glShaderSource(tempid, 1, &shader, 0);
-	glCompileShader(tempid);
-	glGetShaderiv(tempid, GL_COMPILE_STATUS, &success);
-	if (!success)
-	{
-		glGetShaderInfoLog(tempid, 512, NULL, log);
+	glShaderSource( tempid, 1, &shader, 0 );
+	glCompileShader( tempid );
+	glGetShaderiv( tempid, GL_COMPILE_STATUS, &success );
+	if( !success ){
+		glGetShaderInfoLog( tempid, 512, NULL, log );
 		std::cout << "ERROR::SHADER::" << name << "::COMPILATION_FAILED\n" << log << std::endl;
 	};
-	glAttachShader(id, tempid);
+	glAttachShader( id, tempid );
 
 }
 
-void ShaderProgram::detachShader(const char * name)
-{
-	GLuint sid = shaderid.find(name)->second;
-	glDetachShader(id,sid);
-	glDeleteShader(sid);
+void ShaderProgram::detachShader( const char * name ){
+	GLuint sid = shaderid.find( name )->second;
+	glDetachShader( id, sid );
+	glDeleteShader( sid );
 }
 
-void ShaderProgram::link()
-{
+void ShaderProgram::link(){
 	int success = 0;
 	char log[512];
-	glLinkProgram(id);
-	glGetProgramiv(id, GL_LINK_STATUS, &success);
-	if (!success)
-	{
-		glGetProgramInfoLog(id, 512, NULL, log);
+	glLinkProgram( id );
+	glGetProgramiv( id, GL_LINK_STATUS, &success );
+	if( !success ){
+		glGetProgramInfoLog( id, 512, NULL, log );
 		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << log << std::endl;
 	}
 }
 
-void ShaderProgram::bindAttribLocation(const int atnum, const char * atname)
-{
-	glBindAttribLocation(id, atnum, atname);
+void ShaderProgram::bindAttribLocation( const int atnum, const char * atname ){
+	glBindAttribLocation( id, atnum, atname );
 }
 
-void ShaderProgram::uniformBlockBinding(GLint bid, GLuint bpo)
-{
-	glUniformBlockBinding(id, bid, bpo);
-}
-
-
-GLint ShaderProgram::UniformId(const char * uniformName)
-{
-	return glGetUniformLocation(id, uniformName);
-}
-
-GLint ShaderProgram::UniformLocation(const char * uniformName)
-{
-	return glGetUniformLocation(id, uniformName);
-}
-
-GLint ShaderProgram::uniformBlockIndex(const char * uniformName)
-{
-	return glGetUniformBlockIndex(id, uniformName);
-}
-
-void ShaderProgram::addUniformVec(const char * name, vec4 v)
-{
-	glUniform4fv(UniformId(name), 1, v.data());
-}
-
-void ShaderProgram::addUniformVec(const char * name, vec3 v)
-{
-	glUniform3fv(UniformId(name), 1, v.data());
-}
-
-void ShaderProgram::addUniformVec(const char * name, vec2 v)
-{
-	glUniform2fv(UniformId(name), 1, v.data());
-}
-
-void ShaderProgram::addUniformFloat(const char * name, float f)
-{
-	glUniform1f(UniformId(name), f);
-}
-
-void ShaderProgram::addUniformMat(const char * name, mat4 m)
-{
-	glUniformMatrix4fv(UniformId(name), 1, GL_FALSE, m.data());
+void ShaderProgram::uniformBlockBinding( GLint bid, GLuint bpo ){
+	glUniformBlockBinding( id, bid, bpo );
 }
 
 
-void ShaderProgram::use()
-{
-	glUseProgram(id);
+GLint ShaderProgram::UniformId( const char * uniformName ){
+	return glGetUniformLocation( id, uniformName );
+}
+
+GLint ShaderProgram::UniformLocation( const char * uniformName ){
+	return glGetUniformLocation( id, uniformName );
+}
+
+GLint ShaderProgram::uniformBlockIndex( const char * uniformName ){
+	return glGetUniformBlockIndex( id, uniformName );
+}
+
+void ShaderProgram::addUniformVec( const char * name, vec4 v ){
+	glUniform4fv( UniformId( name ), 1, v.data() );
+}
+
+void ShaderProgram::addUniformVec( const char * name, vec3 v ){
+	glUniform3fv( UniformId( name ), 1, v.data() );
+}
+
+void ShaderProgram::addUniformVec( const char * name, vec2 v ){
+	glUniform2fv( UniformId( name ), 1, v.data() );
+}
+
+void ShaderProgram::addUniformFloat( const char * name, float f ){
+	glUniform1f( UniformId( name ), f );
+}
+
+void ShaderProgram::addUniformMat( const char * name, mat4 m ){
+	glUniformMatrix4fv( UniformId( name ), 1, GL_FALSE, m.data() );
+}
+
+
+void ShaderProgram::use(){
+	glUseProgram( id );
 	//for (auto& m : unimat4) {
 	//	glUniformMatrix4fv(UniformId(m.first.c_str()), 1, GL_FALSE, m.second.data());
 	//}
@@ -131,9 +113,8 @@ void ShaderProgram::use()
 	//}
 }
 
-void ShaderProgram::stop()
-{
-	glUseProgram(0);
+void ShaderProgram::stop(){
+	glUseProgram( 0 );
 }
 
 
