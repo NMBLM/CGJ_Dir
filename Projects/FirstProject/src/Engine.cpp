@@ -506,7 +506,6 @@ void createScene(){
 
     sqpc78 = new SceneNode( meshManager->get( "square" ), shaderProgramManager->get( "TextureProgram" ), sq78 );
     sqpc78->addTexture( "wood" );
-    sqpc78->addTexture( "error2" );
     plpc45 = new SceneNode( meshManager->get( "parallelogram" ), prog, pl45 );
 
     trpc1->setColor( red );
