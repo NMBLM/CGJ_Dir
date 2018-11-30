@@ -32,6 +32,7 @@ const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
 
 FixedCamera* camera;
+Camera* freeCamera;
 
 MeshLoader meshLoader;
 
@@ -42,6 +43,7 @@ float delta = 0.0f;
 int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
 float k = 0.0f;
+bool freecam = false;
 
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
@@ -88,7 +90,7 @@ static std::string errorSeverity( GLenum severity ){
 }
 
 static void error( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-                   const GLchar *message, const void *userParam ){
+    const GLchar *message, const void *userParam ){
     std::cerr << "ERROR:" << std::endl;
     std::cerr << "  source:     " << errorSource( source ) << std::endl;
     std::cerr << "  type:       " << errorType( type ) << std::endl;
@@ -103,10 +105,12 @@ void setupErrors(){
     // params: source, type, severity, count, ids, enabled
 }
 
-
 void mouse_wheel_input( int button, int dir, int x, int y ){
-    camera->zoom( dir, delta );
+    if( !freecam ){
+        camera->zoom( dir, delta );
+    }
 }
+
 void mouse_input( int x, int y ){
 
     int xoffset = lastMouseX - x;
@@ -114,14 +118,17 @@ void mouse_input( int x, int y ){
     lastMouseX = x;
     lastMouseY = y;
     float sen = 0.25f;
-    camera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
+    if( freecam ){
+        freeCamera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
+    } else{
+        camera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
+    }
 
 }
 
 void keyPress( unsigned char key, int x, int y ){
     KeyBuffer::instance()->pressKey( key );
 }
-
 
 void keyRelease( unsigned char key, int x, int y ){
     if( KeyBuffer::instance()->isKeyDown( 'g' ) || KeyBuffer::instance()->isKeyDown( 'G' ) ) camera->gimbalLockSwitch();
@@ -130,6 +137,15 @@ void keyRelease( unsigned char key, int x, int y ){
         projectionMatrix = otherProjectionMatrix;
         otherProjectionMatrix = temp;
         camera->ProjectionMatrix( projectionMatrix );
+    }
+
+    if( KeyBuffer::instance()->isKeyDown( 'f' ) || KeyBuffer::instance()->isKeyDown( 'F' ) ){
+        if( freecam ){
+            scene->setCamera( camera );
+        } else{
+            scene->setCamera( freeCamera );
+        }
+        freecam = !freecam;
     }
     if( KeyBuffer::instance()->isKeyDown( 'r' ) ) scene->actOnAnimator();
     if( KeyBuffer::instance()->isKeyDown( 'R' ) ) scene->actOnAnimator();
@@ -146,23 +162,41 @@ void specialKeyRelease( int key, int x, int y ){
 }
 
 void update(){
-    if( KeyBuffer::instance()->isKeyDown( 'a' ) ) camera->cameraMoveLeft( delta );
-    if( KeyBuffer::instance()->isKeyDown( 'A' ) ) camera->cameraMoveLeft( delta );
+    //FixedCamera
+    if( !freecam ){
+        if( KeyBuffer::instance()->isKeyDown( 'a' ) ) camera->cameraMoveLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'A' ) ) camera->cameraMoveLeft( delta );
 
-    if( KeyBuffer::instance()->isKeyDown( 'd' ) ) camera->cameraMoveRight( delta );
-    if( KeyBuffer::instance()->isKeyDown( 'D' ) ) camera->cameraMoveRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'd' ) ) camera->cameraMoveRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'D' ) ) camera->cameraMoveRight( delta );
 
-    if( KeyBuffer::instance()->isKeyDown( 's' ) ) camera->cameraMoveBack( delta );
-    if( KeyBuffer::instance()->isKeyDown( 'S' ) ) camera->cameraMoveBack( delta );
+        if( KeyBuffer::instance()->isKeyDown( 's' ) ) camera->cameraMoveBack( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'S' ) ) camera->cameraMoveBack( delta );
 
-    if( KeyBuffer::instance()->isKeyDown( 'w' ) ) camera->cameraMoveForward( delta );
-    if( KeyBuffer::instance()->isKeyDown( 'W' ) ) camera->cameraMoveForward( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'w' ) ) camera->cameraMoveForward( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'W' ) ) camera->cameraMoveForward( delta );
 
-    if( KeyBuffer::instance()->isKeyDown( 'q' ) ) camera->cameraRollLeft( delta );
-    if( KeyBuffer::instance()->isKeyDown( 'Q' ) ) camera->cameraRollLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'q' ) ) camera->cameraRollLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'Q' ) ) camera->cameraRollLeft( delta );
 
-    if( KeyBuffer::instance()->isKeyDown( 'e' ) ) camera->cameraRollRight( delta );
-    if( KeyBuffer::instance()->isKeyDown( 'E' ) ) camera->cameraRollRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'e' ) ) camera->cameraRollRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'E' ) ) camera->cameraRollRight( delta );
+    }
+
+    //FreeCamera
+    if( freecam ){
+        if( KeyBuffer::instance()->isKeyDown( 'a' ) ) freeCamera->cameraMoveLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'A' ) ) freeCamera->cameraMoveLeft( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'd' ) ) freeCamera->cameraMoveRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'D' ) ) freeCamera->cameraMoveRight( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 's' ) ) freeCamera->cameraMoveBack( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'S' ) ) freeCamera->cameraMoveBack( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'w' ) ) freeCamera->cameraMoveForward( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'W' ) ) freeCamera->cameraMoveForward( delta );
+    }
 
     if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_LEFT ) ){
         table->updateModel( MatrixFactory::createTranslationMatrix( -1.0f * delta, 0.0f, 0.0f ) );
@@ -316,6 +350,9 @@ void reshape( int w, int h ){
     WinX = w;
     WinY = h;
     glViewport( 0, 0, WinX, WinY );
+    projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
+    camera->ProjectionMatrix( projectionMatrix );
+    freeCamera->ProjectionMatrix( projectionMatrix );
 }
 
 void timer( int value ){
@@ -399,11 +436,12 @@ void setupGLUT( int argc, char* argv[] ){
 
 void setupCamera(){
     camera = new FixedCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
+    freeCamera = new FreeCamera( vec3( 0, 3, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
     camera->ProjectionMatrix( projectionMatrix );
+    freeCamera->ProjectionMatrix( projectionMatrix );
 }
 
 void loadMeshes(){
-
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     meshManager->insert( "triangle", meshLoader.createMesh( std::string( "Mesh/Triangle.obj" ) ) );
     meshManager->insert( "square", meshLoader.createMesh( std::string( "Mesh/Square.obj" ) ) );

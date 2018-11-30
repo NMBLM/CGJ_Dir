@@ -10,42 +10,42 @@
 #include <fstream>
 #include <sstream>
 
-namespace engine {
+namespace engine{
 
-	class MeshLoader {
-	public:
+    class MeshLoader{
+        public:
 
-		std::vector <vec3> vertexData;
-		std::vector <vec2> texcoordData;
-		std::vector <vec3> normalData;
+        std::vector <vec3> vertexData;
+        std::vector <vec2> texcoordData;
+        std::vector <vec3> normalData;
 
-		std::vector <unsigned int> vertexIdx, texcoordIdx, normalIdx;
+        std::vector <unsigned int> vertexIdx, texcoordIdx, normalIdx;
 
-		bool TexcoordsLoaded, NormalsLoaded;
+        bool TexcoordsLoaded, NormalsLoaded;
 
-		MeshLoader();
-		~MeshLoader();
+        MeshLoader();
+        ~MeshLoader();
 
-		Mesh* createMesh(const std::string& filename);
+        Mesh* createMesh( const std::string& filename );
 
-	private:
-		void parseVertex(std::stringstream& sin);
+        private:
+        void parseVertex( std::stringstream& sin );
 
-		void parseTexcoord(std::stringstream& sin);
+        void parseTexcoord( std::stringstream& sin );
 
-		void parseNormal(std::stringstream& sin);
+        void parseNormal( std::stringstream& sin );
 
-		void parseFace(std::stringstream& sin);
+        void parseFace( std::stringstream& sin );
 
-		void parseLine(std::stringstream& sin);
+        void parseLine( std::stringstream& sin );
 
-		void loadMeshData(const std::string& filename);
+        void loadMeshData( const std::string& filename );
 
-		Mesh* processMeshData();
+        Mesh* processMeshData();
 
-		void freeMeshData();
+        void freeMeshData();
 
-	};
+    };
 
 }
 

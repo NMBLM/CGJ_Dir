@@ -15,7 +15,7 @@
 #include "GL/glew.h"
 
 
-namespace engine {
+namespace engine{
 
 
 
@@ -54,14 +54,14 @@ namespace engine {
         ShaderProgram* dfault;
         Camera * camera = nullptr;
 
-
-    public:
-        Scene(ShaderProgram* shaders,Camera* cam);
+        public:
+        Scene( ShaderProgram* shaders, Camera* cam );
         void draw();
-        void addNode(SceneNode* node);
-        void updateModel(mat4 trs);
+        void addNode( SceneNode* node );
+        void updateModel( mat4 trs );
         void actOnAnimator();
-        void update(float deltatime);
+        void update( float deltatime );
+        void setCamera( Camera* cam );
 
     };
 

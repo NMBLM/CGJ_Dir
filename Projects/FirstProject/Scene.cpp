@@ -29,6 +29,12 @@ void engine::Scene::update( float deltatime ){
     root->update( deltatime );
 }
 
+void engine::Scene::setCamera( Camera * cam ){
+    camera = cam;
+}
+
+
+
 engine::SceneNode::SceneNode(){
     nodes = std::vector <SceneNode*>();
 }
