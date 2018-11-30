@@ -21,7 +21,6 @@ namespace engine{
             loadDefault();
         }
         stbi_image_free( data );
-        std::cout << textureId << std::endl;
     }
 
     void Texture::loadDefault(){

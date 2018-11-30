@@ -141,6 +141,8 @@
     <None Include="Shaders\force_color_vs.glsl" />
     <None Include="Shaders\FragmentShader.glsl" />
     <None Include="Shaders\FragmentShaderCamera.glsl" />
+    <None Include="Shaders\texShader_color_fs.glsl" />
+    <None Include="Shaders\texShader_color_vs.glsl" />
     <None Include="Shaders\texShader_fs.glsl" />
     <None Include="Shaders\texShader_vs.glsl" />
     <None Include="Shaders\VertexShader.glsl" />
@@ -166,6 +168,7 @@
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Catalog.h" />
     <ClInclude Include="include\KeyBuffer.h" />
+    <ClInclude Include="include\Matrix.h" />
     <ClInclude Include="include\Mesh.h" />
     <ClInclude Include="include\MeshLoader.h" />
     <ClInclude Include="include\Qtrn.h" />

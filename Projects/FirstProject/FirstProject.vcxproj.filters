@@ -63,6 +63,12 @@
     <None Include="Shaders\texShader_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="Shaders\texShader_color_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\texShader_color_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">
@@ -140,6 +146,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
