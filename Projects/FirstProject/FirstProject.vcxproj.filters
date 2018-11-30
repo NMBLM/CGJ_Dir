@@ -51,6 +51,12 @@
     <ClCompile Include="MeshLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vector.h">
@@ -84,6 +90,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Catalog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -125,6 +137,12 @@
       <Filter>Shader Files</Filter>
     </None>
     <None Include="Shaders\VertexShaderCamera.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\texShader_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\texShader_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>

@@ -140,6 +140,8 @@
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="ShaderProgram.cpp" />
     <ClCompile Include="MeshLoader.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="TextureLoader.cpp" />
     <ClCompile Include="vector.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -153,6 +155,8 @@
     <ClInclude Include="quaternion.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="ShaderProgram.h" />
+    <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="vector.h" />
   </ItemGroup>
   <ItemGroup>
@@ -167,6 +171,8 @@
     <None Include="Shaders\force_color_vs.glsl" />
     <None Include="Shaders\FragmentShader.glsl" />
     <None Include="Shaders\FragmentShaderCamera.glsl" />
+    <None Include="Shaders\texShader_fs.glsl" />
+    <None Include="Shaders\texShader_vs.glsl" />
     <None Include="Shaders\VertexShader.glsl" />
     <None Include="Shaders\VertexShaderCamera.glsl" />
   </ItemGroup>
