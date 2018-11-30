@@ -31,6 +31,7 @@ const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
 
 FixedCamera* camera;
+Camera* freeCamera;
 
 MeshLoader meshLoader;
 
@@ -41,6 +42,7 @@ float delta = 0.0f;
 int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
 float k = 0.0f;
+bool freecam = false;
 
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 30);
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 30);
@@ -107,10 +109,11 @@ void setupErrors()
 	// params: source, type, severity, count, ids, enabled
 }
 
-
 void mouse_wheel_input(int button, int dir, int x, int y) {
 	camera->zoom(dir, delta);
+	//freeCamera->zoom(dir, delta);
 }
+
 void mouse_input(int x, int y) {
 
 	int xoffset = lastMouseX - x;
@@ -118,14 +121,18 @@ void mouse_input(int x, int y) {
 	lastMouseX = x;
 	lastMouseY = y;
 	float sen = 0.25f;
-	camera->cameraLookAround(xoffset * sen, yoffset * sen, delta);
+	if(freecam){
+		freeCamera->cameraLookAround(xoffset * sen, yoffset * sen, delta);
+	}
+	else {
+		camera->cameraLookAround(xoffset * sen, yoffset * sen, delta);
+	}
 
 }
 
 void keyPress(unsigned char key, int x, int y) {
 	KeyBuffer::instance()->pressKey(key);
 }
-
 
 void keyRelease(unsigned char key, int x, int y) {
 	if (KeyBuffer::instance()->isKeyDown('g') || KeyBuffer::instance()->isKeyDown('G')) camera->gimbalLockSwitch();
@@ -134,6 +141,16 @@ void keyRelease(unsigned char key, int x, int y) {
 		projectionMatrix = otherProjectionMatrix;
 		otherProjectionMatrix = temp;
 		camera->ProjectionMatrix(projectionMatrix);
+	}
+
+	if (KeyBuffer::instance()->isKeyDown('f') || KeyBuffer::instance()->isKeyDown('F')) {
+		if (freecam) {
+			scene->setCamera(camera);
+		}
+		else {
+			scene->setCamera(freeCamera);
+		}
+		freecam = !freecam;
 	}
 	if (KeyBuffer::instance()->isKeyDown('r')) scene->actOnAnimator();
 	if (KeyBuffer::instance()->isKeyDown('R')) scene->actOnAnimator();
@@ -150,23 +167,41 @@ void specialKeyRelease(int key, int x, int y) {
 }
 
 void update() {
-	if (KeyBuffer::instance()->isKeyDown('a')) camera->cameraMoveLeft(delta);
-	if (KeyBuffer::instance()->isKeyDown('A')) camera->cameraMoveLeft(delta);
+	//FixedCamera
+	if (!freecam) {
+		if (KeyBuffer::instance()->isKeyDown('a')) camera->cameraMoveLeft(delta);
+		if (KeyBuffer::instance()->isKeyDown('A')) camera->cameraMoveLeft(delta);
 
-	if (KeyBuffer::instance()->isKeyDown('d')) camera->cameraMoveRight(delta);
-	if (KeyBuffer::instance()->isKeyDown('D')) camera->cameraMoveRight(delta);
+		if (KeyBuffer::instance()->isKeyDown('d')) camera->cameraMoveRight(delta);
+		if (KeyBuffer::instance()->isKeyDown('D')) camera->cameraMoveRight(delta);
 
-	if (KeyBuffer::instance()->isKeyDown('s')) camera->cameraMoveBack(delta);
-	if (KeyBuffer::instance()->isKeyDown('S')) camera->cameraMoveBack(delta);
+		if (KeyBuffer::instance()->isKeyDown('s')) camera->cameraMoveBack(delta);
+		if (KeyBuffer::instance()->isKeyDown('S')) camera->cameraMoveBack(delta);
 
-	if (KeyBuffer::instance()->isKeyDown('w')) camera->cameraMoveForward(delta);
-	if (KeyBuffer::instance()->isKeyDown('W')) camera->cameraMoveForward(delta);
+		if (KeyBuffer::instance()->isKeyDown('w')) camera->cameraMoveForward(delta);
+		if (KeyBuffer::instance()->isKeyDown('W')) camera->cameraMoveForward(delta);
 
-	if (KeyBuffer::instance()->isKeyDown('q')) camera->cameraRollLeft(delta);
-	if (KeyBuffer::instance()->isKeyDown('Q')) camera->cameraRollLeft(delta);
+		if (KeyBuffer::instance()->isKeyDown('q')) camera->cameraRollLeft(delta);
+		if (KeyBuffer::instance()->isKeyDown('Q')) camera->cameraRollLeft(delta);
 
-	if (KeyBuffer::instance()->isKeyDown('e')) camera->cameraRollRight(delta);
-	if (KeyBuffer::instance()->isKeyDown('E')) camera->cameraRollRight(delta);
+		if (KeyBuffer::instance()->isKeyDown('e')) camera->cameraRollRight(delta);
+		if (KeyBuffer::instance()->isKeyDown('E')) camera->cameraRollRight(delta);
+	}
+
+	//FreeCamera
+	if (freecam) {
+		if (KeyBuffer::instance()->isKeyDown('a')) freeCamera->cameraMoveLeft(delta);
+		if (KeyBuffer::instance()->isKeyDown('A')) freeCamera->cameraMoveLeft(delta);
+
+		if (KeyBuffer::instance()->isKeyDown('d')) freeCamera->cameraMoveRight(delta);
+		if (KeyBuffer::instance()->isKeyDown('D')) freeCamera->cameraMoveRight(delta);
+
+		if (KeyBuffer::instance()->isKeyDown('s')) freeCamera->cameraMoveBack(delta);
+		if (KeyBuffer::instance()->isKeyDown('S')) freeCamera->cameraMoveBack(delta);
+
+		if (KeyBuffer::instance()->isKeyDown('w')) freeCamera->cameraMoveForward(delta);
+		if (KeyBuffer::instance()->isKeyDown('W')) freeCamera->cameraMoveForward(delta);
+	}
 
 	if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
 		table->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
@@ -314,6 +349,9 @@ void reshape(int w, int h)
 	WinX = w;
 	WinY = h;
 	glViewport(0, 0, WinX, WinY);
+	projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 30);
+	camera->ProjectionMatrix(projectionMatrix);
+	freeCamera->ProjectionMatrix(projectionMatrix);
 }
 
 void timer(int value)
@@ -403,7 +441,9 @@ void setupGLUT(int argc, char* argv[])
 
 void setupCamera() {
 	camera = new FixedCamera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
+	freeCamera = new FreeCamera(vec3(0, 1, 5), vec3(0, 0, 0), vec3(0, 1, 0));
 	camera->ProjectionMatrix(projectionMatrix);
+	freeCamera->ProjectionMatrix(projectionMatrix);
 }
 
 void createMesh() {
@@ -464,6 +504,7 @@ void createScene() {
 	ShaderProgram* dfault = shaderProgramManager->get("default");
 	ShaderProgram* prog = shaderProgramManager->get("ColorProgram");
 	scene = new Scene(dfault,camera);
+	//scene = new Scene(dfault, freeCamera);
 	tangram = new SceneNode(nullptr,prog,MatrixFactory::createIdentityMatrix4());
 
 	trpc1 = new SceneNode(meshManager->get("triangle"), prog, tr1);
@@ -498,61 +539,6 @@ void createScene() {
 	table->setColor(orange);
 	table->addNode(tangram);
 	scene->addNode(table);
-}
-SceneNode* bat;
-void createStupidBat() {
-	SceneNode *b1_triangle, *b2_triangle, *s1_triangle, *s2_triangle, *m_triangle, *square, *parallelogram;
-	Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
-	Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-	ShaderProgram* dfault = shaderProgramManager->get("default");
-	ShaderProgram* prog = shaderProgramManager->get("ColorProgram");
-	bat = new SceneNode(nullptr, prog, MatrixFactory::createIdentityMatrix4());
-
-	//mat4 btr1 = MatrixFactory::create
-	//b1_triangle = new SceneNode(initiateAnimator(new keyframe(vec3(0.2f, 0.0f, -0.2f), R180y, 0.0f),
-	//	new keyframe(vec3(0.0f, 0.0f, 0.0f), qtrn(), 2000.0f));
-
-	//b2_triangle->initiateAnimator(new keyframe(vec3(-0.2f, 0.0f, -0.2f), R_90y, 0.0f),
-	//	new keyframe(vec3(-0.4f, 0.0f, 0.0f), qtrn(), 2000.0f));
-
-	//s1_triangle->initiateAnimator(new keyframe(vec3(-0.2f, 0.0f, 0.2f), qtrn(), 0.0f),
-	//	new keyframe(vec3(0.2f, 0.0f, -0.2f), R90y, 2000.0f));
-
-	//s2_triangle->initiateAnimator(new keyframe(vec3(0.4f, 0.0f, -0.0f), R90y, 0.0f),
-	//	new keyframe(vec3(-0.2f, 0.0f, -0.6f), R_90y, 2000.0f));
-
-	//m_triangle->initiateAnimator(new keyframe(vec3(0.28f, 0.0f, 0.0f), R_135y, 0.0f),
-	//	new keyframe(vec3(0.3f, 0.0f, 0.0f), R180y, 2000.0f));
-
-
-	//square->initiateAnimator(new keyframe(vec3(0.2f, 0.0f, 0.0f), qtrn(), 0.0f),
-	//	new keyframe(vec3(0.0f, 0.0f, -0.2f), qtrn(), 2000.0f));
-
-
-
-	//parallelogram->initiateAnimator(new keyframe(vec3(-0.4f, 0.0f, 0.4f), qtrn(), 0.0f),
-	//	new keyframe(vec3(-0.43f, 0.0f, 0.0f), R_45y, 2000.0f));
-
-	//b1_triangle->setColor(red);
-	//b2_triangle->setColor(green);
-	//s1_triangle->setColor(blue);
-	//s2_triangle->setColor(orange);
-	//m_triangle->setColor(purple);
-	//square->setColor(yellow);
-	//parallelogram->setColor(cyan);
-
-	//bat->addNode(b1_triangle);
-	//bat->addNode(b2_triangle);
-	//bat->addNode(s1_triangle);
-	//bat->addNode(s2_triangle);
-	//bat->addNode(m_triangle);
-
-	//bat->addNode(square);
-	//bat->addNode(parallelogram);
-
-
-	//bat->updateModel(MatrixFactory::createTranslationMatrix(2,0,0));
-	//table->addNode(bat);
 }
 
 void createAnimationThreeStep() {

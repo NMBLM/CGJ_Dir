@@ -57,6 +57,7 @@ namespace engine {
 		void updateModel(mat4 trs);
 		void actOnAnimator();
 		void update(float deltatime);
+		void setCamera(Camera* cam);
 
 	};
 
