@@ -51,7 +51,6 @@ void engine::SceneNode::draw( mat4 fm ){
     if( mesh != nullptr ){
         if( anime != nullptr ){
             m = fm * anime->calcAnimation( model );
-
         }
         shaderProgram->use();
         glUniformMatrix4fv( shaderProgram->UniformId( "ModelMatrix" ), 1, GL_FALSE, m.data() );

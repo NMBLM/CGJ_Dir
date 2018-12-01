@@ -14,7 +14,7 @@
 #include "Scene.h"
 #include "Catalog.h"
 #include "Texture.h"
-
+#include "Particle.h"
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
@@ -37,6 +37,8 @@ Camera* freeCamera;
 MeshLoader meshLoader;
 
 Scene* scene;
+ParticleSystem* particlesOne;
+
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -301,6 +303,21 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "ColorTextureProgram", prog );
+
+
+    //PartProgram
+
+    prog = new ShaderProgram();
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "ParticleProgram", prog );
+
     checkOpenGLError( "ERROR: Could not create shaders." );
 
 }
@@ -329,7 +346,7 @@ void destroyBufferObjects(){
 void drawScene(){
 
     scene->draw();
-
+    particlesOne->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -356,6 +373,7 @@ void idle(){
 
     scene->update( delta );
 
+    particlesOne->update( delta );
     glutPostRedisplay();
 }
 
@@ -518,7 +536,7 @@ void createScene(){
     table = new SceneNode( meshManager->get( "table" ), shaderProgramManager->get( "ColorTextureProgram" ) );
     table->addTexture( "wood" );
     table->setColor( orange );
-    scene->addNode( table );
+    //scene->addNode( table );
 
     tangram = new SceneNode( nullptr, prog, MatrixFactory::createIdentityMatrix4() );
     table->addNode( tangram );
@@ -638,6 +656,12 @@ void createAnimationThreeStep(){
     /**/
 }
 
+void createParticleSystem(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ),camera, vec3( 0.1f ) );
+}
+
 void init( int argc, char* argv[] ){
     setupGLUT( argc, argv );
     setupGLEW();
@@ -647,8 +671,11 @@ void init( int argc, char* argv[] ){
     loadMeshes();
     loadTextures();
     createShaderProgram();
+
     createScene();
     createAnimationThreeStep();
+
+    createParticleSystem();
     createBufferObjects();
 }
 
