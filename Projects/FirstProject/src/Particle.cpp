@@ -49,13 +49,15 @@ void ParticleSystem::update( float _delta ){
         Particle &p = particles[i];
         p.Life -= delta; // reduce life
         if( p.Life > 0.0f ){	// particle is alive, thus update
-            p.Position = p.Position - (p.Velocity * delta);
-            //p.Color.w -= delta * 2.5f;
+            p.Velocity += GRAVITY * delta;
+            p.Position = p.Position + (p.Velocity * delta);
+            p.Color.w -= delta * 1.5f;
         }
     }
 }
 
 void ParticleSystem::draw(){
+    glEnable( GL_BLEND );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE );
     camera->setMatrix();
     shader->use();
@@ -69,6 +71,7 @@ void ParticleSystem::draw(){
         }
     }
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    glDisable( GL_BLEND );
     shader->stop();
     
 }
@@ -95,17 +98,22 @@ int ParticleSystem::FirstUnusedParticle(){
 }
 
 void ParticleSystem::RespawnParticle( Particle &particle ){
-    float random = ( ( rand() % 100 ) - 50 ) / 100.0f;
-    float rColor = ( ( rand() % 100 ) / 200.0f );
+    float rnd1 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    float rnd2 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    float rnd3 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    float rColor = ( ( rand() % 100 ) / 100.0f );
+    float gColor = ( ( rand() % 100 ) / 100.0f );
+    float bColor = ( ( rand() % 100 ) / 100.0f );
 
     //particle.Position = position + vec3(random/2, random /5, random);
-    particle.Position = position;
-    particle.Color.x = rColor+0.2f;
-    particle.Color.y = rColor-0.1f;
-    particle.Color.z = rColor+0.3f;
+    particle.Position = position + vec3( rnd1, 0.0f, (rnd1 + rnd2 + rnd3) );
+    particle.Color.x = rColor;
+    particle.Color.y = gColor;
+    particle.Color.z = bColor;
     particle.Color.w = 1.0f;
-    particle.Life = 1.0f;
-    particle.Velocity = vec3(0.0f,-1.0f,0.0f);
+    particle.Life = LIFE;
+    particle.Velocity = vec3( 0.1f + rnd1, 5.0f + rnd2, 0.1f + rnd3 );
+    //particle.distance = (particle.Position - vec3(0.0f,0.0f,5.0f)).length();
     //std::cout << "random " << random << std::endl;
     //std::cout << "Color " << rColor << std::endl;
     //std::cout << "Particle " << std::endl << particle ;

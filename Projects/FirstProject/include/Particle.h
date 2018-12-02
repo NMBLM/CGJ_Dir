@@ -13,13 +13,20 @@
 
 #include <algorithm>
 
+#define GRAVITY vec3(0.0f,-9.81f,0.0f)
+#define POINT 0.01f
+#define LIFE 1.0f
+
 #define VERTEX 10
 #define POSITION 11
 #define COLOR 12
-static const GLfloat Vertices[] = { -0.1f, -0.1f, 0.0f,
-                                    0.1f, -0.1f, 0.0f,
-                                    -0.1f, 0.1f, 0.0f,
-                                    0.1f, 0.1f, 0.0f, };
+
+const int MaxParticles = 10000;
+
+static const GLfloat Vertices[] = { -POINT, -POINT, 0.0f,
+                                    POINT, -POINT, 0.0f,
+                                    -POINT, POINT, 0.0f,
+                                    POINT, POINT, 0.0f, };
 namespace engine{
 
     struct Particle;
@@ -52,7 +59,7 @@ namespace engine{
     };
 }
 using namespace engine;
-const int MaxParticles = 500;
+
 
 class ParticleSystem{
     public:

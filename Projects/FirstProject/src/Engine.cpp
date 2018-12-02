@@ -38,6 +38,7 @@ MeshLoader meshLoader;
 
 Scene* scene;
 ParticleSystem* particlesOne;
+ParticleSystem* particlesTwo;
 
 
 float lastFrame = 0.0f;
@@ -347,6 +348,7 @@ void drawScene(){
 
     scene->draw();
     particlesOne->draw();
+    particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -372,8 +374,9 @@ void idle(){
     k = k + delta / 2;
 
     scene->update( delta );
-
     particlesOne->update( delta );
+    particlesTwo->update( delta );
+
     glutPostRedisplay();
 }
 
@@ -659,23 +662,32 @@ void createAnimationThreeStep(){
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
 
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ),camera, vec3( 0.1f ) );
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ),camera, vec3( 0.2f, -0.4f,0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
+    particlesTwo = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( -0.2f, -0.4f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+
 }
 
 void init( int argc, char* argv[] ){
     setupGLUT( argc, argv );
     setupGLEW();
     setupOpenGL();
+
     setupCamera();
+
     setupCallbacks();
+
     loadMeshes();
     loadTextures();
+
     createShaderProgram();
 
     createScene();
     createAnimationThreeStep();
 
     createParticleSystem();
+
     createBufferObjects();
 }
 
