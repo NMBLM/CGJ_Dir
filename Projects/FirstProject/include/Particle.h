@@ -27,6 +27,7 @@ static const GLfloat Vertices[] = { -POINT, -POINT, 0.0f,
                                     POINT, -POINT, 0.0f,
                                     -POINT, POINT, 0.0f,
                                     POINT, POINT, 0.0f, };
+   
 namespace engine{
 
     struct Particle;
@@ -38,9 +39,9 @@ namespace engine{
         float distance;
 
         Particle()
-            : Position( vec3(0.0f) ), Velocity( vec3(0.01f,0,0) ), Color( vec4(0.0f) ), Life( -1.0f ), distance( 0.0f ){
+            : Position( vec3( 0.0f ) ), Velocity( vec3( 0.01f, 0, 0 ) ), Color( vec4( 0.0f ) ), Life( -1.0f ), distance( 0.0f ){
         }
-        Particle(vec3 pos)
+        Particle( vec3 pos )
             : Position( pos ), Velocity( vec3( 0.01f, 0, 0 ) ), Color( vec4( 0.0f ) ), Life( -1.0f ), distance( 0.0f ){
         }
         bool operator<( Particle& p ){
@@ -72,8 +73,8 @@ class ParticleSystem{
 
     float delta = 0;
 
-    ParticleSystem(ShaderProgram* shaderProgram,Camera* camera);
-    ParticleSystem( ShaderProgram* shaderProgram, Camera* camera, vec3 pos);
+    ParticleSystem( ShaderProgram* shaderProgram, Camera* camera );
+    ParticleSystem( ShaderProgram* shaderProgram, Camera* camera, vec3 pos );
 
     void createBufferObjects();
 

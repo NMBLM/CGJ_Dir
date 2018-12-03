@@ -22,11 +22,12 @@ namespace engine{
         qtrn( float t, float x, float y, float z );
         const void clean();
 
-        const void qToAngleAxis( float& theta, vec4& axis ) const;
+        const void qToAngleAxis( float& theta, vec3& axis ) const;
         const float quadrance() const;
         const float length() const;
 
         friend const mat4 qToMatrix( const qtrn q );
+        friend const mat3 qToMatrix3( const qtrn q );
         friend const qtrn conjugate( const qtrn& q );
         friend const qtrn inverse( const qtrn& q );
         friend qtrn operator+( const qtrn& q1, const qtrn& q2 );

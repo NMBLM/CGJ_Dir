@@ -470,7 +470,7 @@ void setupGLUT( int argc, char* argv[] ){
 
 void setupCamera(){
     camera = new FixedCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
-    freeCamera = new FreeCamera( vec3( 0, 3, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
+    freeCamera = new FreeCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
     camera->ProjectionMatrix( projectionMatrix );
     freeCamera->ProjectionMatrix( projectionMatrix );
 }

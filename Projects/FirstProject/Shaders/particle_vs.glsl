@@ -12,10 +12,11 @@ uniform SharedMatrices
 
 uniform vec4 color;
 uniform vec3 position;
+//uniform mat3 rotation;
 void main()
 {
     float scale = 1.0f;
-	vec3 pos =  inPosition + vec3(position);
+	vec3 pos =  (inPosition + vec3(position));
     ParticleColor = color;
-    gl_Position = ProjectionMatrix * ViewMatrix * vec4((pos.xy * scale), 0.0f, 1.0f);
+    gl_Position = ProjectionMatrix * ViewMatrix  * vec4((pos.xy * scale),0.0f, 1.0f);
 }

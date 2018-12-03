@@ -164,7 +164,6 @@ void FixedCamera::cameraRollLeft( const float deltatime ){
     qtrn qZ, q;
     if( gLock ){
         roll += -3.0f * deltatime * SPEED;
-
     } else{
         qZ = qtrn( 3.0f * deltatime * SPEED, vec3( 0.0f, 0.0f, -1.0f ) );
         qPos = qZ * qPos;
@@ -190,6 +189,7 @@ FreeCamera::FreeCamera(){
 
 FreeCamera::FreeCamera( const vec3 eye, const vec3 center, const vec3 up ){
     this->eye = eye;
+    qPos = qtrn( 1, 0.0f, 0.0f, 0.0f );
     v = center - eye;
     v = v * ( 1 / v.length() ); // normalize
     s = v.cross( up );
@@ -199,10 +199,19 @@ FreeCamera::FreeCamera( const vec3 eye, const vec3 center, const vec3 up ){
 }
 
 mat4 FreeCamera::ViewMatrix(){
+    /** /
+    float angle;
+    vec3 axis;
+    qPos.qToAngleAxis( angle, axis );
+    std::cout << axis << std::endl;
+    mat4 T = MatrixFactory::createTranslationMatrix( eye.x, eye.y, -eye.z );
+    return  qToMatrix( qPos ) * T;
+    /**/
     v = normalize( v );
     s = normalize( s );
     u = normalize( u );
     return MatrixFactory::createLookAt( eye, eye + v, u );
+    /**/
 }
 
 void FreeCamera::cameraLookAround( float x, float y, const float deltatime ){
@@ -212,6 +221,16 @@ void FreeCamera::cameraLookAround( float x, float y, const float deltatime ){
     float mulY = ( y > 2 || y < -2 ) ? 3.0f : 1.5f;
     mulX = ( x < 1 && x > -1 ) ? 0.0f : mulX;
     mulY = ( y < 1 && y > -1 ) ? 0.0f : mulY;
+    /** /
+    qtrn qX, qY;
+    qX = qtrn( -sideX * mulX * SPEED * deltatime, vec3( 0.0f, 1.0f, 0.0f ) );
+    qY = qtrn( -sideY * mulY * SPEED * deltatime, vec3( 1.0f, 0.0f, 0.0f ) );
+    qPos = qX  * qY *  qPos;
+
+    v = normalize( vec3( qToMatrix( qPos ) * vec3( 0.0f, 0.0f, 1.0f ) ) );
+    s = normalize( vec3( qToMatrix( qPos ) * vec3( 1.0f, 0.0f, 0.0f ) ) );
+    u = normalize( s.cross( v ) );
+    /**/
     mat3 rotU = MatrixFactory::createRotationMatrix3( mulX *  sideX *  deltatime * SPEED , u );
     v = rotU * v;
     s = v.cross( u );
@@ -221,6 +240,7 @@ void FreeCamera::cameraLookAround( float x, float y, const float deltatime ){
     v = normalize( v );
     s = normalize( s );
     u = normalize( u );
+    /**/
 }
 
 void FreeCamera::cameraMoveRight( const float deltatime ){

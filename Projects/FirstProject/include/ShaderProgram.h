@@ -41,6 +41,7 @@ class ShaderProgram{
     void addUniformVec( const char* name, vec3 v );
     void addUniformVec( const char* name, vec2 v );
     void addUniformFloat( const char* name, float v );
+    void addUniformMat( const char* name, mat3 v );
     void addUniformMat( const char* name, mat4 v );
     void use();
     void stop();

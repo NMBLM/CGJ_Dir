@@ -2,15 +2,15 @@
 
 using namespace engine;
 
-ParticleSystem::ParticleSystem(ShaderProgram* shaderProgram,Camera* cam){
+ParticleSystem::ParticleSystem( ShaderProgram* shaderProgram, Camera* cam ){
     shader = shaderProgram;
     camera = cam;
     position = vec3( 0.1f );
     for( GLuint i = 0; i < MaxParticles; ++i )
-        particles.push_back( Particle(position) );
+        particles.push_back( Particle( position ) );
     createBufferObjects();
 }
-ParticleSystem::ParticleSystem( ShaderProgram* shaderProgram, Camera* cam, vec3 pos){
+ParticleSystem::ParticleSystem( ShaderProgram* shaderProgram, Camera* cam, vec3 pos ){
     shader = shaderProgram;
     camera = cam;
     position = pos;
@@ -21,12 +21,13 @@ ParticleSystem::ParticleSystem( ShaderProgram* shaderProgram, Camera* cam, vec3 
 void ParticleSystem::createBufferObjects(){
     GLuint VboVertices;
 
+    /**/
     glGenVertexArrays( 1, &VaoId );
     glBindVertexArray( VaoId );
     {
         glGenBuffers( 1, &VboVertices );
         glBindBuffer( GL_ARRAY_BUFFER, VboVertices );
-        glBufferData( GL_ARRAY_BUFFER, 12 * sizeof( GLfloat ) , &Vertices[0], GL_STATIC_DRAW );
+        glBufferData( GL_ARRAY_BUFFER, 12 * sizeof( GLfloat ), &Vertices[0], GL_STATIC_DRAW );
         glEnableVertexAttribArray( 0 );
         glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof( GLfloat ), 0 );
     }
@@ -50,7 +51,7 @@ void ParticleSystem::update( float _delta ){
         p.Life -= delta; // reduce life
         if( p.Life > 0.0f ){	// particle is alive, thus update
             p.Velocity += GRAVITY * delta;
-            p.Position = p.Position + (p.Velocity * delta);
+            p.Position = p.Position + ( p.Velocity * delta );
             p.Color.w -= delta * 1.5f;
         }
     }
@@ -65,6 +66,7 @@ void ParticleSystem::draw(){
         if( particle.Life > 0.0f ){
             shader->addUniformVec( "color", particle.Color );
             shader->addUniformVec( "position", particle.Position );
+            //shader->addUniformMat( "rotation", qToMatrix3( ( -1 ) * camera->rotationQtrn() ) );
             glBindVertexArray( VaoId );
             glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
             glBindVertexArray( 0 );
@@ -73,11 +75,11 @@ void ParticleSystem::draw(){
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glDisable( GL_BLEND );
     shader->stop();
-    
+
 }
 
 int ParticleSystem::FirstUnusedParticle(){
-    
+
     // Search from last used particle, this will usually return almost instantly
     for( unsigned int i = lastUsedParticle; i < MaxParticles; ++i ){
         if( particles[i].Life <= 0.0f ){
@@ -105,8 +107,7 @@ void ParticleSystem::RespawnParticle( Particle &particle ){
     float gColor = ( ( rand() % 100 ) / 100.0f );
     float bColor = ( ( rand() % 100 ) / 100.0f );
 
-    //particle.Position = position + vec3(random/2, random /5, random);
-    particle.Position = position + vec3( rnd1, 0.0f, (rnd1 + rnd2 + rnd3) );
+    particle.Position = position + vec3( rnd1, 0.0f, ( rnd1 + rnd2 + rnd3 ) );
     particle.Color.x = rColor;
     particle.Color.y = gColor;
     particle.Color.z = bColor;

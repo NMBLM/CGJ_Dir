@@ -49,7 +49,7 @@ namespace engine{
 
 
 
-    const void qtrn::qToAngleAxis( float & theta, vec4 & axis ) const{
+    const void qtrn::qToAngleAxis( float & theta, vec3 & axis ) const{
         qtrn qn = normalize( *this );
         theta = 2.0f * acos( qn.t ) * ( float )RADIANS_TO_DEGREES;
         float s = sqrt( 1.0f - qn.t*qn.t );
@@ -57,13 +57,12 @@ namespace engine{
             axis.x = 1.0f;
             axis.y = 0.0f;
             axis.z = 0.0f;
-            axis.w = 1.0f;
         } else{
             axis.x = qn.x / s;
             axis.y = qn.y / s;
             axis.z = qn.z / s;
-            axis.w = 1.0f;
         }
+        axis = normalize( axis );
     }
 
     const float qtrn::quadrance() const{
@@ -111,6 +110,26 @@ namespace engine{
         res.clean();
         return res;
     }
+
+    const mat3 qToMatrix3( const qtrn q ){
+        qtrn qn = normalize( q );
+        float xx = qn.x * qn.x;
+        float xy = qn.x * qn.y;
+        float xz = qn.x * qn.z;
+        float xt = qn.x * qn.t;
+        float yy = qn.y * qn.y;
+        float yz = qn.y * qn.z;
+        float yt = qn.y * qn.t;
+        float zz = qn.z * qn.z;
+        float zt = qn.z * qn.t;
+
+        mat3 res = mat3( 1.0f - 2.0f * ( yy + zz ), 2.0f * ( xy - zt ), 2.0f * ( xz + yt ),
+            2.0f * ( xy + zt ), 1.0f - 2.0f * ( xx + zz ), 2.0f * ( yz - xt ),
+            2.0f * ( xz - yt ), 2.0f * ( yz + xt ), 1.0f - 2.0f * ( xx + yy ));
+        res.clean();
+        return res;
+    }
+
 
     const qtrn lerp( const qtrn & q0, const qtrn & q1, float k ){
         float cos_angle = q0.x*q1.x + q0.y*q1.y + q0.z*q1.z + q0.t*q1.t;
@@ -206,7 +225,7 @@ namespace engine{
         std::cout << s << " = [ ";
 
         float thetaf;
-        vec4 axis_f = vec4( 0.0f );
+        vec3 axis_f = vec3( 0.0f );
         q.qToAngleAxis( thetaf, axis_f );
         std::cout << "  angle = " << thetaf;
         std::cout << " , axis = " << axis_f;

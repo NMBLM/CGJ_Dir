@@ -21,6 +21,7 @@ class Camera{
     vec3 u;
     mat4 projection;
     vec3 eye;
+    qtrn qPos;
     const float SPEED = 10.0f;
     const float vSPEED = 1.0f;
     float lastFrame = 0.0f;
@@ -40,6 +41,12 @@ class Camera{
     virtual void cameraMoveBack( const float deltatime ) = 0;
     void initalizeVbo();
     void setMatrix();
+    mat3 rotation(){
+        return qToMatrix( qPos );
+    }
+    qtrn rotationQtrn(){
+        return qPos;
+    }
 
 };
 
@@ -51,7 +58,6 @@ class FixedCamera: public Camera{
     float yaw = 0.0f;
     float roll = 0.0f;
     const float SPEED = 2.0f;
-    qtrn qPos;
 
     FixedCamera();
     FixedCamera( const vec3 eye, const vec3 center, const vec3 up );
@@ -72,6 +78,7 @@ class FixedCamera: public Camera{
 
 class FreeCamera: public Camera{
     public:
+
 
     FreeCamera();
     FreeCamera( const vec3 eye, const vec3 center, const vec3 up );

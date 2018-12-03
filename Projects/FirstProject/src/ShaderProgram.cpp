@@ -85,6 +85,10 @@ void ShaderProgram::addUniformFloat( const char * name, float f ){
     glUniform1f( UniformId( name ), f );
 }
 
+void ShaderProgram::addUniformMat( const char * name, mat3 m ){
+    glUniformMatrix3fv( UniformId( name ), 1, GL_FALSE, m.data() );
+}
+
 void ShaderProgram::addUniformMat( const char * name, mat4 m ){
     glUniformMatrix4fv( UniformId( name ), 1, GL_FALSE, m.data() );
 }
