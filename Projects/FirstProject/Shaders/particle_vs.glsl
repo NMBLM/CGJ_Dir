@@ -11,7 +11,7 @@ uniform SharedMatrices
 
 uniform vec4 color;
 uniform vec3 position;
-uniform vec3 rotation;
+
 void main()
 {
     float scale = 1.0f;

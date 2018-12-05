@@ -57,26 +57,27 @@ void ParticleSystem::update( float _delta ){
 }
 
 void ParticleSystem::draw(){
-    glEnable( GL_BLEND );
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+    //glEnable( GL_BLEND );
+    //glBlendFunc( GL_SRC_ALPHA, GL_ONE );
     camera->setMatrix();
     shader->use();
-    float angle = 0;
-    vec3 axis = vec3( 0.0f, 0.0f, 1.0f );
-    camera->rotationQtrn().qToAngleAxis( angle, axis );
-    shader->addUniformVec( "rotation", ( ( -1 ) * axis ) );
+    //float angle = 0;
+    //vec3 axis = vec3( 0.0f, 0.0f, 1.0f );
+    //camera->rotationQtrn().qToAngleAxis( angle, axis );
+    //shader->addUniformVec( "rotation", ( ( -1 ) * axis ) );
+    shader->addUniformMat( "rotation", camera->rotation()  );
     for( Particle particle : particles ){
         if( particle.Life > 0.0f ){
             shader->addUniformVec( "color", particle.Color );
             shader->addUniformVec( "position", particle.Position );
             glBindVertexArray( VaoId );
             //glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-            glDrawArrays( GL_POINTS, 0, 1 );
+            glDrawArrays( GL_POINTS, 0, 4 );
             glBindVertexArray( 0 );
         }
     }
-    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-    glDisable( GL_BLEND );
+    //glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+    //glDisable( GL_BLEND );
     shader->stop();
 
 }
