@@ -141,7 +141,9 @@
     <None Include="Shaders\force_color_vs.glsl" />
     <None Include="Shaders\FragmentShader.glsl" />
     <None Include="Shaders\FragmentShaderCamera.glsl" />
+    <None Include="Shaders\particle_withgs_vs.glsl" />
     <None Include="Shaders\particle_fs.glsl" />
+    <None Include="Shaders\particle_gs.glsl" />
     <None Include="Shaders\particle_vs.glsl" />
     <None Include="Shaders\texShader_color_fs.glsl" />
     <None Include="Shaders\texShader_color_vs.glsl" />

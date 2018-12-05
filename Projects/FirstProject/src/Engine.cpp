@@ -319,6 +319,19 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "ParticleProgram", prog );
 
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->link();
+
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+    
+    shaderProgramManager->insert( "GeometryParticleProgram", prog );
+
     checkOpenGLError( "ERROR: Could not create shaders." );
 
 }
@@ -348,7 +361,7 @@ void drawScene(){
 
     scene->draw();
     particlesOne->draw();
-    particlesTwo->draw();
+    //particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -661,12 +674,17 @@ void createAnimationThreeStep(){
 
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ),camera, vec3( 0.2f, -0.4f,0.0f ) );
+    /**/
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
+    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( -0.2f, -0.4f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+    /** /
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
     particlesTwo = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( -0.2f, -0.4f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
-
+    /**/
 }
 
 void init( int argc, char* argv[] ){

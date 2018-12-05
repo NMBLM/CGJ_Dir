@@ -21,7 +21,6 @@ ParticleSystem::ParticleSystem( ShaderProgram* shaderProgram, Camera* cam, vec3 
 void ParticleSystem::createBufferObjects(){
     GLuint VboVertices;
 
-    /**/
     glGenVertexArrays( 1, &VaoId );
     glBindVertexArray( VaoId );
     {
@@ -39,7 +38,7 @@ void ParticleSystem::createBufferObjects(){
 
 void ParticleSystem::update( float _delta ){
     float delta = _delta / 100.0f;
-    GLuint nr_new_particles = 2;
+    GLuint nr_new_particles = 10;
     // Add new particles
     for( GLuint i = 0; i < nr_new_particles; ++i ){
         int unusedParticle = FirstUnusedParticle();
@@ -62,13 +61,17 @@ void ParticleSystem::draw(){
     glBlendFunc( GL_SRC_ALPHA, GL_ONE );
     camera->setMatrix();
     shader->use();
+    float angle = 0;
+    vec3 axis = vec3( 0.0f, 0.0f, 1.0f );
+    camera->rotationQtrn().qToAngleAxis( angle, axis );
+    shader->addUniformVec( "rotation", ( ( -1 ) * axis ) );
     for( Particle particle : particles ){
         if( particle.Life > 0.0f ){
             shader->addUniformVec( "color", particle.Color );
             shader->addUniformVec( "position", particle.Position );
-            //shader->addUniformMat( "rotation", qToMatrix3( ( -1 ) * camera->rotationQtrn() ) );
             glBindVertexArray( VaoId );
-            glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+            //glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+            glDrawArrays( GL_POINTS, 0, 1 );
             glBindVertexArray( 0 );
         }
     }
