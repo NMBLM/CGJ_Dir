@@ -677,7 +677,7 @@ void createParticleSystem(){
     /**/
     particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( -0.2f, -0.4f, 0.0f ) );
+    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
     /** /
     particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
