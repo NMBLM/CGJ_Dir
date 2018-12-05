@@ -6,18 +6,30 @@ uniform vec4 color;
 uniform vec3 position;
 uniform mat3 rotation;
 
+uniform SharedMatrices
+{
+	mat4 ViewMatrix;
+	mat4 ProjectionMatrix;
+};
+
 out vec4 ParticleColor;
+
+vec3 eye = normalize(vec3(ViewMatrix[3][0],ViewMatrix[3][1],-ViewMatrix[3][2]));
+vec3 up = vec3(0,1,0);
+vec3 side = cross(eye,up);
 
 void build_quad(vec4 pos)
 {    
+	//gl_Position = ProjectionMatrix * ViewMatrix  * vec4(inPosition.xy,0.0f, 1.0f);
 	pos = pos + position;
-    gl_Position = pos + vec4(-0.01, -0.01, 0.0, 0.0);    // 1:bottom-left
+	side = side * 0.01;
+    gl_Position = ProjectionMatrix * ViewMatrix  * (pos + side - up*0.01 );    // 1:bottom-left
     EmitVertex();   
-    gl_Position = pos + vec4( 0.01, -0.01, 0.0, 0.0);    // 2:bottom-right
+    gl_Position = ProjectionMatrix * ViewMatrix  * (pos - side - up*0.01);    // 2:bottom-right
     EmitVertex();
-    gl_Position = pos + vec4(-0.01,  0.01, 0.0, 0.0);    // 3:top-left
+    gl_Position = ProjectionMatrix * ViewMatrix  * (pos + side + up*0.01 );    // 3:top-left
     EmitVertex();
-    gl_Position = pos + vec4( 0.01,  0.01, 0.0, 0.0);    // 4:top-right
+    gl_Position = ProjectionMatrix * ViewMatrix  * (pos - side + up*0.01);    // 4:top-right
     EmitVertex();
     EndPrimitive();
 }

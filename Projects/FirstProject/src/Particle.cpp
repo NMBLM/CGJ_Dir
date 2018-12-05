@@ -72,7 +72,7 @@ void ParticleSystem::draw(){
             shader->addUniformVec( "position", particle.Position );
             glBindVertexArray( VaoId );
             //glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
-            glDrawArrays( GL_POINTS, 0, 4 );
+            glDrawArrays( GL_POINTS, 0, 1 );
             glBindVertexArray( 0 );
         }
     }
