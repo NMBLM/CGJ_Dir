@@ -111,7 +111,7 @@ void ParticleSystem::RespawnParticle( Particle &particle ){
     float gColor = ( ( rand() % 100 ) / 100.0f );
     float bColor = ( ( rand() % 100 ) / 100.0f );
 
-    particle.Position = position + vec3( rnd1, 0.0f, ( rnd1 + rnd2 + rnd3 ) );
+    particle.Position = position + vec3( rnd1, 0.0f, ( rnd1 - rnd2 + rnd3 ) );
     particle.Color.x = rColor;
     particle.Color.y = gColor;
     particle.Color.z = bColor;

@@ -566,7 +566,7 @@ void createScene(){
     table = new SceneNode( meshManager->get( "table" ), shaderProgramManager->get( "ColorTextureProgram" ) );
     table->addTexture( "wood" );
     table->setColor( orange );
-    scene->addNode( table );
+    //scene->addNode( table );
 
     tangram = new SceneNode( nullptr, prog, MatrixFactory::createIdentityMatrix4() );
     table->addNode( tangram );

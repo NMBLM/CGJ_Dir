@@ -132,3 +132,9 @@ Projects/FirstProject/x64/Debug/Qtrn.obj
 Projects/FirstProject/x64/Debug/Texture.obj
 Projects/FirstProject/x64/Debug/TextureLoader.obj
 Projects/FirstProject/x64/Debug/Particle.obj
+Projects/FirstProject/x64/Release/Engine.obj
+Projects/FirstProject/x64/Release/MeshLoader.obj
+Projects/FirstProject/x64/Release/Particle.obj
+Projects/FirstProject/x64/Release/Qtrn.obj
+Projects/FirstProject/x64/Release/Texture.obj
+Projects/FirstProject/x64/Release/TextureLoader.obj

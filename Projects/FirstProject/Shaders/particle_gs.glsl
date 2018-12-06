@@ -16,7 +16,7 @@ out vec4 ParticleColor;
 out vec3 vertex;
 
 vec4 temp;
-
+#define POINT 0.1f
 void build_quad(vec4 pos)
 {    
 	mat4 mvp = ProjectionMatrix * ViewMatrix;
@@ -24,13 +24,13 @@ void build_quad(vec4 pos)
 	pos = mvp * (pos + position);
 	vertex = vec3(pos);
 
-    gl_Position = pos + vec4(-0.01, -0.01, 0.0, 0.0);   // 1:bottom-left
+    gl_Position = pos + vec4(-POINT, -POINT, 0.0, 0.0);   // 1:bottom-left
     EmitVertex();
-	gl_Position = pos + vec4(0.01, -0.01, 0.0, 0.0);   // 2:bottom-right
+	gl_Position = pos + vec4(POINT, -POINT, 0.0, 0.0);   // 2:bottom-right
     EmitVertex();
-    gl_Position = pos + vec4(-0.01, 0.01, 0.0, 0.0);   // 3:top-left
+    gl_Position = pos + vec4(-POINT, POINT, 0.0, 0.0);   // 3:top-left
     EmitVertex();
-    gl_Position = pos + vec4(0.01, 0.01, 0.0, 0.0);   // 4:top-right
+    gl_Position = pos + vec4(POINT, POINT, 0.0, 0.0);   // 4:top-right
     EmitVertex();
     EndPrimitive();
 }
@@ -45,13 +45,13 @@ void build_quad2(vec4 pos)
 	
 	mat4 mvp = ProjectionMatrix * ViewMatrix;
 
-    gl_Position = mvp * pos + vec4(-0.01, -0.01, 0.0, 0.0);    // 1:bottom-left
+    gl_Position = mvp * pos + vec4(-POINT, -POINT, 0.0, 0.0);    // 1:bottom-left
     EmitVertex();   
-    gl_Position = mvp * pos + vec4( 0.01, -0.01, 0.0, 0.0);    // 2:bottom-right
+    gl_Position = mvp * pos + vec4( POINT, -POINT, 0.0, 0.0);    // 2:bottom-right
     EmitVertex();
-    gl_Position = mvp * pos + vec4(-0.01,  0.01, 0.0, 0.0);    // 3:top-left
+    gl_Position = mvp * pos + vec4(-POINT,  POINT, 0.0, 0.0);    // 3:top-left
     EmitVertex();
-    gl_Position = mvp * pos + vec4( 0.01,  0.01, 0.0, 0.0);    // 4:top-right
+    gl_Position = mvp * pos + vec4( POINT,  POINT, 0.0, 0.0);    // 4:top-right
     EmitVertex();
     EndPrimitive();
 }
