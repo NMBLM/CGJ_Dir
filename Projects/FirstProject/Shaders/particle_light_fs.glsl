@@ -1,8 +1,6 @@
 #version 330 core
 
-in vec4 ParticleColor;
 in vec3 vertex;
-
 out vec4 out_color;
 
 uniform SharedMatrices
@@ -11,6 +9,7 @@ uniform SharedMatrices
 	mat4 ProjectionMatrix;
 };
 vec3 eye;
+
 struct PointLight {    
     vec3 position;
     
@@ -22,13 +21,14 @@ struct PointLight {
     vec3 diffuse;
     vec3 specular;
 }; 
+
 struct Material{
 	float shininess;
 	vec3 diffuse;
     vec3 specular;
 };
+
 #define NR_POINT_LIGHTS 1  
-//uniform PointLight pointLights[NR_POINT_LIGHTS];
 PointLight p;
 Material material;
 
@@ -73,6 +73,7 @@ void setupMaterial(){
 	material.diffuse = normalize(vec3(0.57735f,0.57735f,0.57735f));
     material.specular = normalize(vec3(0.57735f,0.57735f,0.57735f));
 }
+
 vec3 someFunctionToCalculatePointLight(){
 	vec3 N = normalize(eye - vertex);
 	vec3 L = p.position - vertex;
