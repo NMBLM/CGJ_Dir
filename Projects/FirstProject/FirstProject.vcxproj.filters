@@ -81,6 +81,9 @@
     <None Include="Shaders\particle_withgs_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="Shaders\particle_light_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">

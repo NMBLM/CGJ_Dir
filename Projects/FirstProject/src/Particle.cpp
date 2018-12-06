@@ -38,7 +38,7 @@ void ParticleSystem::createBufferObjects(){
 
 void ParticleSystem::update( float _delta ){
     float delta = _delta / 100.0f;
-    GLuint nr_new_particles = 10;
+    GLuint nr_new_particles = 20;
     // Add new particles
     for( GLuint i = 0; i < nr_new_particles; ++i ){
         int unusedParticle = FirstUnusedParticle();

@@ -41,6 +41,8 @@ void Camera::initalizeVbo(){
 
 void Camera::setMatrix(){
     const GLsizeiptr matrixSize = sizeof( GLfloat[16] );
+    //mat4 view = ProjectionMatrix() * ViewMatrix();
+    //std::cout << " eye = " << vec3( view.mat[3], view.mat[7], view.mat[11] ) << std::endl;
     glBindBuffer( GL_UNIFORM_BUFFER, Camera::CamVboId[0] );
     glBufferSubData( GL_UNIFORM_BUFFER, 0, matrixSize, ViewMatrix().data() );
     glBufferSubData( GL_UNIFORM_BUFFER, matrixSize, matrixSize, ProjectionMatrix().data() );

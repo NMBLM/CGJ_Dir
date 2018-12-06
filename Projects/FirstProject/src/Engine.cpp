@@ -332,6 +332,20 @@ void createShaderProgram(){
     
     shaderProgramManager->insert( "GeometryParticleProgram", prog );
 
+
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_fs.glsl" );
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->link();
+
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "GeometryLightParticleProgram", prog );
+
     checkOpenGLError( "ERROR: Could not create shaders." );
 
 }
@@ -552,7 +566,7 @@ void createScene(){
     table = new SceneNode( meshManager->get( "table" ), shaderProgramManager->get( "ColorTextureProgram" ) );
     table->addTexture( "wood" );
     table->setColor( orange );
-    //scene->addNode( table );
+    scene->addNode( table );
 
     tangram = new SceneNode( nullptr, prog, MatrixFactory::createIdentityMatrix4() );
     table->addNode( tangram );
@@ -675,7 +689,7 @@ void createAnimationThreeStep(){
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     /**/
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, -0.4f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
     particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
