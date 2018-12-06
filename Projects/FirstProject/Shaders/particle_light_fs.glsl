@@ -33,18 +33,43 @@ PointLight p;
 Material material;
 
 void setupLight(){
-	p.position = vec3(ProjectionMatrix * ViewMatrix * vec4(0.5f,0.5f,0.5f,1.0f));
+	p.position = vec3(ProjectionMatrix * ViewMatrix * vec4(-0.3f,0.4f,0.4f,1.0f));
 
 	p.constant = 1.0f;
-	p.linear = 0.2f ;
-    p.quadratic = 0.1f;  
+	p.linear = 1.0f ;
+    p.quadratic = 0.5f;  
 
-    p.ambient = vec3(1.0f,1.0f,1.0f);
-    p.diffuse = vec3(1.0f,1.0f,1.0f);
+    p.ambient = vec3(0.0f,1.0f,1.0f);
+    p.diffuse = vec3(0.0f,1.0f,1.0f);
     p.specular = vec3(1.0f,1.0f,1.0f);
 }
+
+void setupLight2(){
+	p.position = vec3(ProjectionMatrix * ViewMatrix * vec4(0.3f,0.4f,0.4f,1.0f));
+
+	p.constant = 1.0f;
+	p.linear = 1.0f ;
+    p.quadratic = 0.5f;  
+
+    p.ambient = vec3(1.0f,0.0f,1.0f);
+    p.diffuse = vec3(1.0f,0.0f,1.0f);
+    p.specular = vec3(1.0f,1.0f,1.0f);
+}
+
+void setupLight3(){
+	p.position = vec3(ProjectionMatrix * ViewMatrix * vec4(0.0f,0.4f,-0.5f,1.0f));
+
+	p.constant = 1.0f;
+	p.linear = 1.0f ;
+    p.quadratic = 0.5f;  
+
+    p.ambient = vec3(1.0f,1.0f,0.0f);
+    p.diffuse = vec3(1.0f,1.0f,0.0f);
+    p.specular = vec3(1.0f,1.0f,1.0f);
+}
+
 void setupMaterial(){
-	material.shininess = 0.1f;
+	material.shininess = 0.5f;
 	material.diffuse = normalize(vec3(0.57735f,0.57735f,0.57735f));
     material.specular = normalize(vec3(0.57735f,0.57735f,0.57735f));
 }
@@ -75,13 +100,17 @@ vec3 someFunctionToCalculatePointLight(){
 void main()
 {	
 	eye = vec3(ViewMatrix[3][0],ViewMatrix[3][1],ViewMatrix[3][2]);
-	setupLight();
-
+	
+	setupMaterial();
 	// define an output color value
 	vec3 op = vec3(0.0f,0.0f,0.0f);
 	// do the same for all point lights
-	for(int i = 0; i < NR_POINT_LIGHTS; i++)
-		op += someFunctionToCalculatePointLight();
+	setupLight();
+	op += someFunctionToCalculatePointLight();
+	setupLight2();
+	op += someFunctionToCalculatePointLight();
+	setupLight3();
+	op += someFunctionToCalculatePointLight();
 
 	out_color = vec4(op, 1.0f);
 }
