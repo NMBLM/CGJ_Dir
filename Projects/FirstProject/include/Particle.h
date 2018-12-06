@@ -23,11 +23,13 @@
 
 const int MaxParticles = 10000;
 
-static const GLfloat Vertices[] = { -POINT, -POINT, 0.0f,
-                                    POINT, -POINT, 0.0f,
-                                    -POINT, POINT, 0.0f,
-                                    POINT, POINT, 0.0f, };
-   
+static const GLfloat Vertices[] = { 0.0f, 0.0f, 0.0f };
+/*{
+-POINT, -POINT, 0.0f,
+POINT, -POINT, 0.0f,
+-POINT, POINT, 0.0f,
+POINT, POINT, 0.0f,
+};*/
 namespace engine{
 
     struct Particle;
