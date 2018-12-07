@@ -37,12 +37,12 @@ class ShaderProgram{
     GLint UniformId( const char* uniformName );
     GLint UniformLocation( const char* uniformName );
     GLint uniformBlockIndex( const char* uniformName );
-    void addUniformVec( const char* name, vec4 v );
-    void addUniformVec( const char* name, vec3 v );
-    void addUniformVec( const char* name, vec2 v );
-    void addUniformFloat( const char* name, float v );
-    void addUniformMat( const char* name, mat3 v );
-    void addUniformMat( const char* name, mat4 v );
+    void addUniform( const char* name, vec4 v );
+    void addUniform( const char* name, vec3 v );
+    void addUniform( const char* name, vec2 v );
+    void addUniform( const char* name, float v );
+    void addUniform( const char* name, mat3 v );
+    void addUniform( const char* name, mat4 v );
     void use();
     void stop();
 

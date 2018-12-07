@@ -69,27 +69,27 @@ GLint ShaderProgram::uniformBlockIndex( const char * uniformName ){
     return glGetUniformBlockIndex( id, uniformName );
 }
 
-void ShaderProgram::addUniformVec( const char * name, vec4 v ){
+void ShaderProgram::addUniform( const char * name, vec4 v ){
     glUniform4fv( UniformId( name ), 1, v.data() );
 }
 
-void ShaderProgram::addUniformVec( const char * name, vec3 v ){
+void ShaderProgram::addUniform( const char * name, vec3 v ){
     glUniform3fv( UniformId( name ), 1, v.data() );
 }
 
-void ShaderProgram::addUniformVec( const char * name, vec2 v ){
+void ShaderProgram::addUniform( const char * name, vec2 v ){
     glUniform2fv( UniformId( name ), 1, v.data() );
 }
 
-void ShaderProgram::addUniformFloat( const char * name, float f ){
+void ShaderProgram::addUniform( const char * name, float f ){
     glUniform1f( UniformId( name ), f );
 }
 
-void ShaderProgram::addUniformMat( const char * name, mat3 m ){
+void ShaderProgram::addUniform( const char * name, mat3 m ){
     glUniformMatrix3fv( UniformId( name ), 1, GL_FALSE, m.data() );
 }
 
-void ShaderProgram::addUniformMat( const char * name, mat4 m ){
+void ShaderProgram::addUniform( const char * name, mat4 m ){
     glUniformMatrix4fv( UniformId( name ), 1, GL_FALSE, m.data() );
 }
 

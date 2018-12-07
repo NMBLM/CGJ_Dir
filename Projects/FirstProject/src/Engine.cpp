@@ -38,6 +38,8 @@ MeshLoader meshLoader;
 
 Scene* scene;
 ParticleSystem* particlesOne;
+ParticleSystem* particlesTwo;
+
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -303,11 +305,37 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "ColorTextureProgram", prog );
 
+
     //PartProgram
 
     prog = new ShaderProgram();
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "ParticleProgram", prog );
+
+    prog = new ShaderProgram();
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->link();
+
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+    
+    shaderProgramManager->insert( "GeometryParticleProgram", prog );
+
+
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_fs.glsl" );
     prog->bindAttribLocation( VERTICES, "inPosition" );
     prog->link();
@@ -317,19 +345,6 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "GeometryLightParticleProgram", prog );
-
-    prog = new ShaderProgram();
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_vs.glsl" );
-    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_gs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_fs.glsl" );
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->link();
-
-    prog->detachShader( "geometry" );
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "TransformFeedbackProgram", prog );
 
     checkOpenGLError( "ERROR: Could not create shaders." );
 
@@ -360,6 +375,7 @@ void drawScene(){
 
     scene->draw();
     particlesOne->draw();
+    //particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -386,6 +402,7 @@ void idle(){
 
     scene->update( delta );
     particlesOne->update( delta );
+    particlesTwo->update( delta );
 
     glutPostRedisplay();
 }
@@ -672,12 +689,21 @@ void createAnimationThreeStep(){
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     /**/
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ),
-        shaderProgramManager->get( "TransformFeedbackProgram" ),
-        camera,
-        vec3( 0.0f, -0.8f, 0.0f ) );
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    
+    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+    /** /
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, -0.4f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
+    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+    /** /
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
+    particlesTwo = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( -0.2f, -0.4f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+    /**/
 }
 
 void init( int argc, char* argv[] ){
