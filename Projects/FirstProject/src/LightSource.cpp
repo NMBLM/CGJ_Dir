@@ -62,7 +62,7 @@ inline void PointLight::SetLightUniform( ShaderProgram * shader, const char * pr
     std::ostringstream ss;
     ss << "pointLights[" << lightIndex << "]." << propertyName;
     std::string uniformName = ss.str();
-    std::cout << uniformName << " " << value <<std::endl;
+    //std::cout << uniformName << " " << value <<std::endl;
     shader->addUniform( uniformName.c_str(), value );
 
 }

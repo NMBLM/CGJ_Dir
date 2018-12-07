@@ -145,8 +145,11 @@ void keyRelease( unsigned char key, int x, int y ){
     if( KeyBuffer::instance()->isKeyDown( 'f' ) || KeyBuffer::instance()->isKeyDown( 'F' ) ){
         if( freecam ){
             scene->setCamera( camera );
+            particlesOne->camera = camera;
         } else{
             scene->setCamera( freeCamera );
+            particlesOne->camera = freeCamera;
+
         }
         freecam = !freecam;
     }
@@ -274,22 +277,6 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "ColorProgram", prog );
 
-
-    prog = new ShaderProgram();
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/texShader_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_fs.glsl" );
-
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->bindAttribLocation( TEXCOORDS, "inTexcoord" );
-    prog->bindAttribLocation( NORMALS, "inNormal" );
-
-    prog->link();
-
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "TextureProgram", prog );
-
     prog = new ShaderProgram();
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/texShader_color_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_color_fs.glsl" );
@@ -305,48 +292,7 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "ColorTextureProgram", prog );
 
-
     //PartProgram
-
-    prog = new ShaderProgram();
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->link();
-
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "ParticleProgram", prog );
-
-    prog = new ShaderProgram();
-    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->link();
-
-    prog->detachShader( "geometry" );
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "GeometryParticleProgram", prog );
-
-
-    prog = new ShaderProgram();
-    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_fs.glsl" );
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->link();
-
-    prog->detachShader( "geometry" );
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "GeometryLightParticleProgram", prog );
-
-
     prog = new ShaderProgram();
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
@@ -577,7 +523,7 @@ void createScene(){
     table = new SceneNode( meshManager->get( "table" ), shaderProgramManager->get( "ColorTextureProgram" ) );
     table->addTexture( "wood" );
     table->setColor( orange );
-    //scene->addNode( table );
+    scene->addNode( table );
 
     tangram = new SceneNode( nullptr, prog, MatrixFactory::createIdentityMatrix4() );
     table->addNode( tangram );
@@ -612,97 +558,14 @@ void createScene(){
     plpc45->setColor( white );
     tangram->addNode( plpc45 );
 
-
 }
 
-void createAnimationThreeStep(){
-    qtrn qzero = qtrn();
-    vec4 vzero = vec4( 0 );
-    /**/
-    // TRIANGLE 1
-    Animator* tra1 = new Animator();
-    Animation* moveup1 = new Animation( qzero, vzero, qzero, vec4( 0, 1.0f, 0, 1 ) );
-    Animation* moveside1 = new Animation( qzero, vec4( 0, 1.0f, 0, 1 ), qzero, vec4( -0.2f, 1.0f, 0.4f, 1 ) );
-    Animation* movedown1 = new Animation( qzero, vec4( -0.2f, 1.0f, 0.4f, 1 ), qzero, vec4( -0.2f, 0.0f, 0.4f, 1 ) );
-
-    tra1->addAnimation( moveup1 );
-    tra1->addAnimation( moveside1 );
-    tra1->addAnimation( movedown1 );
-    trpc1->addAnimator( tra1 );
-    /**/
-    // TRIANGLE 2
-    Animator* tra2 = new Animator();
-    Animation* moveup2 = new Animation( qzero, vzero, qzero, vec4( 0, 1.2f, 0, 1 ) );
-    Animation* moveside2 = new Animation( qzero, vec4( 0, 1.2f, 0, 1 ), qzero, vec4( 0.0f, 1.2f, 0.2f, 1 ) );
-    Animation* movedown2 = new Animation( qzero, vec4( 0.0f, 1.2f, 0.2f, 1 ), qzero, vec4( 0.0f, 0.0f, 0.2f, 1 ) );
-
-    tra2->addAnimation( moveup2 );
-    tra2->addAnimation( moveside2 );
-    tra2->addAnimation( movedown2 );
-    trpc2->addAnimator( tra2 );
-    /**/
-    // TRIANGLE 3
-    Animator* tra3 = new Animator();
-    Animation* moveup3 = new Animation( qzero, vzero, qzero, vec4( 0, 0.8f, 0, 1 ) );
-    Animation* moveside3 = new Animation( qzero, vec4( 0, 0.8f, 0, 1 ), qzero, vec4( 0.0f, 0.8f, 0.2f, 1 ) );
-    Animation* movedown3 = new Animation( qzero, vec4( 0, 0.8f, 0.2f, 1 ), qzero, vec4( 0.0f, 0, 0.2f, 1 ) );
-
-    tra3->addAnimation( moveup3 );
-    tra3->addAnimation( moveside3 );
-    tra3->addAnimation( movedown3 );
-    trpc3->addAnimator( tra3 );
-    /**/
-    // TRIANGLE 6
-    Animator* tra6 = new Animator();
-    Animation* moveup6 = new Animation( qzero, vzero, qzero, vec4( 0, 0.6f, 0, 1 ) );
-    Animation* moveside6 = new Animation( qzero, vec4( 0, 0.6f, 0, 1 ), qtrn( 90, YY ), vec4( 0.0f, 0.6f, 0.2f, 1 ) );
-    Animation* movedown6 = new Animation( qtrn( 90, YY ), vec4( 0.0f, 0.6f, 0.2f, 1 ), qtrn( 90, YY ), vec4( 0.0f, 0, 0.2f, 1 ) );
-
-    tra6->addAnimation( moveup6 );
-    tra6->addAnimation( moveside6 );
-    tra6->addAnimation( movedown6 );
-    trpc6->addAnimator( tra6 );
-    /**/
-    // TRIANGLE 9
-    Animator* tra9 = new Animator();
-    Animation* moveup9 = new Animation( qzero, vzero, qzero, vec4( 0, 1.4f, 0, 1 ) );
-    Animation* moveside9 = new Animation( qzero, vec4( 0, 1.4f, 0, 1 ), qtrn( 90 + 45, YY ), vec4( -0.2828f, 1.4f, -0.88f, 1 ) );
-    Animation* movedown9 = new Animation( qtrn( 90 + 45, YY ), vec4( -0.2828f, 1.4f, -0.88f, 1 ), qtrn( 90 + 45, YY ), vec4( -0.2828f, 0, -0.88f, 1 ) );
-
-    tra9->addAnimation( moveup9 );
-    tra9->addAnimation( moveside9 );
-    tra9->addAnimation( movedown9 );
-    trpc9->addAnimator( tra9 );
-    /**/
-    // PARALLELOGRAM 45
-    Animator* pla45 = new Animator();
-    Animation* moveup45 = new Animation( qzero, vzero, qzero, vec4( 0, 1.6f, 0, 1 ) );
-    Animation* moveside45 = new Animation( qzero, vec4( 0, 1.6f, 0, 1 ), qzero, vec4( 0.2f, 1.6f, 0.8f, 1 ) );
-    Animation* movedown45 = new Animation( qzero, vec4( 0.2f, 1.6f, 0.8f, 1 ), qzero, vec4( 0.2f, 0, 0.8f, 1 ) );
-
-    pla45->addAnimation( moveup45 );
-    pla45->addAnimation( moveside45 );
-    pla45->addAnimation( movedown45 );
-    plpc45->addAnimator( pla45 );
-    /**/
-    // SQUARE 78
-    Animator* sqa78 = new Animator();
-    Animation* moveup78 = new Animation( qzero, vzero, qzero, vec4( 0, 1.8f, 0, 1 ) );
-    Animation* moveside78 = new Animation( qzero, vec4( 0, 1.8f, 0, 1 ), qtrn( 45, YY ), vec4( 0.14f, 1.8f, -0.48f, 1 ) );
-    Animation* movedown78 = new Animation( qtrn( 45, YY ), vec4( 0.14f, 1.8f, -0.48f, 1 ), qtrn( 45, YY ), vec4( 0.14f, 0, -0.48f, 1 ) );
-    sqa78->addAnimation( moveup78 );
-    sqa78->addAnimation( moveside78 );
-    sqa78->addAnimation( movedown78 );
-    sqpc78->addAnimator( sqa78 );
-    /**/
-}
 
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     /**/
     particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryProperLightParticleProgram" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-
     /**/
 
 }
@@ -743,7 +606,6 @@ void init( int argc, char* argv[] ){
     createShaderProgram();
 
     createScene();
-    createAnimationThreeStep();
 
     createParticleSystem();
 
