@@ -151,6 +151,9 @@
     <None Include="Shaders\texShader_color_vs.glsl" />
     <None Include="Shaders\texShader_fs.glsl" />
     <None Include="Shaders\texShader_vs.glsl" />
+    <None Include="Shaders\tfb_fs.glsl" />
+    <None Include="Shaders\tfb_gs.glsl" />
+    <None Include="Shaders\tfb_vs.glsl" />
     <None Include="Shaders\VertexShader.glsl" />
     <None Include="Shaders\VertexShaderCamera.glsl" />
   </ItemGroup>

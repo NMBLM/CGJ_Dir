@@ -19,7 +19,7 @@ out vec2 texCoord;
 
 vec4 temp;
 vec3 eye;
-#define POINT 0.1f
+#define POINT 0.02f
 void build_quad(vec4 pos)
 {    
 
