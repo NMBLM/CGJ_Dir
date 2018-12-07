@@ -588,11 +588,13 @@ void setupLight(){
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
     vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
     vec3 dropoff = vec3( 2.0f, 1.0f, 1.0f );
+
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
     vec3 ambient = vec3( 1.0f, 0.0f, 0.0f );
     vec3 diffuse = vec3( 1.0f, 0.0f, 0.0f );
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
+
     for( int i = 3; i < NR_NEON_LIGHTS + 3; i++ ){
         pointLights[i] = PointLight( pos, dropoff, ambient, diffuse, specular );
         pos.x += offset;

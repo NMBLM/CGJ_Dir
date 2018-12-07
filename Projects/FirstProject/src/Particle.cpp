@@ -50,7 +50,6 @@ void ParticleSystem::update( float _delta ){
         if( p.Life > 0.0f ){	// particle is alive, thus update
             p.Velocity += GRAVITY * delta;
             p.Position = p.Position + ( p.Velocity * delta );
-            p.Color.w -= delta * 1.5f;
         }
     }
 }
@@ -58,16 +57,11 @@ void ParticleSystem::update( float _delta ){
 void ParticleSystem::draw(){
     //glEnable( GL_BLEND );
     //glBlendFunc( GL_SRC_ALPHA, GL_ONE );
+
     camera->setMatrix();
     shader->use();
-    //float angle = 0;
-    //vec3 axis = vec3( 0.0f, 0.0f, 1.0f );
-    //camera->rotationQtrn().qToAngleAxis( angle, axis );
-    //shader->addUniform( "rotation", ( ( -1 ) * axis ) );
-    shader->addUniform( "rotation", camera->rotation() );
     for( Particle particle : particles ){
         if( particle.Life > 0.0f ){
-            shader->addUniform( "color", particle.Color );
             shader->addUniform( "position", particle.Position );
             glBindVertexArray( VaoId );
             //glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
@@ -75,6 +69,7 @@ void ParticleSystem::draw(){
             glBindVertexArray( 0 );
         }
     }
+
     //glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     //glDisable( GL_BLEND );
     shader->stop();
@@ -106,20 +101,9 @@ void ParticleSystem::RespawnParticle( Particle &particle ){
     float rnd1 = ( ( rand() % 100 ) - 50 ) / 100.0f;
     float rnd2 = ( ( rand() % 100 ) - 50 ) / 100.0f;
     float rnd3 = ( ( rand() % 100 ) - 50 ) / 100.0f;
-    float rColor = ( ( rand() % 100 ) / 100.0f );
-    float gColor = ( ( rand() % 100 ) / 100.0f );
-    float bColor = ( ( rand() % 100 ) / 100.0f );
-
     particle.Position = position + vec3( ( rnd1 - rnd2 + rnd3 ) , 0.0f, rnd1  ) * (1/2.0f);
-    particle.Color.x = rColor;
-    particle.Color.y = gColor;
-    particle.Color.z = bColor;
-    particle.Color.w = 1.0f;
     particle.Life = LIFE;
     particle.Velocity = VELOCITY + vec3( 0.1f*rnd1 -0.1f, rnd2, 0.1f*rnd3 - 0.1f );
-    //particle.distance = (particle.Position - vec3(0.0f,0.0f,5.0f)).length();
-    //std::cout << "random " << random << std::endl;
-    //std::cout << "Color " << rColor << std::endl;
     //std::cout << "Particle " << std::endl << particle ;
 
 }

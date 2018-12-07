@@ -2,7 +2,6 @@
 layout (points) in;
 layout (triangle_strip, max_vertices = 4) out;
 
-uniform vec4 color;
 uniform vec3 position;
 uniform mat3 rotation;
 
@@ -12,7 +11,6 @@ uniform SharedMatrices
 	mat4 ProjectionMatrix;
 };
 
-out vec4 ParticleColor;
 out vec3 vertex;
 out vec3 normal;
 out vec2 texCoord;
@@ -102,8 +100,6 @@ void build_quad2(vec4 pos)
 }
 
 void main() {   
-	ParticleColor = color;
-    //build_quad(gl_in[0].gl_Position);
 	build_quad(gl_in[0].gl_Position);
 
 }  
