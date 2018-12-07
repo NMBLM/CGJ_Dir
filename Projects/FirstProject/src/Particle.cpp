@@ -110,17 +110,13 @@ void ParticleSystem::RespawnParticle( Particle &particle ){
     float gColor = ( ( rand() % 100 ) / 100.0f );
     float bColor = ( ( rand() % 100 ) / 100.0f );
 
-    particle.Position = position + vec3( rnd1 , 0.0f, ( rnd1 - rnd2 + rnd3 ) ) * (1/10.0f);
+    particle.Position = position + vec3( ( rnd1 - rnd2 + rnd3 ) , 0.0f, rnd1  ) * (1/1.0f);
     particle.Color.x = rColor;
     particle.Color.y = gColor;
     particle.Color.z = bColor;
     particle.Color.w = 1.0f;
     particle.Life = LIFE;
     particle.Velocity = VELOCITY + vec3( rnd1, rnd2, rnd3 );
-    //particle.Velocity = VELOCITY;
-    //particle.Velocity.x *= rnd1;
-    //particle.Velocity.y += rnd2;
-    //particle.Velocity.z *= rnd3;
     //particle.distance = (particle.Position - vec3(0.0f,0.0f,5.0f)).length();
     //std::cout << "random " << random << std::endl;
     //std::cout << "Color " << rColor << std::endl;
