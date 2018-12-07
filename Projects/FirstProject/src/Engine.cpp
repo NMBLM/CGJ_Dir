@@ -21,7 +21,9 @@
 #include "GL/freeglut.h"
 
 #define CAPTION "Hello Modern 3D World"
-#define NR_POINT_LIGHTS 3
+#define NR_NEON_LIGHTS 5
+#define NR_POINT_LIGHTS 3 + NR_NEON_LIGHTS
+
 
 using namespace engine;
 
@@ -332,7 +334,7 @@ void destroyBufferObjects(){
 
 void drawScene(){
 
-    scene->draw();
+    //scene->draw();
     particlesOne->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
@@ -474,44 +476,45 @@ void loadTextures(){
     textureCatalog->insert( "error2", new Texture( "Textures/errorTexture3.png" ) );
 }
 
-vec4 YY = vec4( 0, 1, 0, 1 );
-const mat4 tr1 = MatrixFactory::createTranslationMatrix( -0.2f, 0.0f, -0.8f ) *
-MatrixFactory::createRotationMatrix4( -90.0f, YY );
-
-const mat4 tr2 = MatrixFactory::createTranslationMatrix( -0.4f, 0.0f, 0.2f );
-
-const mat4 tr3 = MatrixFactory::createTranslationMatrix( 0.2f, 0.0f, 0.0f ) *
-MatrixFactory::createScaleMatrix4( 0.5f, 1, 0.5f ) *
-MatrixFactory::createRotationMatrix4( 90.0f, YY );
-
-const mat4 pl45 = MatrixFactory::createTranslationMatrix( 0.2f, 0.0f, -0.4f ) *
-MatrixFactory::createRotationMatrix4( 90.0f, YY );
-
-const mat4 tr6 = MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, -0.6f ) *
-MatrixFactory::createScaleMatrix4( 0.5f, 1, 0.5f ) *
-MatrixFactory::createRotationMatrix4( 90.0f, YY );
-
-const mat4 sq78 = MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 0.34f ) * // '.14f is half the side of the square
-MatrixFactory::createRotationMatrix4( 45.0f, YY ) * //rotate 45 degrees
-MatrixFactory::createTranslationMatrix( -0.2f, 0.0f, 0.0f ); // center in the origin
-
-const mat4 tr9 = MatrixFactory::createTranslationMatrix( 0.4f * 0.707f, 0.0f, 0.48f ) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
-MatrixFactory::createScaleMatrix4( 0.707f, 1, 0.707f ) *
-MatrixFactory::createRotationMatrix4( -180.0f, YY );
-
-const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
-const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
-const vec4 blue = vec4( 0.0f, 0.0f, 1.0f, 1.0f );
-const vec4 cyan = vec4( 0.0f, 1.0f, 1.0f, 1.0f );
-const vec4 magenta = vec4( 1.0f, 0.0f, 1.0f, 1.0f );
-const vec4 yellow = vec4( 1.0f, 1.0f, 0.0f, 1.0f );
-const vec4 white = vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-const vec4 orange = vec4( 1.0f, 0.2f, 0.0f, 1.0f );
-const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
-SceneNode* tangram;
-SceneNode  *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78;
-
 void createScene(){
+    vec4 YY = vec4( 0, 1, 0, 1 );
+    const mat4 tr1 = MatrixFactory::createTranslationMatrix( -0.2f, 0.0f, -0.8f ) *
+        MatrixFactory::createRotationMatrix4( -90.0f, YY );
+
+    const mat4 tr2 = MatrixFactory::createTranslationMatrix( -0.4f, 0.0f, 0.2f );
+
+    const mat4 tr3 = MatrixFactory::createTranslationMatrix( 0.2f, 0.0f, 0.0f ) *
+        MatrixFactory::createScaleMatrix4( 0.5f, 1, 0.5f ) *
+        MatrixFactory::createRotationMatrix4( 90.0f, YY );
+
+    const mat4 pl45 = MatrixFactory::createTranslationMatrix( 0.2f, 0.0f, -0.4f ) *
+        MatrixFactory::createRotationMatrix4( 90.0f, YY );
+
+    const mat4 tr6 = MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, -0.6f ) *
+        MatrixFactory::createScaleMatrix4( 0.5f, 1, 0.5f ) *
+        MatrixFactory::createRotationMatrix4( 90.0f, YY );
+
+    const mat4 sq78 = MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 0.34f ) * // '.14f is half the side of the square
+        MatrixFactory::createRotationMatrix4( 45.0f, YY ) * //rotate 45 degrees
+        MatrixFactory::createTranslationMatrix( -0.2f, 0.0f, 0.0f ); // center in the origin
+
+    const mat4 tr9 = MatrixFactory::createTranslationMatrix( 0.4f * 0.707f, 0.0f, 0.48f ) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
+        MatrixFactory::createScaleMatrix4( 0.707f, 1, 0.707f ) *
+        MatrixFactory::createRotationMatrix4( -180.0f, YY );
+
+    const vec4 red = vec4( 1.0f, 0.0f, 0.0f, 1.0f );
+    const vec4 green = vec4( 0.0f, 1.0f, 0.0f, 1.0f );
+    const vec4 blue = vec4( 0.0f, 0.0f, 1.0f, 1.0f );
+    const vec4 cyan = vec4( 0.0f, 1.0f, 1.0f, 1.0f );
+    const vec4 magenta = vec4( 1.0f, 0.0f, 1.0f, 1.0f );
+    const vec4 yellow = vec4( 1.0f, 1.0f, 0.0f, 1.0f );
+    const vec4 white = vec4( 1.0f, 1.0f, 1.0f, 1.0f );
+    const vec4 orange = vec4( 1.0f, 0.2f, 0.0f, 1.0f );
+    const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
+
+    SceneNode* tangram;
+    SceneNode  *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78;
+
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
@@ -579,6 +582,22 @@ void setupLight(){
 
     pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 0.5f,
         vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+
+    float endX = 1.0f;
+    float beginX = -1.0f;
+    float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
+    vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
+    vec3 dropoff = vec3( 2.0f, 1.0f, 1.0f );
+    //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
+    //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
+    vec3 ambient = vec3( 1.0f, 0.0f, 0.0f );
+    vec3 diffuse = vec3( 1.0f, 0.0f, 0.0f );
+    vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
+    for( int i = 3; i < NR_NEON_LIGHTS + 3; i++ ){
+        pointLights[i] = PointLight( pos, dropoff, ambient, diffuse, specular );
+        pos.x += offset;
+    }
+
 }
 
 void activateLights(){
