@@ -15,11 +15,13 @@
 #include "Catalog.h"
 #include "Texture.h"
 #include "Particle.h"
+#include "LightSource.h"
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
 #define CAPTION "Hello Modern 3D World"
+#define NR_POINT_LIGHTS 3
 
 using namespace engine;
 
@@ -36,9 +38,9 @@ Camera* freeCamera;
 
 MeshLoader meshLoader;
 
+PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
 ParticleSystem* particlesOne;
-ParticleSystem* particlesTwo;
 
 
 float lastFrame = 0.0f;
@@ -50,8 +52,6 @@ bool freecam = false;
 
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
-bool OG = false;
-
 
 SceneNode  *table;
 
@@ -329,7 +329,7 @@ void createShaderProgram(){
     prog->detachShader( "geometry" );
     prog->detachShader( "vertex" );
     prog->detachShader( "fragment" );
-    
+
     shaderProgramManager->insert( "GeometryParticleProgram", prog );
 
 
@@ -346,6 +346,19 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "GeometryLightParticleProgram", prog );
 
+
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_proper_fs.glsl" );
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->link();
+
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "GeometryProperLightParticleProgram", prog );
     checkOpenGLError( "ERROR: Could not create shaders." );
 
 }
@@ -375,7 +388,6 @@ void drawScene(){
 
     scene->draw();
     particlesOne->draw();
-    //particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -402,7 +414,6 @@ void idle(){
 
     scene->update( delta );
     particlesOne->update( delta );
-    particlesTwo->update( delta );
 
     glutPostRedisplay();
 }
@@ -689,21 +700,32 @@ void createAnimationThreeStep(){
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     /**/
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryProperLightParticleProgram" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
-    /** /
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, -0.4f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
-    /** /
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    particlesTwo = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( -0.2f, -0.4f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+
     /**/
+
+}
+
+void setupLight(){
+    pointLights[0] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 0.5f,
+        vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+
+    pointLights[1] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 0.5f,
+        vec3( 1.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+
+    pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 0.5f,
+        vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+}
+
+void activateLights(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    ShaderProgram* shader = shaderProgramManager->get( "GeometryProperLightParticleProgram" );
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
 }
 
 void init( int argc, char* argv[] ){
@@ -712,7 +734,7 @@ void init( int argc, char* argv[] ){
     setupOpenGL();
 
     setupCamera();
-
+    setupLight();
     setupCallbacks();
 
     loadMeshes();
@@ -726,6 +748,7 @@ void init( int argc, char* argv[] ){
     createParticleSystem();
 
     createBufferObjects();
+    activateLights();
 }
 
 int main( int argc, char* argv[] ){

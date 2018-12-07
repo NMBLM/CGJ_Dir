@@ -1,7 +1,8 @@
 #version 330 core
 
-in vec4 ParticleColor;
 in vec3 vertex;
+in vec3 normal;
+in vec2 texCoord;
 
 out vec4 out_color;
 
@@ -22,14 +23,14 @@ struct PointLight {
     vec3 diffuse;
     vec3 specular;
 }; 
+#define NR_POINT_LIGHTS 3  
+uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 struct Material{
 	float shininess;
 	vec3 diffuse;
     vec3 specular;
 };
-#define NR_POINT_LIGHTS 3  
-uniform PointLight pointLights[NR_POINT_LIGHTS];
 Material material;
 vec3 eye;
 
@@ -39,9 +40,11 @@ void setupMaterial(){
     material.specular = normalize(vec3(0.57735f,0.57735f,0.57735f));
 }
 vec3 someFunctionToCalculatePointLight(PointLight p){
+	vec3 lightPos = vec3(ProjectionMatrix * ViewMatrix * vec4(p.position,1.0f));
 	vec3 E = normalize(eye - vertex);
 	vec3 N = normalize(eye - vertex);
-	vec3 L = p.position - vertex;
+	//vec3 N = normalize(normal);
+	vec3 L =  lightPos - vertex;
 	float dist = length(L);
 	L = normalize(L);
 	float attenuation = 1/(p.constant + p.linear * dist + p.quadratic * pow(dist,2));

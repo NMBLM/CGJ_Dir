@@ -131,6 +131,9 @@
     <ClCompile Include="src\Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="src\LightSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\Anime.h">
@@ -175,7 +178,7 @@
     <ClInclude Include="include\Particle.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LightSource.h">
+    <ClInclude Include="include\LightSource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

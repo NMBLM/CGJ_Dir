@@ -36,8 +36,8 @@ void build_quad(vec4 pos)
 	vec3 side = normalize(cross(E,Worldup)) ;
 	vec3 up = normalize(cross(side,E)) ;
 
-	normal = normalize(vec3(mvp* vec4(E,1.0f)));
-	//normal = E;
+	//normal = normalize(vec3(mvp* vec4(E,1.0f)));
+	normal = E;
     gl_Position = mvp * vec4(pos.xyz + side* POINT - up* POINT,1.0f);    // 1:bottom-left
 	vertex = gl_Position.xyz;
 	texCoord = vec2(0,0);

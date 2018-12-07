@@ -1,6 +1,5 @@
 #version 330 core
 
-in vec4 ParticleColor;
 in vec3 vertex;
 in vec3 normal;
 in vec2 texCoord;
