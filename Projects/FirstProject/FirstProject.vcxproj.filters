@@ -96,6 +96,15 @@
     <None Include="Shaders\tfb_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="Shaders\tfb_billboard_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_gs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">

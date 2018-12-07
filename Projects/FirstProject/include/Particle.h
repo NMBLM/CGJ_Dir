@@ -67,6 +67,7 @@ class ParticleSystem{
     ShaderProgram* shader;
     Camera* camera;
 
+
     float delta = 0;
 
     ParticleSystem( ShaderProgram* shaderProgram, Camera* camera );
@@ -84,7 +85,29 @@ class ParticleSystem{
     void draw();
 };
 
+class ParticleSystemTransform{
+    public:
+    Particle Particles[MaxParticles];
+    vec3 position;
+    Camera* camera;
+    ShaderProgram*  m_billboardTechnique;
+    ShaderProgram* m_updateTechnique;
+    bool m_isFirst;
+    unsigned int m_currVB;
+    unsigned int m_currTFB;
+    GLuint m_particleBuffer[2];
+    GLuint m_transformFeedback[2];
+    float delta = 0;
 
+    ParticleSystemTransform( ShaderProgram* draw, ShaderProgram* update, Camera* cam, vec3 pos );
+
+    void InitParticleSystem();
+    void UpdateParticles();
+    void RenderParticles();
+
+    void update( float _delta );
+    void draw();
+};
 
 
 #endif

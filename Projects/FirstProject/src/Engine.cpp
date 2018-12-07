@@ -43,7 +43,7 @@ MeshLoader meshLoader;
 PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
 ParticleSystem* particlesOne;
-
+ParticleSystemTransform* particlesTwo;
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -309,6 +309,37 @@ void createShaderProgram(){
     shaderProgramManager->insert( "GeometryProperLightParticleProgram", prog );
     checkOpenGLError( "ERROR: Could not create shaders." );
 
+    //PartTransformProgram
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_billboard_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_billboard_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_billboard_fs.glsl" );
+
+    prog->bindAttribLocation( 0, "Position" );
+    prog->link();
+
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "TFBDraw", prog );
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_fs.glsl" );
+    prog->bindAttribLocation( 0, "Position" );
+    prog->bindAttribLocation( 1, "Velocity" );
+    prog->bindAttribLocation( 2, "Life" );
+    prog->link();
+
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "TFBUpdate", prog );
+    checkOpenGLError( "ERROR: Could not create Transform shaders." );
+    checkOpenGLError( "ERROR: Could not create shaders." );
+
 }
 void destroyShaderProgram(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
@@ -336,6 +367,7 @@ void drawScene(){
 
     //scene->draw();
     particlesOne->draw();
+    //particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -362,6 +394,7 @@ void idle(){
 
     scene->update( delta );
     particlesOne->update( delta );
+    particlesTwo->update( delta );
 
     glutPostRedisplay();
 }
@@ -567,7 +600,13 @@ void createScene(){
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     /**/
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryProperLightParticleProgram" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
+    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryProperLightParticleProgram" ),
+        camera, vec3( 0.0f, -0.8f, 0.0f ) );
+    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+
+    particlesTwo = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
+    particlesTwo->InitParticleSystem();
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
     /**/
 
@@ -605,6 +644,13 @@ void setupLight(){
 void activateLights(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* shader = shaderProgramManager->get( "GeometryProperLightParticleProgram" );
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
+
+    shader = shaderProgramManager->get( "TFBDraw" );
     shader->use();
     for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
         pointLights[i].addItself( shader, i );

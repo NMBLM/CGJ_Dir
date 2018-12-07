@@ -42,7 +42,6 @@ void main()
 		float rnd3 = random(st + vec2(rnd2,rnd1));
 		Position1 = position + vec3( rnd1, 0.0f, ( rnd1 - rnd2 + rnd3 ) );
 		Velocity1 = VELOCITY + vec3( rnd1, rnd2, rnd3 );
-
 		Life1 = LIFE;
 		EmitVertex();
 		EndPrimitive();
