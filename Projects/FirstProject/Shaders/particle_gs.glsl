@@ -21,7 +21,7 @@ vec3 eye;
 void build_quad(vec4 pos)
 {    
 
-	pos = pos + position;
+	pos = pos + vec4(position,1.0f);
 	
 	mat4 mvp = ProjectionMatrix * ViewMatrix;
 	mat4 ModelMatrix = mat4(1);
@@ -57,7 +57,7 @@ void build_quad(vec4 pos)
 
 void build_quad2(vec4 pos)
 {    
-	pos = pos + position;
+	pos = pos + vec4(position,1.0f);
 
 	mat4 mvp = ProjectionMatrix * ViewMatrix;
 	mat4 ModelMatrix = mat4(1);

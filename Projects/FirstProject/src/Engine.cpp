@@ -366,8 +366,8 @@ void destroyBufferObjects(){
 void drawScene(){
 
     //scene->draw();
-    particlesOne->draw();
-    //particlesTwo->draw();
+    //particlesOne->draw();
+    particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 

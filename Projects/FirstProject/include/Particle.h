@@ -26,15 +26,18 @@
 #define POSITION 11
 #define COLOR 12
 
-const int MaxParticles = 10000;
+const int MaxParticles = 50000;
 const int nr_new_particles = 20;
 static const GLfloat Vertices[] = { 0.0f, 0.0f, 0.0f };
+
+#define ZERO_MEM(a) memset(a, 0, sizeof(a))
 
 namespace engine{
 
     struct Particle;
 
     struct Particle{
+
         vec3 Position;
         vec3 Velocity;
         float Life;
@@ -87,16 +90,18 @@ class ParticleSystem{
 
 class ParticleSystemTransform{
     public:
+   
     Particle Particles[MaxParticles];
     vec3 position;
     Camera* camera;
     ShaderProgram*  m_billboardTechnique;
     ShaderProgram* m_updateTechnique;
-    bool m_isFirst;
     unsigned int m_currVB;
     unsigned int m_currTFB;
+    bool m_isFirst;
     GLuint m_particleBuffer[2];
     GLuint m_transformFeedback[2];
+    GLuint VaoId;
     float delta = 0;
 
     ParticleSystemTransform( ShaderProgram* draw, ShaderProgram* update, Camera* cam, vec3 pos );
@@ -108,6 +113,7 @@ class ParticleSystemTransform{
     void update( float _delta );
     void draw();
 };
+
 
 
 #endif
