@@ -15,6 +15,7 @@ uniform float delta;
 uniform vec3 position;
 #define LIFE 1.0f
 #define VELOCITY vec3(0.1f,2.0f,0.1f)
+
 float random (vec2 st) {
     return fract(sin(dot(st.xy,
         vec2(12.9898,78.233)))*
@@ -40,6 +41,7 @@ void main()
 		float rnd1 = random(st);
 		float rnd2 = random(st + vec2(rnd1,rnd1 / Position0[0].x));
 		float rnd3 = random(st + vec2(rnd2,rnd1));
+
 		Position1 = position + vec3( rnd1, 0.0f, ( rnd1 - rnd2 + rnd3 ) );
 		Velocity1 = VELOCITY + vec3( rnd1, rnd2, rnd3 );
 		Life1 = LIFE;

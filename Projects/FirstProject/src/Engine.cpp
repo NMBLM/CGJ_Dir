@@ -28,6 +28,7 @@
 using namespace engine;
 
 int WinX = 640, WinY = 640;
+int lastWinX = WinX, lastWinY = WinY;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
@@ -315,7 +316,6 @@ void createShaderProgram(){
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_billboard_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_billboard_fs.glsl" );
 
-    prog->bindAttribLocation( 0, "Position" );
     prog->link();
 
     prog->detachShader( "geometry" );
@@ -327,9 +327,17 @@ void createShaderProgram(){
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_gs.glsl" );
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_fs.glsl" );
-    prog->bindAttribLocation( 0, "Position" );
-    prog->bindAttribLocation( 1, "Velocity" );
-    prog->bindAttribLocation( 2, "Life" );
+    //prog->bindAttribLocation( 0, "Position" );
+    //prog->bindAttribLocation( 1, "Velocity" );
+    //prog->bindAttribLocation( 2, "Life" );
+
+    const GLchar* Varyings[3];
+    Varyings[0] = "Position1";
+    Varyings[1] = "Velocity1";
+    Varyings[2] = "Life1";
+
+    glTransformFeedbackVaryings( prog->id, 3, Varyings, GL_INTERLEAVED_ATTRIBS );
+
     prog->link();
 
     prog->detachShader( "geometry" );
@@ -403,9 +411,13 @@ void reshape( int w, int h ){
     WinX = w;
     WinY = h;
     glViewport( 0, 0, WinX, WinY );
-    projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
-    camera->ProjectionMatrix( projectionMatrix );
-    freeCamera->ProjectionMatrix( projectionMatrix );
+    if( lastWinX != WinX || lastWinY != WinY ){
+        projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
+        camera->ProjectionMatrix( projectionMatrix );
+        freeCamera->ProjectionMatrix( projectionMatrix );
+        lastWinX = WinX;
+        lastWinY = WinY;
+    }
 }
 
 void timer( int value ){
@@ -667,17 +679,20 @@ void init( int argc, char* argv[] ){
     setupLight();
     setupCallbacks();
 
+
     loadMeshes();
     loadTextures();
 
     createShaderProgram();
+    activateLights();
 
     createScene();
+
 
     createParticleSystem();
 
     createBufferObjects();
-    activateLights();
+    
 }
 
 int main( int argc, char* argv[] ){

@@ -141,3 +141,4 @@ Projects/FirstProject/x64/Release/TextureLoader.obj
 Projects/FirstProject/x64/Release/FirstProject.tlog/link.read.5.tlog
 Projects/FirstProject/x64/Release/FirstProject.tlog/unsuccessfulbuild
 Projects/FirstProject/x64/Debug/particle.obj.enc
+*.nvact
