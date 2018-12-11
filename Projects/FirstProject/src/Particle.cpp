@@ -114,6 +114,7 @@ ParticleSystemTransform::ParticleSystemTransform( ShaderProgram * draw, ShaderPr
     m_billboardTechnique = draw;
     m_updateTechnique = update;
 
+
     camera = cam;
     position = pos;
 
@@ -128,7 +129,6 @@ ParticleSystemTransform::ParticleSystemTransform( ShaderProgram * draw, ShaderPr
 
 }
 void ParticleSystemTransform::InitParticleSystem(){
-
     Particles[0].Position = position;
     Particles[0].Velocity = VELOCITY;
     Particles[0].Life = 0.1f;
@@ -159,6 +159,7 @@ void ParticleSystemTransform::update( float _delta ){
 void ParticleSystemTransform::draw(){
 
     camera->setMatrix();
+
     UpdateParticles();
 
     RenderParticles();
@@ -178,9 +179,7 @@ void ParticleSystemTransform::UpdateParticles(){
     m_updateTechnique->addUniform( "rnd1", rnd1 );
     m_updateTechnique->addUniform( "rnd2", rnd2 );
     m_updateTechnique->addUniform( "rnd3", rnd3 );
-    //std::cout << "1 " << rnd1 << std::endl;
-    //std::cout << "2 " << rnd2 << std::endl;
-    //std::cout << "3 " << rnd3 << std::endl;
+
     glEnable( GL_RASTERIZER_DISCARD );
 
     glBindVertexArray( VaoId );
@@ -201,7 +200,7 @@ void ParticleSystemTransform::UpdateParticles(){
 
         if( m_isFirst ){
             m_isFirst = false;
-            glDrawArrays( GL_POINTS, 0, 10 );
+            glDrawArrays( GL_POINTS, 0, 1 );
         } else{
             glDrawTransformFeedback( GL_POINTS, m_transformFeedback[m_currVB] );
         }

@@ -15,7 +15,7 @@ uniform float delta;
 uniform vec3 position;
 
 #define LIFE 0.4f
-#define VELOCITY vec3(0.0f,1.0f,0.0f)
+#define VELOCITY vec3(0.0f,2.0f,0.0f)
 #define SCALE 2.0f
 
 float random (vec2 st) {
@@ -25,11 +25,11 @@ float random (vec2 st) {
 }
 
 void main(){
-	float life = Life0[0] - delta; 
-	if(life>0){
+	float Life = Life0[0] - delta; 
+	if(Life>0){
 		Position1 = Position0[0] + (Velocity0[0] * delta) ;
 		Velocity1 = Velocity0[0];
-		Life1 = life;
+		Life1 = Life;
 		EmitVertex();
 		EndPrimitive();
 	}else{
@@ -41,8 +41,18 @@ void main(){
 				rnd2 = -rnd2/2.0f;
 			}
 			float rnd3 = random(st + vec2(rnd2,rnd1));
-			Position1 = position + vec3( 0.5f - rnd1 , 0.0f, 0.5f - rnd2  );
-			Velocity1 = VELOCITY;// + vec3(0.5f - rnd1,rnd2,0.5f - rnd3); //+ vec3( (rnd1 - 0.5f) * rnd2, rnd2 ,(rnd3 - 0.5f)*rnd2  );
+
+			Position1 = position + vec3(cos(rnd2 * 10),cos(rnd1 * 10),cos(rnd3 * 10))/4.0f;
+
+			if (rnd3 > 0.5f){
+				rnd3 = -rnd3/2.0f;
+			}
+			if (rnd1 < 0.5f){
+				rnd1 = rnd1 * 2.0f;
+			}else{
+				rnd1 = -rnd1;
+			}
+			Velocity1 = VELOCITY + vec3(rnd1,0.0f,rnd3);
 			Life1 = LIFE +rnd2/2.0f ;
 			EmitVertex();
 			EndPrimitive();
@@ -50,5 +60,4 @@ void main(){
 		}
 	}
 
-	
 }

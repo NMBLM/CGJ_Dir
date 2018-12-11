@@ -154,7 +154,7 @@ void keyRelease( unsigned char key, int x, int y ){
         } else{
             scene->setCamera( freeCamera );
             //particlesOne->camera = freeCamera;
-            particlesTwo->camera = camera;
+            particlesTwo->camera = freeCamera;
 
         }
         freecam = !freecam;
@@ -298,20 +298,6 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "ColorTextureProgram", prog );
 
-    //PartProgram
-    prog = new ShaderProgram();
-    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_proper_fs.glsl" );
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->link();
-
-    prog->detachShader( "geometry" );
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "GeometryProperLightParticleProgram", prog );
-    checkOpenGLError( "ERROR: Could not create shaders." );
 
     //PartTransformProgram
     prog = new ShaderProgram();
@@ -337,7 +323,6 @@ void createShaderProgram(){
     Varyings[2] = "Life1";
 
     glTransformFeedbackVaryings( prog->id, 3, Varyings, GL_INTERLEAVED_ATTRIBS );
-
     prog->link();
 
     prog->detachShader( "geometry" );
@@ -374,7 +359,6 @@ void destroyBufferObjects(){
 void drawScene(){
 
     //scene->draw();
-    //particlesOne->draw();
     particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
@@ -398,10 +382,7 @@ void idle(){
     float currentFrame = ( float )glutGet( GLUT_ELAPSED_TIME );
     delta = ( ( float )currentFrame - ( float )lastFrame ) / 100;
     lastFrame = ( float )currentFrame;
-    k = k + delta / 2;
-
     scene->update( delta );
-    //particlesOne->update( delta );
     particlesTwo->update( delta );
 
     glutPostRedisplay();
@@ -638,7 +619,7 @@ void setupLight(){
     float beginX = -1.0f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
     vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
-    vec3 dropoff = vec3( 0.0f, 5.0f,0.0f );
+    vec3 dropoff = vec3( 0.0f, 5.0f, 0.5f );
 
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
@@ -655,14 +636,8 @@ void setupLight(){
 
 void activateLights(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-    ShaderProgram* shader = shaderProgramManager->get( "GeometryProperLightParticleProgram" );
-    shader->use();
-    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
-        pointLights[i].addItself( shader, i );
-    }
-    shader->stop();
+    ShaderProgram* shader = shaderProgramManager->get( "TFBDraw" );
 
-    shader = shaderProgramManager->get( "TFBDraw" );
     shader->use();
     for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
         pointLights[i].addItself( shader, i );
