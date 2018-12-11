@@ -327,9 +327,6 @@ void createShaderProgram(){
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_gs.glsl" );
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_fs.glsl" );
-    //prog->bindAttribLocation( 0, "Position" );
-    //prog->bindAttribLocation( 1, "Velocity" );
-    //prog->bindAttribLocation( 2, "Life" );
 
     const GLchar* Varyings[3];
     Varyings[0] = "Position1";
@@ -692,7 +689,7 @@ void init( int argc, char* argv[] ){
     createParticleSystem();
 
     createBufferObjects();
-    
+
 }
 
 int main( int argc, char* argv[] ){

@@ -26,7 +26,7 @@
 #define POSITION 11
 #define COLOR 12
 
-const int MaxParticles = 50000;
+const int MaxParticles = 100000;
 const int nr_new_particles = 20;
 static const GLfloat Vertices[] = { 0.0f, 0.0f, 0.0f };
 
@@ -90,7 +90,7 @@ class ParticleSystem{
 
 class ParticleSystemTransform{
     public:
-   
+
     Particle Particles[MaxParticles];
     vec3 position;
     Camera* camera;

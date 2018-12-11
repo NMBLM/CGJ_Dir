@@ -156,6 +156,9 @@
     <None Include="Shaders\tfb_billboard_vs.glsl" />
     <None Include="Shaders\tfb_fs.glsl" />
     <None Include="Shaders\tfb_gs.glsl" />
+    <None Include="Shaders\tfb_update_fs.glsl" />
+    <None Include="Shaders\tfb_update_gs.glsl" />
+    <None Include="Shaders\tfb_update_vs.glsl" />
     <None Include="Shaders\tfb_vs.glsl" />
     <None Include="Shaders\VertexShader.glsl" />
     <None Include="Shaders\VertexShaderCamera.glsl" />
