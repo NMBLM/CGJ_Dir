@@ -20,13 +20,13 @@
 #define VELOCITY vec3(0.1f,2.0f,0.1f)
 
 #define POINT 0.01f
-#define LIFE 1.0f
+#define LIFE 0.4f
 
 #define VERTEX 10
 #define POSITION 11
 #define COLOR 12
 
-const int MaxParticles = 100000;
+const int MaxParticles = 1000000;
 const int nr_new_particles = 20;
 static const GLfloat Vertices[] = { 0.0f, 0.0f, 0.0f };
 

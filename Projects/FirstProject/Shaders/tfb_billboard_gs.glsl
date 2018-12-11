@@ -33,7 +33,7 @@ void build_quad(vec4 pos)
 	normal = E;
     gl_Position = mvp * vec4(pos.xyz + side* POINT - up* POINT,1.0f);    // 1:bottom-left
 	vertex = gl_Position.xyz;
-	texCoord = vec2(0,0);
+	texCoord = vec2(1,0);
     EmitVertex();   
     gl_Position = mvp * vec4(pos.xyz - side* POINT - up* POINT,1.0f);    // 2:bottom-right
 	vertex = gl_Position.xyz;
@@ -41,11 +41,11 @@ void build_quad(vec4 pos)
     EmitVertex();
     gl_Position = mvp * vec4(pos.xyz + side* POINT + up* POINT,1.0f);    // 3:top-left
 	vertex = gl_Position.xyz;
-	texCoord = vec2(0,0);
+	texCoord = vec2(1,1);
     EmitVertex();
     gl_Position = mvp * vec4(pos.xyz - side* POINT + up* POINT,1.0f);    // 4:top-right
 	vertex = gl_Position.xyz;
-	texCoord = vec2(0,0);
+	texCoord = vec2(0,1);
     EmitVertex();
     EndPrimitive();
 }

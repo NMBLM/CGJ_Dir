@@ -43,7 +43,7 @@ MeshLoader meshLoader;
 
 PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
-ParticleSystem* particlesOne;
+//ParticleSystem* particlesOne;
 ParticleSystemTransform* particlesTwo;
 
 float lastFrame = 0.0f;
@@ -148,10 +148,13 @@ void keyRelease( unsigned char key, int x, int y ){
     if( KeyBuffer::instance()->isKeyDown( 'f' ) || KeyBuffer::instance()->isKeyDown( 'F' ) ){
         if( freecam ){
             scene->setCamera( camera );
-            particlesOne->camera = camera;
+            //particlesOne->camera = camera;
+            particlesTwo->camera = camera;
+
         } else{
             scene->setCamera( freeCamera );
-            particlesOne->camera = freeCamera;
+            //particlesOne->camera = freeCamera;
+            particlesTwo->camera = camera;
 
         }
         freecam = !freecam;
@@ -398,7 +401,7 @@ void idle(){
     k = k + delta / 2;
 
     scene->update( delta );
-    particlesOne->update( delta );
+    //particlesOne->update( delta );
     particlesTwo->update( delta );
 
     glutPostRedisplay();
@@ -609,12 +612,12 @@ void createScene(){
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     /**/
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryProperLightParticleProgram" ),
-        camera, vec3( 0.0f, -0.8f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
+    //particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryProperLightParticleProgram" ),
+              //camera, vec3( 0.0f, -0.8f, 0.0f ) );
+    //checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
 
     particlesTwo = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
-        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, -0.2f, 0.0f ) );
     particlesTwo->InitParticleSystem();
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
     /**/
@@ -622,20 +625,20 @@ void createParticleSystem(){
 }
 
 void setupLight(){
-    pointLights[0] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 0.5f,
+    pointLights[0] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 10.5f,
         vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
 
-    pointLights[1] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 0.5f,
+    pointLights[1] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 10.5f,
         vec3( 1.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
 
-    pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 0.5f,
+    pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 10.5f,
         vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
 
     float endX = 1.0f;
     float beginX = -1.0f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
     vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
-    vec3 dropoff = vec3( 2.0f, 1.0f, 1.0f );
+    vec3 dropoff = vec3( 0.0f, 5.0f,0.0f );
 
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );

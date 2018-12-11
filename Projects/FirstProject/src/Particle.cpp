@@ -121,15 +121,6 @@ ParticleSystemTransform::ParticleSystemTransform( ShaderProgram * draw, ShaderPr
     m_currTFB = 1;
     m_isFirst = true;
 
-    for( int i = 0; i < 100; i++ ){
-        Particles[i].Position = position;
-        Particles[i].Velocity = VELOCITY;
-        Particles[i].Life = 0.01f * rand()/100.0f;
-    }
-    //for( int i = 0; i < MaxParticles; i++ ){
-    //    std::cout << i << " " << Particles[i] << std::endl;
-    //}
-
 
     ZERO_MEM( m_particleBuffer );
     ZERO_MEM( m_transformFeedback );
@@ -138,7 +129,9 @@ ParticleSystemTransform::ParticleSystemTransform( ShaderProgram * draw, ShaderPr
 }
 void ParticleSystemTransform::InitParticleSystem(){
 
-
+    Particles[0].Position = position;
+    Particles[0].Velocity = VELOCITY;
+    Particles[0].Life = 0.1f;
     glGenVertexArrays( 1, &VaoId );
     glBindVertexArray( VaoId );
     {
@@ -167,11 +160,6 @@ void ParticleSystemTransform::draw(){
 
     camera->setMatrix();
     UpdateParticles();
-    //std::cout << "UpdateParticles" << std::endl;
-    //for( int i = 0; i < MaxParticles; i++ ){
-    //    std::cout << i << " " << Particles[i] << std::endl;
-    //}
-    //std::cout << "EndUpdateParticles" << std::endl;
 
     RenderParticles();
 
@@ -181,10 +169,18 @@ void ParticleSystemTransform::draw(){
 
 
 void ParticleSystemTransform::UpdateParticles(){
+    float rnd1 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    float rnd2 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    float rnd3 = ( ( rand() % 100 ) - 50 ) / 100.0f;
     m_updateTechnique->use();
     m_updateTechnique->addUniform( "delta", delta );
     m_updateTechnique->addUniform( "position", position );
-
+    m_updateTechnique->addUniform( "rnd1", rnd1 );
+    m_updateTechnique->addUniform( "rnd2", rnd2 );
+    m_updateTechnique->addUniform( "rnd3", rnd3 );
+    //std::cout << "1 " << rnd1 << std::endl;
+    //std::cout << "2 " << rnd2 << std::endl;
+    //std::cout << "3 " << rnd3 << std::endl;
     glEnable( GL_RASTERIZER_DISCARD );
 
     glBindVertexArray( VaoId );
