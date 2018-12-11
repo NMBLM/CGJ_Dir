@@ -130,6 +130,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="mapping_fs.glsl" />
     <None Include="Shaders\cube_fs.glsl" />
     <None Include="Shaders\cube_fs_extra.glsl" />
     <None Include="Shaders\cube_vs.glsl" />
@@ -141,6 +142,7 @@
     <None Include="Shaders\force_color_vs.glsl" />
     <None Include="Shaders\FragmentShader.glsl" />
     <None Include="Shaders\FragmentShaderCamera.glsl" />
+    <None Include="Shaders\mapping_vs.glsl" />
     <None Include="Shaders\particle_light_fs.glsl" />
     <None Include="Shaders\particle_light_proper_fs.glsl" />
     <None Include="Shaders\particle_withgs_vs.glsl" />
@@ -167,6 +169,7 @@
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\ShaderProgram.cpp" />
     <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\TextureInfo.cpp" />
     <ClCompile Include="src\TextureLoader.cpp" />
     <ClCompile Include="src\Vector.cpp" />
   </ItemGroup>
@@ -175,6 +178,7 @@
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Catalog.h" />
     <ClInclude Include="include\KeyBuffer.h" />
+    <ClInclude Include="include\LightSource.h" />
     <ClInclude Include="include\Matrix.h" />
     <ClInclude Include="include\Mesh.h" />
     <ClInclude Include="include\MeshLoader.h" />
@@ -184,8 +188,8 @@
     <ClInclude Include="include\ShaderProgram.h" />
     <ClInclude Include="include\stb_image.h" />
     <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="include\TextureInfo.h" />
     <ClInclude Include="include\Vector.h" />
-    <ClInclude Include="LightSource.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

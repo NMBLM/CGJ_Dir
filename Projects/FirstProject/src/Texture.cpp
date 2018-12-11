@@ -1,8 +1,14 @@
 #include "Texture.h"
 namespace engine{
+    unsigned int Texture::unit = GL_TEXTURE0;
 
+    Texture::Texture() {
+        unit++;
+        std::cout << "empty" << std::endl;
+    }
 
     Texture::Texture( const char* filename ){
+        unit++;
         glGenTextures( 1, &textureId );
         glBindTexture( GL_TEXTURE_2D, textureId );
         // set the texture wrapping/filtering options (on the currently bound texture object)
@@ -35,8 +41,8 @@ namespace engine{
         stbi_image_free( data );
     }
 
-    void Texture::activate( const unsigned int unit ){
-        glActiveTexture( unit );
+    void Texture::activate(){
+        glActiveTexture( Texture::unit );
         glBindTexture( GL_TEXTURE_2D, textureId );
     }
 

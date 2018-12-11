@@ -16,7 +16,13 @@ Mesh::Mesh( std::vector<vec3> vertices,
     this->Normals = std::vector<vec3>( normals );
     this->TexcoordsLoaded = tcLoaded;
     this->NormalsLoaded = nLoaded;
+    calculateTangentSpace();
     createBufferObjects();
+}
+
+
+void engine::Mesh::calculateTangentSpace() {
+    //TODO calculate tangents
 }
 
 /////////////////////////////////////////////////////////////////////// VAOs & VBOs
@@ -48,13 +54,13 @@ void Mesh::createBufferObjects(){
             glVertexAttribPointer( NORMALS, 3, GL_FLOAT, GL_FALSE, sizeof( vec3 ), 0 );
         }
     }
+    //TODO adde tangents do buffer
     glBindVertexArray( 0 );
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
     glDeleteBuffers( 1, &VboVertices );
     glDeleteBuffers( 1, &VboTexcoords );
     glDeleteBuffers( 1, &VboNormals );
 }
-
 
 void Mesh::destroyBufferObjects(){
     glBindVertexArray(VaoId);

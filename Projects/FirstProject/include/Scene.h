@@ -17,8 +17,6 @@
 
 namespace engine{
 
-
-
     class SceneNode {
         Mesh* mesh = nullptr;
         ShaderProgram* shaderProgram = nullptr;
@@ -64,7 +62,6 @@ namespace engine{
         void setCamera( Camera* cam );
 
     };
-
 }
 
 #endif

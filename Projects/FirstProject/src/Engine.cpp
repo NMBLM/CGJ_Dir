@@ -37,9 +37,8 @@ Camera* freeCamera;
 MeshLoader meshLoader;
 
 Scene* scene;
-ParticleSystem* particlesOne;
-ParticleSystem* particlesTwo;
-
+SceneNode  *table;
+SceneNode  *quad;
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -51,9 +50,6 @@ bool freecam = false;
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
 bool OG = false;
-
-
-SceneNode  *table;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -348,6 +344,23 @@ void createShaderProgram(){
 
     checkOpenGLError( "ERROR: Could not create shaders." );
 
+    // mapping
+    prog = new ShaderProgram();
+    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/mapping_vs.glsl");
+    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/mapping_fs.glsl");
+
+
+    prog->bindAttribLocation(VERTICES, "inPosition");
+    prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
+    prog->bindAttribLocation(NORMALS, "inNormal");
+
+    prog->link();
+
+    prog->detachShader("vertex");
+    prog->detachShader("fragment");
+
+    shaderProgramManager->insert("Mapping", prog);
+
 }
 void destroyShaderProgram(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
@@ -359,23 +372,12 @@ void destroyShaderProgram(){
     checkOpenGLError( "ERROR: Could not destroy shaders." );
 }
 
-/////////////////////////////////////////////////////////////////////// VAOs & VBOs
-
-void createBufferObjects(){
-    checkOpenGLError( "ERROR: Could not create VAOs, VBOs and UBOs." );
-}
-
-void destroyBufferObjects(){
-    checkOpenGLError( "ERROR: Could not destroy VAOs and VBOs." );
-}
-
 /////////////////////////////////////////////////////////////////////// SCENE
 
 void drawScene(){
 
     scene->draw();
-    particlesOne->draw();
-    //particlesTwo->draw();
+
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -383,7 +385,6 @@ void drawScene(){
 
 void cleanup(){
     destroyShaderProgram();
-    destroyBufferObjects();
 }
 
 void display(){
@@ -401,8 +402,6 @@ void idle(){
     k = k + delta / 2;
 
     scene->update( delta );
-    particlesOne->update( delta );
-    particlesTwo->update( delta );
 
     glutPostRedisplay();
 }
@@ -504,17 +503,22 @@ void setupCamera(){
 
 void loadMeshes(){
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
-    meshManager->insert( "triangle", meshLoader.createMesh( std::string( "Mesh/Triangle.obj" ) ) );
-    meshManager->insert( "square", meshLoader.createMesh( std::string( "Mesh/Square.obj" ) ) );
-    meshManager->insert( "parallelogram", meshLoader.createMesh( std::string( "Mesh/Parallelogram.obj" ) ) );
-    meshManager->insert( "table", meshLoader.createMesh( std::string( "Mesh/Table.obj" ) ) );
-
+    meshManager->insert( Mesh::TRIANGLE, meshLoader.createMesh( std::string( "Mesh/Triangle.obj" ) ) );
+    meshManager->insert( Mesh::SQUARE, meshLoader.createMesh( std::string( "Mesh/Square.obj" ) ) );
+    meshManager->insert( Mesh::PARALLELOGRAM, meshLoader.createMesh( std::string( "Mesh/Parallelogram.obj" ) ) );
+    meshManager->insert( Mesh::TABLE, meshLoader.createMesh( std::string( "Mesh/Table.obj" ) ) );
+    meshManager->insert( Mesh::QUAD, meshLoader.createMesh( std::string( "Mesh/Quad.obj" ) ) );
 }
 
 void loadTextures(){
     Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
-    textureCatalog->insert( "wood", new Texture( "Textures/wood.jpg" ) );
-    textureCatalog->insert( "error2", new Texture( "Textures/errorTexture3.png" ) );
+    textureCatalog->insert( Texture::WOOD, new Texture( "Textures/wood.jpg" ) );
+    textureCatalog->insert( Texture::DEFAULT, new Texture( "Textures/errorTexture.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_MAP_DISPLACEMENT, new Texture( "Textures/noodle_displacement_map.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_MAP_AO, new Texture( "Textures/noodle_ao_map.jpg" ) );
 }
 
 vec4 YY = vec4( 0, 1, 0, 1 );
@@ -553,6 +557,19 @@ const vec4 orange = vec4( 1.0f, 0.2f, 0.0f, 1.0f );
 const vec4 purple = vec4( 0.4f, 0.0f, 0.4f, 1.0f );
 SceneNode* tangram;
 SceneNode  *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78;
+
+void createSceneMapping() {
+    Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    ShaderProgram* dfault = shaderProgramManager->get("default");
+    ShaderProgram* prog = shaderProgramManager->get("ColorProgram");
+
+    scene = new Scene(dfault, camera);
+
+    quad = new SceneNode(meshManager->get(Mesh::QUAD), shaderProgramManager->get("ColorTextureProgram"),MatrixFactory::createRotationMatrix4(-90,YY));
+    quad->addTexture(Texture::NOODLE_TEXTURE);
+    scene->addNode(quad);
+}
 
 void createScene(){
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
@@ -600,95 +617,11 @@ void createScene(){
     plpc45->addTexture( "wood" );
     plpc45->setColor( white );
     tangram->addNode( plpc45 );
-
-
-}
-
-void createAnimationThreeStep(){
-    qtrn qzero = qtrn();
-    vec4 vzero = vec4( 0 );
-    /**/
-    // TRIANGLE 1
-    Animator* tra1 = new Animator();
-    Animation* moveup1 = new Animation( qzero, vzero, qzero, vec4( 0, 1.0f, 0, 1 ) );
-    Animation* moveside1 = new Animation( qzero, vec4( 0, 1.0f, 0, 1 ), qzero, vec4( -0.2f, 1.0f, 0.4f, 1 ) );
-    Animation* movedown1 = new Animation( qzero, vec4( -0.2f, 1.0f, 0.4f, 1 ), qzero, vec4( -0.2f, 0.0f, 0.4f, 1 ) );
-
-    tra1->addAnimation( moveup1 );
-    tra1->addAnimation( moveside1 );
-    tra1->addAnimation( movedown1 );
-    trpc1->addAnimator( tra1 );
-    /**/
-    // TRIANGLE 2
-    Animator* tra2 = new Animator();
-    Animation* moveup2 = new Animation( qzero, vzero, qzero, vec4( 0, 1.2f, 0, 1 ) );
-    Animation* moveside2 = new Animation( qzero, vec4( 0, 1.2f, 0, 1 ), qzero, vec4( 0.0f, 1.2f, 0.2f, 1 ) );
-    Animation* movedown2 = new Animation( qzero, vec4( 0.0f, 1.2f, 0.2f, 1 ), qzero, vec4( 0.0f, 0.0f, 0.2f, 1 ) );
-
-    tra2->addAnimation( moveup2 );
-    tra2->addAnimation( moveside2 );
-    tra2->addAnimation( movedown2 );
-    trpc2->addAnimator( tra2 );
-    /**/
-    // TRIANGLE 3
-    Animator* tra3 = new Animator();
-    Animation* moveup3 = new Animation( qzero, vzero, qzero, vec4( 0, 0.8f, 0, 1 ) );
-    Animation* moveside3 = new Animation( qzero, vec4( 0, 0.8f, 0, 1 ), qzero, vec4( 0.0f, 0.8f, 0.2f, 1 ) );
-    Animation* movedown3 = new Animation( qzero, vec4( 0, 0.8f, 0.2f, 1 ), qzero, vec4( 0.0f, 0, 0.2f, 1 ) );
-
-    tra3->addAnimation( moveup3 );
-    tra3->addAnimation( moveside3 );
-    tra3->addAnimation( movedown3 );
-    trpc3->addAnimator( tra3 );
-    /**/
-    // TRIANGLE 6
-    Animator* tra6 = new Animator();
-    Animation* moveup6 = new Animation( qzero, vzero, qzero, vec4( 0, 0.6f, 0, 1 ) );
-    Animation* moveside6 = new Animation( qzero, vec4( 0, 0.6f, 0, 1 ), qtrn( 90, YY ), vec4( 0.0f, 0.6f, 0.2f, 1 ) );
-    Animation* movedown6 = new Animation( qtrn( 90, YY ), vec4( 0.0f, 0.6f, 0.2f, 1 ), qtrn( 90, YY ), vec4( 0.0f, 0, 0.2f, 1 ) );
-
-    tra6->addAnimation( moveup6 );
-    tra6->addAnimation( moveside6 );
-    tra6->addAnimation( movedown6 );
-    trpc6->addAnimator( tra6 );
-    /**/
-    // TRIANGLE 9
-    Animator* tra9 = new Animator();
-    Animation* moveup9 = new Animation( qzero, vzero, qzero, vec4( 0, 1.4f, 0, 1 ) );
-    Animation* moveside9 = new Animation( qzero, vec4( 0, 1.4f, 0, 1 ), qtrn( 90 + 45, YY ), vec4( -0.2828f, 1.4f, -0.88f, 1 ) );
-    Animation* movedown9 = new Animation( qtrn( 90 + 45, YY ), vec4( -0.2828f, 1.4f, -0.88f, 1 ), qtrn( 90 + 45, YY ), vec4( -0.2828f, 0, -0.88f, 1 ) );
-
-    tra9->addAnimation( moveup9 );
-    tra9->addAnimation( moveside9 );
-    tra9->addAnimation( movedown9 );
-    trpc9->addAnimator( tra9 );
-    /**/
-    // PARALLELOGRAM 45
-    Animator* pla45 = new Animator();
-    Animation* moveup45 = new Animation( qzero, vzero, qzero, vec4( 0, 1.6f, 0, 1 ) );
-    Animation* moveside45 = new Animation( qzero, vec4( 0, 1.6f, 0, 1 ), qzero, vec4( 0.2f, 1.6f, 0.8f, 1 ) );
-    Animation* movedown45 = new Animation( qzero, vec4( 0.2f, 1.6f, 0.8f, 1 ), qzero, vec4( 0.2f, 0, 0.8f, 1 ) );
-
-    pla45->addAnimation( moveup45 );
-    pla45->addAnimation( moveside45 );
-    pla45->addAnimation( movedown45 );
-    plpc45->addAnimator( pla45 );
-    /**/
-    // SQUARE 78
-    Animator* sqa78 = new Animator();
-    Animation* moveup78 = new Animation( qzero, vzero, qzero, vec4( 0, 1.8f, 0, 1 ) );
-    Animation* moveside78 = new Animation( qzero, vec4( 0, 1.8f, 0, 1 ), qtrn( 45, YY ), vec4( 0.14f, 1.8f, -0.48f, 1 ) );
-    Animation* movedown78 = new Animation( qtrn( 45, YY ), vec4( 0.14f, 1.8f, -0.48f, 1 ), qtrn( 45, YY ), vec4( 0.14f, 0, -0.48f, 1 ) );
-    sqa78->addAnimation( moveup78 );
-    sqa78->addAnimation( moveside78 );
-    sqa78->addAnimation( movedown78 );
-    sqpc78->addAnimator( sqa78 );
-    /**/
 }
 
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-    /**/
+    /** /
     particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
     particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
@@ -720,12 +653,11 @@ void init( int argc, char* argv[] ){
 
     createShaderProgram();
 
-    createScene();
-    createAnimationThreeStep();
+    //createScene();
+    //createAnimationThreeStep();
+    createSceneMapping();
 
-    createParticleSystem();
-
-    createBufferObjects();
+    //createParticleSystem();
 }
 
 int main( int argc, char* argv[] ){
