@@ -130,7 +130,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <None Include="mapping_fs.glsl" />
     <None Include="Shaders\cube_fs.glsl" />
     <None Include="Shaders\cube_fs_extra.glsl" />
     <None Include="Shaders\cube_vs.glsl" />
@@ -142,6 +141,7 @@
     <None Include="Shaders\force_color_vs.glsl" />
     <None Include="Shaders\FragmentShader.glsl" />
     <None Include="Shaders\FragmentShaderCamera.glsl" />
+    <None Include="shaders\mapping_fs.glsl" />
     <None Include="Shaders\mapping_vs.glsl" />
     <None Include="Shaders\particle_light_fs.glsl" />
     <None Include="Shaders\particle_light_proper_fs.glsl" />

@@ -2,13 +2,13 @@
 namespace engine{
     unsigned int Texture::unit = GL_TEXTURE0;
 
-    Texture::Texture() {
+    Texture::Texture(){
         unit++;
         std::cout << "empty" << std::endl;
     }
 
     Texture::Texture( const char* filename ){
-        unit++;
+
         glGenTextures( 1, &textureId );
         glBindTexture( GL_TEXTURE_2D, textureId );
         // set the texture wrapping/filtering options (on the currently bound texture object)
@@ -20,6 +20,8 @@ namespace engine{
         int width, height, nrChannels;
         unsigned char *data = stbi_load( filename, &width, &height, &nrChannels, 0 );
         if( data ){
+            unit++;
+            thisUnit = int(unit);
             glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
             glGenerateMipmap( GL_TEXTURE_2D );
         } else{
@@ -42,7 +44,9 @@ namespace engine{
     }
 
     void Texture::activate(){
-        glActiveTexture( Texture::unit );
+        std::cout << GL_TEXTURE0 << std::endl;
+        std::cout << thisUnit << std::endl;
+        glActiveTexture( thisUnit );
         glBindTexture( GL_TEXTURE_2D, textureId );
     }
 

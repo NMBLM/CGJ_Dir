@@ -17,7 +17,7 @@ namespace engine {
         int nrChannels;
         unsigned int textureId;
 
-        //TextureInfo *ti;
+        unsigned int thisUnit;
 
     public:
         static unsigned int unit;

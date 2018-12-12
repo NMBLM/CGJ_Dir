@@ -240,7 +240,7 @@ void createShaderProgram(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* dfault;
     ShaderProgram* prog;
-    dfault = new ShaderProgram();
+    dfault = new ShaderProgram();//1
     dfault->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/default_vs.glsl" );
     dfault->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/default_fs.glsl" );
 
@@ -254,7 +254,7 @@ void createShaderProgram(){
     checkOpenGLError( "ERROR: Could not create default shaders." );
 
     // Non default
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//2
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/force_color_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/force_color_rcv_fs.glsl" );
 
@@ -271,7 +271,7 @@ void createShaderProgram(){
     shaderProgramManager->insert( "ColorProgram", prog );
 
 
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//3
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/texShader_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_fs.glsl" );
 
@@ -286,7 +286,7 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "TextureProgram", prog );
 
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//4
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/texShader_color_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_color_fs.glsl" );
 
@@ -304,7 +304,7 @@ void createShaderProgram(){
 
     //PartProgram
 
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//5
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
     prog->bindAttribLocation( VERTICES, "inPosition" );
@@ -315,37 +315,37 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "ParticleProgram", prog );
 
-    prog = new ShaderProgram();
-    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->link();
+    //prog = new ShaderProgram();//6
+    //prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
+    //prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
+    //prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
+    //prog->bindAttribLocation( VERTICES, "inPosition" );
+    //prog->link();
 
-    prog->detachShader( "geometry" );
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-    
-    shaderProgramManager->insert( "GeometryParticleProgram", prog );
+    //prog->detachShader( "geometry" );
+    //prog->detachShader( "vertex" );
+    //prog->detachShader( "fragment" );
+    //
+    //shaderProgramManager->insert( "GeometryParticleProgram", prog );
 
 
-    prog = new ShaderProgram();
-    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_fs.glsl" );
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->link();
+    //prog = new ShaderProgram();//7
+    //prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
+    //prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
+    //prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_fs.glsl" );
+    //prog->bindAttribLocation( VERTICES, "inPosition" );
+    //prog->link();
 
-    prog->detachShader( "geometry" );
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
+    //prog->detachShader( "geometry" );
+    //prog->detachShader( "vertex" );
+    //prog->detachShader( "fragment" );
 
-    shaderProgramManager->insert( "GeometryLightParticleProgram", prog );
+    //shaderProgramManager->insert( "GeometryLightParticleProgram", prog );
 
-    checkOpenGLError( "ERROR: Could not create shaders." );
+    //checkOpenGLError( "ERROR: Could not create shaders." );
 
     // mapping
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//8
     prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/mapping_vs.glsl");
     prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/mapping_fs.glsl");
 
@@ -517,8 +517,8 @@ void loadTextures(){
     textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture.jpg" ) );
     textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
     textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
-    textureCatalog->insert( Texture::NOODLE_MAP_DISPLACEMENT, new Texture( "Textures/noodle_displacement_map.jpg" ) );
-    textureCatalog->insert( Texture::NOODLE_MAP_AO, new Texture( "Textures/noodle_ao_map.jpg" ) );
+    //textureCatalog->insert( Texture::NOODLE_MAP_DISPLACEMENT, new Texture( "Textures/noodle_displacement_map.jpg" ) );
+    //textureCatalog->insert( Texture::NOODLE_MAP_AO, new Texture( "Textures/noodle_ao_map.jpg" ) );
 }
 
 vec4 YY = vec4( 0, 1, 0, 1 );
@@ -566,7 +566,8 @@ void createSceneMapping() {
 
     scene = new Scene(dfault, camera);
 
-    quad = new SceneNode(meshManager->get(Mesh::QUAD), shaderProgramManager->get("ColorTextureProgram"),MatrixFactory::createRotationMatrix4(-90,YY));
+    quad = new SceneNode(meshManager->get(Mesh::QUAD), shaderProgramManager->get("Mapping"),MatrixFactory::createRotationMatrix4(-90,YY));
+    quad->addTexture(Texture::WOOD);
     quad->addTexture(Texture::NOODLE_TEXTURE);
     scene->addNode(quad);
 }
@@ -580,41 +581,41 @@ void createScene(){
     scene = new Scene( dfault, camera );
 
     //TABLE SETUP
-    table = new SceneNode( meshManager->get( "table" ), shaderProgramManager->get( "ColorTextureProgram" ) );
-    table->addTexture( "wood" );
+    table = new SceneNode( meshManager->get(Mesh::TABLE), shaderProgramManager->get( "ColorTextureProgram" ) );
+    table->addTexture( Texture::WOOD );
     table->setColor( orange );
-    //scene->addNode( table );
+    scene->addNode( table );
 
     tangram = new SceneNode( nullptr, prog, MatrixFactory::createIdentityMatrix4() );
     table->addNode( tangram );
 
-    trpc1 = new SceneNode( meshManager->get( "triangle" ), prog, tr1 );
+    trpc1 = new SceneNode( meshManager->get( Mesh::TRIANGLE), prog, tr1 );
     trpc1->setColor( red );
     tangram->addNode( trpc1 );
 
-    trpc2 = new SceneNode( meshManager->get( "triangle" ), prog, tr2 );
+    trpc2 = new SceneNode( meshManager->get( Mesh::TRIANGLE ), prog, tr2 );
     trpc2->setColor( green );
     tangram->addNode( trpc2 );
 
-    trpc3 = new SceneNode( meshManager->get( "triangle" ), prog, tr3 );
+    trpc3 = new SceneNode( meshManager->get( Mesh::TRIANGLE ), prog, tr3 );
     trpc3->setColor( blue );
     tangram->addNode( trpc3 );
 
-    trpc6 = new SceneNode( meshManager->get( "triangle" ), prog, tr6 );
+    trpc6 = new SceneNode( meshManager->get( Mesh::TRIANGLE ), prog, tr6 );
     trpc6->setColor( cyan );
     tangram->addNode( trpc6 );
 
-    trpc9 = new SceneNode( meshManager->get( "triangle" ), prog, tr9 );
+    trpc9 = new SceneNode( meshManager->get( Mesh::TRIANGLE ), prog, tr9 );
     trpc9->setColor( magenta );
     tangram->addNode( trpc9 );
 
-    sqpc78 = new SceneNode( meshManager->get( "square" ), shaderProgramManager->get( "ColorTextureProgram" ), sq78 );
-    sqpc78->addTexture( "wood" );
+    sqpc78 = new SceneNode( meshManager->get( Mesh::TRIANGLE ), shaderProgramManager->get( "ColorTextureProgram" ), sq78 );
+    sqpc78->addTexture( Texture::WOOD );
     sqpc78->setColor( yellow );
     tangram->addNode( sqpc78 );
 
-    plpc45 = new SceneNode( meshManager->get( "parallelogram" ), shaderProgramManager->get( "ColorTextureProgram" ), pl45 );
-    plpc45->addTexture( "wood" );
+    plpc45 = new SceneNode( meshManager->get( Mesh::PARALLELOGRAM ), shaderProgramManager->get( "ColorTextureProgram" ), pl45 );
+    plpc45->addTexture( Texture::WOOD );
     plpc45->setColor( white );
     tangram->addNode( plpc45 );
 }
@@ -653,7 +654,7 @@ void init( int argc, char* argv[] ){
 
     createShaderProgram();
 
-    //createScene();
+    createScene();
     //createAnimationThreeStep();
     createSceneMapping();
 

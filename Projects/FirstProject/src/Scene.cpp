@@ -59,9 +59,9 @@ void engine::SceneNode::draw(mat4 fm) {
         }
         unsigned int i = 0;
 
-        std::string t = std::string("texture");
         for (auto& texName : textures) {
-            glUniform1i(shaderProgram->UniformId((t + std::to_string(i)).c_str()), i);
+            
+            glUniform1i(shaderProgram->UniformId((texName + std::to_string(i)).c_str()), i);
             Catalog<Texture*>::instance()->get(texName)->activate();
             i++;
         }
@@ -136,5 +136,3 @@ ShaderProgram * engine::SceneNode::getShaderProgram() {
     std::cerr << "No ShaderProgram found in SceneNode";
     exit(1);
 }
-
-

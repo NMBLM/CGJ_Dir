@@ -87,10 +87,10 @@
     <None Include="Shaders\particle_light_proper_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="mapping_fs.glsl">
+    <None Include="Shaders\mapping_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="Shaders\mapping_vs.glsl">
+    <None Include="shaders\mapping_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
