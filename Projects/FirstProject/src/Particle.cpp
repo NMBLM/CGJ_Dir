@@ -131,7 +131,7 @@ ParticleSystemTransform::ParticleSystemTransform( ShaderProgram * draw, ShaderPr
 void ParticleSystemTransform::InitParticleSystem(){
     Particles[0].Position = position;
     Particles[0].Velocity = VELOCITY;//vec3( 0 );
-    Particles[0].Life = 0.1f;
+    Particles[0].Life = TIMER;
     Particles[0].Type = PARTICLE_LAUNCHER;
     glGenVertexArrays( 1, &VaoId );
     glBindVertexArray( VaoId );
@@ -172,9 +172,9 @@ void ParticleSystemTransform::draw(){
 
 void ParticleSystemTransform::UpdateParticles(){
     // Three different values between 0 and 1;
-    float rnd1 =  ( rand() % 100 ) / 100.0f;
-    float rnd2 =  ( rand() % 100 ) / 100.0f;
-    float rnd3 =  ( rand() % 100 ) / 100.0f;
+    float rnd1 = ( rand() % 100 ) / 100.0f;
+    float rnd2 = ( rand() % 100 ) / 100.0f;
+    float rnd3 = ( rand() % 100 ) / 100.0f;
     m_updateTechnique->use();
     m_updateTechnique->addUniform( "delta", delta );
     m_updateTechnique->addUniform( "position", position );
@@ -190,15 +190,15 @@ void ParticleSystemTransform::UpdateParticles(){
         glBindBuffer( GL_ARRAY_BUFFER, m_particleBuffer[m_currVB] );
         glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, m_transformFeedback[m_currTFB] );
 
-        glEnableVertexAttribArray( 0 );
-        glEnableVertexAttribArray( 1 );
-        glEnableVertexAttribArray( 2 );
-        glEnableVertexAttribArray( 3 );
+        glEnableVertexAttribArray( APOSITION );
+        glEnableVertexAttribArray( AVELOCITY );
+        glEnableVertexAttribArray( ALIFE );
+        glEnableVertexAttribArray( ATYPE );
 
-        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )0 );         // Position
-        glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )12 );        // Velocity
-        glVertexAttribPointer( 2, 1, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )24 );        // Life
-        glVertexAttribPointer( 3, 1, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )28 );        // Type
+        glVertexAttribPointer( APOSITION, 3, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )0 );         // Position
+        glVertexAttribPointer( AVELOCITY, 3, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )12 );        // Velocity
+        glVertexAttribPointer( ALIFE, 1, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )24 );        // Life
+        glVertexAttribPointer( ATYPE, 1, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )28 );        // Type
 
         glBeginTransformFeedback( GL_POINTS );
 
@@ -211,10 +211,10 @@ void ParticleSystemTransform::UpdateParticles(){
 
         glEndTransformFeedback();
 
-        glDisableVertexAttribArray( 0 );
-        glDisableVertexAttribArray( 1 );
-        glDisableVertexAttribArray( 2 );
-        glDisableVertexAttribArray( 3 );
+        glDisableVertexAttribArray( APOSITION );
+        glDisableVertexAttribArray( AVELOCITY );
+        glDisableVertexAttribArray( ALIFE );
+        glDisableVertexAttribArray( ATYPE );
 
     }
     glBindVertexArray( 0 );
@@ -228,7 +228,9 @@ void ParticleSystemTransform::UpdateParticles(){
 void ParticleSystemTransform::RenderParticles(){
     m_billboardTechnique->use();
     m_billboardTechnique->addUniform( "delta", delta );
-
+    glEnable( GL_BLEND );
+    glDepthMask( GL_FALSE );
+    glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
     glDisable( GL_RASTERIZER_DISCARD );
     glBindVertexArray( VaoId );
     {
@@ -244,5 +246,7 @@ void ParticleSystemTransform::RenderParticles(){
         glDisableVertexAttribArray( 0 );
 
     }
+    glDepthMask( GL_TRUE );
+    glDisable( GL_BLEND );
     m_billboardTechnique->stop();
 }

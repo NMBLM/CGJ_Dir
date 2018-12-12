@@ -359,7 +359,7 @@ void destroyBufferObjects(){
 
 void drawScene(){
 
-    //scene->draw();
+    scene->draw();
     particlesTwo->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
@@ -599,7 +599,7 @@ void createParticleSystem(){
     //checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
 
     particlesTwo = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
-        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, -0.2f, 0.0f ) );
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, -0.0f, 0.0f ) );
     particlesTwo->InitParticleSystem();
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
     /**/
@@ -639,6 +639,13 @@ void activateLights(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* shader = shaderProgramManager->get( "TFBDraw" );
 
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
+
+    shader = shaderProgramManager->get( "TFBDraw" );
     shader->use();
     for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
         pointLights[i].addItself( shader, i );

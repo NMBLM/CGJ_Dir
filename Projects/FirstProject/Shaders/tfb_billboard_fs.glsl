@@ -80,5 +80,5 @@ void main()
 		op += someFunctionToCalculatePointLight(pointLights[i]);
 	}
 
-	out_color = vec4(op, 1.0f);
+	out_color = vec4(op, 0.5f);
 }

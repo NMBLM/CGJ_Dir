@@ -21,10 +21,12 @@
 
 #define POINT 0.01f
 #define LIFE 0.4f
+#define TIMER 0.01f
 
-#define VERTEX 10
-#define POSITION 11
-#define COLOR 12
+#define APOSITION 0
+#define AVELOCITY 1
+#define ALIFE 2
+#define ATYPE 3
 #define PARTICLE_LAUNCHER 0.0f
 
 const int MaxParticles = 1000000;
