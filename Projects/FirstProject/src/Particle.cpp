@@ -228,9 +228,11 @@ void ParticleSystemTransform::UpdateParticles(){
 void ParticleSystemTransform::RenderParticles(){
     m_billboardTechnique->use();
     m_billboardTechnique->addUniform( "delta", delta );
+
     glEnable( GL_BLEND );
     glDepthMask( GL_FALSE );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
     glDisable( GL_RASTERIZER_DISCARD );
     glBindVertexArray( VaoId );
     {
@@ -246,7 +248,9 @@ void ParticleSystemTransform::RenderParticles(){
         glDisableVertexAttribArray( 0 );
 
     }
+
     glDepthMask( GL_TRUE );
     glDisable( GL_BLEND );
+
     m_billboardTechnique->stop();
 }

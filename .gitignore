@@ -142,3 +142,6 @@ Projects/FirstProject/x64/Release/FirstProject.tlog/link.read.5.tlog
 Projects/FirstProject/x64/Release/FirstProject.tlog/unsuccessfulbuild
 Projects/FirstProject/x64/Debug/particle.obj.enc
 *.nvact
+bin/x64/FirstProject.iobj
+bin/x64/FirstProject.ipdb
+Projects/FirstProject/x64/Release/LightSource.obj
