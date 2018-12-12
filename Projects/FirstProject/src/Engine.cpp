@@ -317,12 +317,13 @@ void createShaderProgram(){
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_fs.glsl" );
 
-    const GLchar* Varyings[3];
+    const GLchar* Varyings[4];
     Varyings[0] = "Position1";
     Varyings[1] = "Velocity1";
     Varyings[2] = "Life1";
+    Varyings[3] = "Type1";
 
-    glTransformFeedbackVaryings( prog->id, 3, Varyings, GL_INTERLEAVED_ATTRIBS );
+    glTransformFeedbackVaryings( prog->id, 4, Varyings, GL_INTERLEAVED_ATTRIBS );
     prog->link();
 
     prog->detachShader( "geometry" );

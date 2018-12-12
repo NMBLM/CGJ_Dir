@@ -25,6 +25,7 @@
 #define VERTEX 10
 #define POSITION 11
 #define COLOR 12
+#define PARTICLE_LAUNCHER 0.0f
 
 const int MaxParticles = 1000000;
 const int nr_new_particles = 20;
@@ -41,6 +42,7 @@ namespace engine{
         vec3 Position;
         vec3 Velocity;
         float Life;
+        float Type;
 
         Particle()
             : Position( vec3( 0.0f ) ), Velocity( vec3( 0.01f, 0, 0 ) ), Life( -1.0f ){

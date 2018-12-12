@@ -130,8 +130,9 @@ ParticleSystemTransform::ParticleSystemTransform( ShaderProgram * draw, ShaderPr
 }
 void ParticleSystemTransform::InitParticleSystem(){
     Particles[0].Position = position;
-    Particles[0].Velocity = VELOCITY;
+    Particles[0].Velocity = VELOCITY;//vec3( 0 );
     Particles[0].Life = 0.1f;
+    Particles[0].Type = PARTICLE_LAUNCHER;
     glGenVertexArrays( 1, &VaoId );
     glBindVertexArray( VaoId );
     {
@@ -170,9 +171,10 @@ void ParticleSystemTransform::draw(){
 
 
 void ParticleSystemTransform::UpdateParticles(){
-    float rnd1 = ( ( rand() % 100 ) - 50 ) / 100.0f;
-    float rnd2 = ( ( rand() % 100 ) - 50 ) / 100.0f;
-    float rnd3 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    // Three different values between 0 and 1;
+    float rnd1 =  ( rand() % 100 ) / 100.0f;
+    float rnd2 =  ( rand() % 100 ) / 100.0f;
+    float rnd3 =  ( rand() % 100 ) / 100.0f;
     m_updateTechnique->use();
     m_updateTechnique->addUniform( "delta", delta );
     m_updateTechnique->addUniform( "position", position );
@@ -191,10 +193,12 @@ void ParticleSystemTransform::UpdateParticles(){
         glEnableVertexAttribArray( 0 );
         glEnableVertexAttribArray( 1 );
         glEnableVertexAttribArray( 2 );
+        glEnableVertexAttribArray( 3 );
 
         glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )0 );         // Position
         glVertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )12 );        // Velocity
         glVertexAttribPointer( 2, 1, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )24 );        // Life
+        glVertexAttribPointer( 3, 1, GL_FLOAT, GL_FALSE, sizeof( Particle ), ( const GLvoid* )28 );        // Type
 
         glBeginTransformFeedback( GL_POINTS );
 
@@ -210,6 +214,8 @@ void ParticleSystemTransform::UpdateParticles(){
         glDisableVertexAttribArray( 0 );
         glDisableVertexAttribArray( 1 );
         glDisableVertexAttribArray( 2 );
+        glDisableVertexAttribArray( 3 );
+
     }
     glBindVertexArray( 0 );
     glBindBuffer( GL_ARRAY_BUFFER, 0 );
