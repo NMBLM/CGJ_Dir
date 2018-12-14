@@ -145,3 +145,4 @@ Projects/FirstProject/x64/Debug/particle.obj.enc
 bin/x64/FirstProject.iobj
 bin/x64/FirstProject.ipdb
 Projects/FirstProject/x64/Release/LightSource.obj
+*.doc#

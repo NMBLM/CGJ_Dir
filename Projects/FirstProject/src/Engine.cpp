@@ -43,8 +43,7 @@ MeshLoader meshLoader;
 
 PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
-//ParticleSystem* particlesOne;
-ParticleSystemTransform* particlesTwo;
+ParticleSystemTransform* particlesOne;
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -148,13 +147,11 @@ void keyRelease( unsigned char key, int x, int y ){
     if( KeyBuffer::instance()->isKeyDown( 'f' ) || KeyBuffer::instance()->isKeyDown( 'F' ) ){
         if( freecam ){
             scene->setCamera( camera );
-            //particlesOne->camera = camera;
-            particlesTwo->camera = camera;
+            particlesOne->camera = camera;
 
         } else{
             scene->setCamera( freeCamera );
-            //particlesOne->camera = freeCamera;
-            particlesTwo->camera = freeCamera;
+            particlesOne->camera = freeCamera;
 
         }
         freecam = !freecam;
@@ -212,15 +209,20 @@ void update(){
 
     if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_LEFT ) ){
         table->updateModel( MatrixFactory::createTranslationMatrix( -1.0f * delta, 0.0f, 0.0f ) );
+        particlesOne->position += vec3( -1.0f * delta, 0.0f, 0.0f );
     }
     if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_UP ) ){
         table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, -1.0f * delta ) );
+        particlesOne->position += vec3( 0.0f, 0.0f, -1.0f * delta );
     }
     if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_RIGHT ) ){
         table->updateModel( MatrixFactory::createTranslationMatrix( 1.0f * delta, 0.0f, 0.0f ) );
+        particlesOne->position += vec3( 1.0f * delta, 0.0f, 0.0f );
+
     }
     if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_DOWN ) ){
         table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 1.0f * delta ) );
+        particlesOne->position += vec3(  0.0f, 0.0f, 1.0f * delta );
     }
 
 }
@@ -360,7 +362,7 @@ void destroyBufferObjects(){
 void drawScene(){
 
     scene->draw();
-    particlesTwo->draw();
+    particlesOne->draw();
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -384,7 +386,7 @@ void idle(){
     delta = ( ( float )currentFrame - ( float )lastFrame ) / 100;
     lastFrame = ( float )currentFrame;
     scene->update( delta );
-    particlesTwo->update( delta );
+    particlesOne->update( delta );
 
     glutPostRedisplay();
 }
@@ -593,34 +595,29 @@ void createScene(){
 
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-    /**/
-    //particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryProperLightParticleProgram" ),
-              //camera, vec3( 0.0f, -0.8f, 0.0f ) );
-    //checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
 
-    particlesTwo = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
-        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, -0.0f, 0.0f ) );
-    particlesTwo->InitParticleSystem();
+    particlesOne = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
+    particlesOne->InitParticleSystem();
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    /**/
 
 }
 
 void setupLight(){
-    pointLights[0] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 10.5f,
+    pointLights[0] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
         vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
 
-    pointLights[1] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 10.5f,
+    pointLights[1] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
         vec3( 1.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
 
-    pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 10.5f,
+    pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 100.5f,
         vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
 
     float endX = 1.0f;
     float beginX = -1.0f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
     vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
-    vec3 dropoff = vec3( 0.0f, 5.0f, 0.5f );
+    vec3 dropoff = vec3( 0.0f, 5.0f, 100.5f );
 
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );

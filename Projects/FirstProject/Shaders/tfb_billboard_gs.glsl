@@ -50,6 +50,41 @@ void build_quad(vec4 pos)
     EndPrimitive();
 }
 
+void build_quad3(vec4 pos)
+{    
+	
+	mat4 mvp = ProjectionMatrix * ViewMatrix;
+	mat4 ModelMatrix = mat4(1);
+	// place eye in model space slash world space(because model matrix is the identity matrix),
+	// so this is to bring eye from eye space slash view space;
+	mat4 invView = inverse(ViewMatrix * ModelMatrix);
+	vec3 eye = vec3(invView[3])/invView[3][3]; // world space
+	vec3 E = normalize(eye - pos.xyz);
+	vec3 Worldup = vec3(0,1,0);
+	vec3 side = normalize(cross(E,Worldup)) ;
+	vec3 up = normalize(cross(side,E)) ;
+
+	//normal = normalize(vec3(mvp* vec4(E,1.0f)));
+	normal = E;
+    gl_Position = mvp * vec4(pos.xyz + side* POINT - up* POINT,1.0f);    // 1:bottom-left
+	vertex = pos.xyz + side* POINT - up* POINT;
+	texCoord = vec2(1,0);
+    EmitVertex();   
+    gl_Position = mvp * vec4(pos.xyz - side* POINT - up* POINT,1.0f);    // 2:bottom-right
+	vertex = pos.xyz - side* POINT - up* POINT;
+	texCoord = vec2(0,0);
+    EmitVertex();
+    gl_Position = mvp * vec4(pos.xyz + side* POINT + up* POINT,1.0f);    // 3:top-left
+	vertex = pos.xyz + side* POINT + up* POINT;
+	texCoord = vec2(1,1);
+    EmitVertex();
+    gl_Position = mvp * vec4(pos.xyz - side* POINT + up* POINT,1.0f);    // 4:top-right
+	vertex = pos.xyz - side* POINT + up* POINT;
+	texCoord = vec2(0,1);
+    EmitVertex();
+    EndPrimitive();
+}
+
 void build_quad2(vec4 pos)
 {    
 	mat4 mvp = ProjectionMatrix * ViewMatrix;
@@ -94,6 +129,6 @@ void build_quad2(vec4 pos)
 
 void main() {
 
-	build_quad(gl_in[0].gl_Position);
+	build_quad3(gl_in[0].gl_Position);
 
 }  

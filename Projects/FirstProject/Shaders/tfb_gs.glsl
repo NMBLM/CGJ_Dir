@@ -1,7 +1,8 @@
 #version 330
 layout(points) in;
 layout(points) out;
-layout(max_vertices = 30) out;
+#define PARTICLES 100
+layout(max_vertices = PARTICLES) out;
 
 in vec3 Position0[];
 in vec3 Velocity0[];
@@ -26,6 +27,7 @@ uniform float rnd3;
 #define PARTICLE_LAUNCHER 0.0f
 #define PARTICLE_TYPE 1.0f
 
+
 float random (vec2 st) {
     return fract(sin(dot(st.xy,
         vec2(12.9898,78.233)))*
@@ -45,7 +47,7 @@ void main(){
 			EmitVertex();
 			EndPrimitive();
 			vec2 st = vec2(rnd1,rnd3);
-			for(int i = 0; i < 1000; i++){
+			for(int i = 0; i < PARTICLES; i++){
 				float strnd1 = random(st);
 				float strnd2 = random(st + vec2(rnd2,strnd1));
 				float strnd3 = random(st + vec2(strnd2,strnd1));
