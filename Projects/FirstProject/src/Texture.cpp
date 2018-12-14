@@ -26,12 +26,12 @@ namespace engine{
             glGenerateMipmap( GL_TEXTURE_2D );
         } else{
             std::cout << "Failed to load texture in " << filename << std::endl;
-            loadDefault();
+            LoadDefault();
         }
         stbi_image_free( data );
     }
 
-    void Texture::loadDefault(){
+    void Texture::LoadDefault(){
         unsigned char *data = stbi_load( DEFAULT_TEXTURE, &width, &height, &nrChannels, 0 );
         if( data ){
             glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
@@ -42,13 +42,8 @@ namespace engine{
         }
         stbi_image_free( data );
     }
-
-    void Texture::activate(){
-        std::cout << GL_TEXTURE0 << std::endl;
-        std::cout << thisUnit << std::endl;
-        glActiveTexture( thisUnit );
-        glBindTexture( GL_TEXTURE_2D, textureId );
+    unsigned int Texture::getId() {
+        return textureId;
     }
-
 }
 

@@ -33,8 +33,6 @@ void engine::Scene::setCamera(Camera * cam) {
     camera = cam;
 }
 
-
-
 engine::SceneNode::SceneNode() {
     nodes = std::vector <SceneNode*>();
 }
@@ -57,13 +55,9 @@ void engine::SceneNode::draw(mat4 fm) {
         if (!fcmp(color.x, -1)) {
             glUniform4fv(shaderProgram->UniformLocation("forcedColor"), 1, color.data());
         }
-        unsigned int i = 0;
 
-        for (auto& texName : textures) {
-            
-            glUniform1i(shaderProgram->UniformId((texName + std::to_string(i)).c_str()), i);
-            Catalog<Texture*>::instance()->get(texName)->activate();
-            i++;
+        for (auto& tex : textures) {
+            tex->Activate(shaderProgram);
         }
         mesh->draw();
         shaderProgram->stop();
@@ -112,8 +106,8 @@ void engine::SceneNode::addAnimator(Animator* a) {
     anime = a;
 }
 
-void engine::SceneNode::addTexture(const std::string & texName) {
-    textures.push_back(texName);
+void engine::SceneNode::addTexture(TextureInfo* t) {
+    textures.push_back(t);
 }
 
 Animator* engine::SceneNode::getAnimator() {

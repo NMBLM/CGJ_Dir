@@ -9,7 +9,7 @@
 #include "Matrix.h"
 #include "Anime.h"
 #include "ShaderProgram.h"
-#include "Texture.h"
+#include "TextureInfo.h"
 #include "Catalog.h"
 
 #include "GL/glew.h"
@@ -25,8 +25,8 @@ namespace engine{
         std::vector <SceneNode*> nodes;
         vec4 color = vec4(-1, 0, 0, 1);
         Animator* anime = nullptr;
-
-        std::vector<std::string> textures;
+       
+        std::vector<TextureInfo*> textures;
 
     public:
         SceneNode();
@@ -41,7 +41,7 @@ namespace engine{
         void update(float deltatime);
 
         void addAnimator(Animator* a);
-        void addTexture(const std::string& texName);
+        void addTexture(TextureInfo* t);
         Animator* getAnimator();
         void actOnAnimator();
     };

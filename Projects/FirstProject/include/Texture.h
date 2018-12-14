@@ -6,9 +6,10 @@
 #include "GL/glew.h"
 #include "stb_image.h"
 #include <iostream>
-#include "TextureInfo.h"
 
 #define DEFAULT_TEXTURE "Textures/errorTexture.jpg"
+#define NOODLE_TEXTURE_PATH "Textures/errorTexture.jpg" //TODO
+#define DEFAULT_TEXTURE "Textures/errorTexture.jpg" //TODO
 namespace engine {
 
     class Texture {
@@ -21,6 +22,7 @@ namespace engine {
 
     public:
         static unsigned int unit;
+        
         static constexpr const char* const WOOD = "WOOD";
         static constexpr const char* const DEFAULT = "ERROR";
         static constexpr const char* const NOODLE_TEXTURE = "NOODLE_TEXTURE";
@@ -33,8 +35,8 @@ namespace engine {
         Texture(const char* filename);
         ~Texture() = default;
 
-        void loadDefault();
-        void activate();
+        void LoadDefault();
+        unsigned int getId();
     };
 }
 #endif // !TEXTURE_H
