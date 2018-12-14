@@ -25,6 +25,6 @@ void main(void){
     TexCoord = inTexcoord;
     PassNormal = (normalMatrix * vec4(inNormal, 0.0)).xyz;
     WorldPos = (ModelMatrix * vec4(inPosition, 1.0)).xyz;
-    Tangent = (ModelMatrix * vec4(Tangent, 0.0)).xyz;
-    BiTangent = (ModelMatrix * vec4(Tangent, 0.0f)).xyz;
+    Tangent = (ModelMatrix * vec4(inTangent, 0.0)).xyz;
+    BiTangent = (ModelMatrix * vec4(inBiTangent, 0.0f)).xyz;
 }

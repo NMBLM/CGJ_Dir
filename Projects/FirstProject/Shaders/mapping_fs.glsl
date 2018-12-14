@@ -28,13 +28,13 @@ uniform sampler2D noodleSpec;
 
 vec3 CalcBumpedNormal(){
     vec3 Normal = normalize(PassNormal);
-    vec3 Tangent = normalize(Tangent);
-    Tangent = normalize(Tangent - dot(Tangent, Normal) * Normal);
-    //vec3 Bitangent = cross(Tangent, Normal);
+    vec3 TangentN = normalize(Tangent);
+    TangentN = normalize(TangentN - dot(TangentN, Normal) * Normal);
+    vec3 BiTangentN = cross(TangentN, Normal);
     vec3 BumpMapNormal = texture(noodleNormal, TexCoord).xyz;
     BumpMapNormal = 2.0 * BumpMapNormal - vec3(1.0, 1.0, 1.0);
     vec3 NewNormal;
-    mat3 TBN = mat3(Tangent, BiTangent, Normal);
+    mat3 TBN = mat3(TangentN, BiTangentN, Normal);
     NewNormal = TBN * BumpMapNormal;
     NewNormal = normalize(NewNormal);
     return NewNormal;
@@ -58,9 +58,8 @@ void main(){
     vec4 AmbientColor = vec4(gDirectionalLight.Color * gDirectionalLight.AmbientIntensity, 1.0f);
     vec3 LightDirection = -gDirectionalLight.Direction;
     
-    vec3 Normal = -CalcBumpedNormal();
-//    vec3 Normal = normalize(PassNormal);
-
+//    vec3 Normal = CalcBumpedNormal();
+    vec3 Normal = normalize(PassNormal);
     float DiffuseFactor = dot(Normal, LightDirection);
 
     vec4 DiffuseColor = vec4(0, 0, 0, 0);
@@ -80,6 +79,5 @@ void main(){
                           * texture2D(noodleSpec, TexCoord).x;
         }
     }
-        outColor = texture2D(noodleTex, TexCoord.xy) * (AmbientColor + DiffuseColor + SpecularColor);
-////        outColor = texture2D(noodleNormal, TexCoord.xy);
+         outColor = texture2D(noodleTex, TexCoord.xy) * (AmbientColor + DiffuseColor + SpecularColor);
 }

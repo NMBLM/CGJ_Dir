@@ -50,7 +50,6 @@ void engine::Mesh::calculateTangentSpace() {
         float r = 1.0f / (deltaUV1.x * deltaUV2.y - deltaUV1.y * deltaUV2.x);
         vec3 tangent = (deltaPos1 * deltaUV2.y - deltaPos2 * deltaUV1.y)*r;
         vec3 bitangent = (deltaPos2 * deltaUV1.x - deltaPos1 * deltaUV2.x)*r;
-
         Tangents.push_back(tangent);
         Tangents.push_back(tangent);
         Tangents.push_back(tangent);
@@ -91,19 +90,20 @@ void Mesh::createBufferObjects() {
             glEnableVertexAttribArray(NORMALS);
             glVertexAttribPointer(NORMALS, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
         }
+        if (NormalsLoaded && TexcoordsLoaded) {
+            glGenBuffers(1, &VboTangents);
+            glBindBuffer(GL_ARRAY_BUFFER, VboTangents);
+            glBufferData(GL_ARRAY_BUFFER, Tangents.size() * sizeof(vec3), &Tangents[0], GL_STATIC_DRAW);
+            glEnableVertexAttribArray(TANGENTS);
+            glVertexAttribPointer(TANGENTS, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
 
-        glGenBuffers(1, &VboTangents);
-        glBindBuffer(GL_ARRAY_BUFFER, VboTangents);
-        glBufferData(GL_ARRAY_BUFFER, Tangents.size() * sizeof(vec3), &Tangents[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(TANGENTS);
-        glVertexAttribPointer(TANGENTS, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
+            glGenBuffers(1, &VboBiTangents);
+            glBindBuffer(GL_ARRAY_BUFFER, VboBiTangents);
+            glBufferData(GL_ARRAY_BUFFER, BiTangents.size() * sizeof(vec3), &BiTangents[0], GL_STATIC_DRAW);
+            glEnableVertexAttribArray(BI_TANGENTS);
+            glVertexAttribPointer(BI_TANGENTS, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
+        }
 
-        glGenBuffers(1, &VboBiTangents);
-        glBindBuffer(GL_ARRAY_BUFFER, VboBiTangents);
-        glBufferData(GL_ARRAY_BUFFER, BiTangents.size() * sizeof(vec3), &BiTangents[0], GL_STATIC_DRAW);
-        glEnableVertexAttribArray(BI_TANGENTS);
-        glVertexAttribPointer(BI_TANGENTS, 3, GL_FLOAT, GL_FALSE, sizeof(vec3), 0);
-        
     }
     //TODO adde tangents do buffer
     glBindVertexArray(0);
