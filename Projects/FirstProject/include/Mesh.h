@@ -15,6 +15,8 @@
 #define VERTICES 0
 #define TEXCOORDS 1
 #define NORMALS 2
+#define TANGENTS 3
+#define BI_TANGENTS 4
 
 namespace engine{
 
@@ -36,6 +38,8 @@ namespace engine{
         static constexpr const char* const PARALLELOGRAM = "PARALLELOGRAM";
         static constexpr const char* const DUCK = "DUCK";
         static constexpr const char* const QUAD = "QUAD";
+        static constexpr const char* const CUBE = "CUBE";
+        static constexpr const char* const SPHERE = "SPHERE";
 
         bool TexcoordsLoaded, NormalsLoaded;
         GLuint VaoId;

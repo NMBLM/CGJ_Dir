@@ -23,7 +23,7 @@ class Camera{
     vec3 eye;
     qtrn qPos;
     const float SPEED = 10.0f;
-    const float vSPEED = 1.0f;
+    const float vSPEED = 10.0f;
     float lastFrame = 0.0f;
 
     public:
@@ -57,7 +57,6 @@ class FixedCamera: public Camera{
     float pitch = 0.0f;
     float yaw = 0.0f;
     float roll = 0.0f;
-    const float SPEED = 2.0f;
 
     FixedCamera();
     FixedCamera( const vec3 eye, const vec3 center, const vec3 up );

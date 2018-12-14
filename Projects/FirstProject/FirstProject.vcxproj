@@ -190,6 +190,7 @@
     <ClInclude Include="include\Texture.h" />
     <ClInclude Include="include\TextureInfo.h" />
     <ClInclude Include="include\Vector.h" />
+    <ClInclude Include="src\Engine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

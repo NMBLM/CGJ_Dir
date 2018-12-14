@@ -354,6 +354,8 @@ void createShaderProgram() {
     prog->bindAttribLocation(VERTICES, "inPosition");
     prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
     prog->bindAttribLocation(NORMALS, "inNormal");
+    prog->bindAttribLocation(TANGENTS, "inTangent");
+    prog->bindAttribLocation(BI_TANGENTS, "inBiTangent");
 
     prog->link();
 
@@ -373,6 +375,17 @@ void destroyShaderProgram() {
     checkOpenGLError("ERROR: Could not destroy shaders.");
 }
 
+void destroyMeshes() {
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    //TODO kill
+
+}
+
+void destroyTextures() {
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    //TODO kill
+
+}
 /////////////////////////////////////////////////////////////////////// SCENE
 
 void drawScene() {
@@ -386,6 +399,8 @@ void drawScene() {
 
 void cleanup() {
     destroyShaderProgram();
+    destroyMeshes();
+    destroyTextures();
 }
 
 void display() {
@@ -504,22 +519,24 @@ void setupCamera() {
 
 void loadMeshes() {
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
-    meshManager->insert(Mesh::TRIANGLE, meshLoader.createMesh(std::string("Mesh/Triangle.obj")));
-    meshManager->insert(Mesh::SQUARE, meshLoader.createMesh(std::string("Mesh/Square.obj")));
-    meshManager->insert(Mesh::PARALLELOGRAM, meshLoader.createMesh(std::string("Mesh/Parallelogram.obj")));
-    meshManager->insert(Mesh::TABLE, meshLoader.createMesh(std::string("Mesh/Table.obj")));
-    meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
+    //meshManager->insert(Mesh::TRIANGLE, meshLoader.createMesh(std::string("Mesh/Triangle.obj")));
+    //meshManager->insert(Mesh::SQUARE, meshLoader.createMesh(std::string("Mesh/Square.obj")));
+    //meshManager->insert(Mesh::PARALLELOGRAM, meshLoader.createMesh(std::string("Mesh/Parallelogram.obj")));
+    //meshManager->insert(Mesh::TABLE, meshLoader.createMesh(std::string("Mesh/Table.obj")));
+    //meshManager->insert(Mesh::CUBE, meshLoader.createMesh(std::string("Mesh/Cube.obj")));
+    //meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
+    meshManager->insert(Mesh::SPHERE, meshLoader.createMesh(std::string("Mesh/Sphere.obj")));
 }
 
 void loadTextures() {
     Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
-    textureCatalog->insert(Texture::WOOD, new Texture("Textures/wood.jpg"));
+    //textureCatalog->insert(Texture::WOOD, new Texture("Textures/wood.jpg"));
     textureCatalog->insert(Texture::DEFAULT, new Texture("Textures/errorTexture.jpg"));
     textureCatalog->insert(Texture::NOODLE_TEXTURE, new Texture("Textures/noodle_texture.jpg"));
     textureCatalog->insert(Texture::NOODLE_MAP_NORMAL, new Texture("Textures/noodle_normal_map.jpg"));
     textureCatalog->insert(Texture::NOODLE_MAP_SPECULAR, new Texture("Textures/noodle_specular_map.jpg"));
-    textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
-    textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
+    //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
+    //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
 }
 
 vec4 YY = vec4(0, 1, 0, 1);
@@ -567,12 +584,14 @@ void createSceneMapping() {
 
     TextureInfo* noodleTextureInfo = new TextureInfo(Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0);
     TextureInfo* noodleNormalInfo = new TextureInfo(Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1);
+    TextureInfo* noodleSpecularInfo = new TextureInfo(Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2);
 
     scene = new Scene(dfault, camera);
 
-    quad = new SceneNode(meshManager->get(Mesh::QUAD), shaderProgramManager->get("Mapping"), MatrixFactory::createRotationMatrix4(-90, YY));
+    quad = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("Mapping"), MatrixFactory::createRotationMatrix4(-90, YY));
     quad->addTexture(noodleTextureInfo);
     quad->addTexture(noodleNormalInfo);
+    quad->addTexture(noodleSpecularInfo);
     scene->addNode(quad);
 }
 
@@ -658,7 +677,7 @@ void init(int argc, char* argv[]) {
 
     createShaderProgram();
 
-    createScene();
+    //createScene();
     //createAnimationThreeStep();
     createSceneMapping();
 
