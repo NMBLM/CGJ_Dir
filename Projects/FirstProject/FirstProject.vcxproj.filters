@@ -87,10 +87,31 @@
     <None Include="Shaders\particle_light_proper_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="Shaders\mapping_vs.glsl">
+    <None Include="Shaders\tfb_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
-    <None Include="shaders\mapping_fs.glsl">
+    <None Include="Shaders\tfb_gs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_gs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_gs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
   </ItemGroup>
@@ -137,7 +158,7 @@
     <ClCompile Include="src\Particle.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TextureInfo.cpp">
+    <ClCompile Include="src\LightSource.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

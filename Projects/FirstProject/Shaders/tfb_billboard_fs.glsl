@@ -40,7 +40,9 @@ void setupMaterial(){
     material.specular = normalize(vec3(0.57735f,0.57735f,0.57735f));
 }
 vec3 someFunctionToCalculatePointLight(PointLight p){
-	vec3 lightPos = vec3(ProjectionMatrix * ViewMatrix * vec4(p.position,1.0f));
+	//vec3 lightPos = vec3(ProjectionMatrix * ViewMatrix * vec4(p.position,1.0f));
+	vec3 lightPos = vec3( vec4(p.position,1.0f)); //WorldSpace
+	//Vertex in WorldSpace
 	vec3 E = normalize(eye - vertex);
 	vec3 N = normalize(eye - vertex);
 	//vec3 N = normalize(normal);
@@ -70,8 +72,10 @@ vec3 someFunctionToCalculatePointLight(PointLight p){
 
 void main()
 {	
-	eye = vec3(ViewMatrix[3])/ViewMatrix[3][3];
-	
+	//eye = vec3(ViewMatrix[3])/ViewMatrix[3][3];
+	mat4 invView = inverse(ViewMatrix);
+	eye = vec3(invView[3])/invView[3][3]; // world space
+	//eye = vec3(ViewMatrix * vec4(eye,1.0f));
 	setupMaterial();
 	// define an output color value
 	vec3 op = vec3(0.0f,0.0f,0.0f);
@@ -80,5 +84,5 @@ void main()
 		op += someFunctionToCalculatePointLight(pointLights[i]);
 	}
 
-	out_color = vec4(op, 1.0f);
+	out_color = vec4(op, 0.5f);
 }

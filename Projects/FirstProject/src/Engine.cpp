@@ -16,15 +16,20 @@
 #include "Texture.h"
 #include "Particle.h"
 #include  "TextureInfo.h"
+#include "LightSource.h"
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
 
 #define CAPTION "CyberNoodles"
+#define NR_NEON_LIGHTS 5
+#define NR_POINT_LIGHTS 3 + NR_NEON_LIGHTS
+
 
 using namespace engine;
 
 int WinX = 640, WinY = 640;
+int lastWinX = WinX, lastWinY = WinY;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
 
@@ -37,9 +42,11 @@ Camera* freeCamera;
 
 MeshLoader meshLoader;
 
+PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
 SceneNode  *table;
 SceneNode  *quad;
+ParticleSystemTransform* particlesOne;
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -48,9 +55,9 @@ int lastMouseX = WinY / 2;
 float k = 0.0f;
 bool freecam = false;
 
-mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 30);
-mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 30);
-bool OG = false;
+mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
+mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
+
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -139,11 +146,15 @@ void keyRelease(unsigned char key, int x, int y) {
         camera->ProjectionMatrix(projectionMatrix);
     }
 
-    if (KeyBuffer::instance()->isKeyDown('f') || KeyBuffer::instance()->isKeyDown('F')) {
-        if (freecam) {
-            scene->setCamera(camera);
-        } else {
-            scene->setCamera(freeCamera);
+    if( KeyBuffer::instance()->isKeyDown( 'f' ) || KeyBuffer::instance()->isKeyDown( 'F' ) ){
+        if( freecam ){
+            scene->setCamera( camera );
+            particlesOne->camera = camera;
+
+        } else{
+            scene->setCamera( freeCamera );
+            particlesOne->camera = freeCamera;
+
         }
         freecam = !freecam;
     }
@@ -198,17 +209,22 @@ void update() {
         if (KeyBuffer::instance()->isKeyDown('W')) freeCamera->cameraMoveForward(delta);
     }
 
-    if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_LEFT)) {
-        table->updateModel(MatrixFactory::createTranslationMatrix(-1.0f * delta, 0.0f, 0.0f));
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_LEFT ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( -1.0f * delta, 0.0f, 0.0f ) );
+        particlesOne->position += vec3( -1.0f * delta, 0.0f, 0.0f );
     }
-    if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_UP)) {
-        table->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -1.0f * delta));
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_UP ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, -1.0f * delta ) );
+        particlesOne->position += vec3( 0.0f, 0.0f, -1.0f * delta );
     }
-    if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_RIGHT)) {
-        table->updateModel(MatrixFactory::createTranslationMatrix(1.0f * delta, 0.0f, 0.0f));
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_RIGHT ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( 1.0f * delta, 0.0f, 0.0f ) );
+        particlesOne->position += vec3( 1.0f * delta, 0.0f, 0.0f );
+
     }
-    if (KeyBuffer::instance()->isSpecialKeyDown(GLUT_KEY_DOWN)) {
-        table->updateModel(MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 1.0f * delta));
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_DOWN ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 1.0f * delta ) );
+        particlesOne->position += vec3(  0.0f, 0.0f, 1.0f * delta );
     }
 
 }
@@ -271,25 +287,9 @@ void createShaderProgram() {
 
     shaderProgramManager->insert("ColorProgram", prog);
 
-
-    prog = new ShaderProgram();//3
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/texShader_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_fs.glsl");
-
-    prog->bindAttribLocation(VERTICES, "inPosition");
-    prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
-    prog->bindAttribLocation(NORMALS, "inNormal");
-
-    prog->link();
-
-    prog->detachShader("vertex");
-    prog->detachShader("fragment");
-
-    shaderProgramManager->insert("TextureProgram", prog);
-
-    prog = new ShaderProgram();//4
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/texShader_color_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_color_fs.glsl");
+    prog = new ShaderProgram();
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/texShader_color_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_color_fs.glsl" );
 
     prog->bindAttribLocation(VERTICES, "inPosition");
     prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
@@ -302,54 +302,46 @@ void createShaderProgram() {
 
     shaderProgramManager->insert("ColorTextureProgram", prog);
 
+    // mapping
 
-    //PartProgram
 
-    prog = new ShaderProgram();//5
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/particle_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl");
-    prog->bindAttribLocation(VERTICES, "inPosition");
+    //PartTransformProgram
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_billboard_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_billboard_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_billboard_fs.glsl" );
+
     prog->link();
 
-    prog->detachShader("vertex");
-    prog->detachShader("fragment");
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
 
-    shaderProgramManager->insert("ParticleProgram", prog);
+    shaderProgramManager->insert( "TFBDraw", prog );
+    prog = new ShaderProgram();
+    prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_gs.glsl" );
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_fs.glsl" );
 
-    //prog = new ShaderProgram();//6
-    //prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
-    //prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
-    //prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_fs.glsl" );
-    //prog->bindAttribLocation( VERTICES, "inPosition" );
-    //prog->link();
+    const GLchar* Varyings[4];
+    Varyings[0] = "Position1";
+    Varyings[1] = "Velocity1";
+    Varyings[2] = "Life1";
+    Varyings[3] = "Type1";
 
-    //prog->detachShader( "geometry" );
-    //prog->detachShader( "vertex" );
-    //prog->detachShader( "fragment" );
-    //
-    //shaderProgramManager->insert( "GeometryParticleProgram", prog );
+    glTransformFeedbackVaryings( prog->id, 4, Varyings, GL_INTERLEAVED_ATTRIBS );
+    prog->link();
 
+    prog->detachShader( "geometry" );
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
 
-    //prog = new ShaderProgram();//7
-    //prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/particle_gs.glsl" );
-    //prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/particle_withgs_vs.glsl" );
-    //prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/particle_light_fs.glsl" );
-    //prog->bindAttribLocation( VERTICES, "inPosition" );
-    //prog->link();
+    shaderProgramManager->insert( "TFBUpdate", prog );
+    checkOpenGLError( "ERROR: Could not create Transform shaders." );
 
-    //prog->detachShader( "geometry" );
-    //prog->detachShader( "vertex" );
-    //prog->detachShader( "fragment" );
-
-    //shaderProgramManager->insert( "GeometryLightParticleProgram", prog );
-
-    //checkOpenGLError( "ERROR: Could not create shaders." );
-
-    // mapping
     prog = new ShaderProgram();//8
     prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/mapping_vs.glsl");
     prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/mapping_fs.glsl");
-
 
     prog->bindAttribLocation(VERTICES, "inPosition");
     prog->bindAttribLocation(TEXCOORDS, "inTexcoord");
@@ -363,6 +355,8 @@ void createShaderProgram() {
     prog->detachShader("fragment");
 
     shaderProgramManager->insert("Mapping", prog);
+
+    checkOpenGLError( "ERROR: Could not create shaders." );
 
 }
 void destroyShaderProgram() {
@@ -391,8 +385,8 @@ void destroyTextures() {
 void drawScene() {
 
     scene->draw();
-
-    checkOpenGLError("ERROR: Could not draw scene.");
+    particlesOne->draw();
+    checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -412,12 +406,11 @@ void display() {
 
 void idle() {
     update();
-    float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME);
-    delta = ((float)currentFrame - (float)lastFrame) / 100;
-    lastFrame = (float)currentFrame;
-    k = k + delta / 2;
-
-    scene->update(delta);
+    float currentFrame = ( float )glutGet( GLUT_ELAPSED_TIME );
+    delta = ( ( float )currentFrame - ( float )lastFrame ) / 100;
+    lastFrame = ( float )currentFrame;
+    scene->update( delta );
+    particlesOne->update( delta );
 
     glutPostRedisplay();
 }
@@ -425,10 +418,14 @@ void idle() {
 void reshape(int w, int h) {
     WinX = w;
     WinY = h;
-    glViewport(0, 0, WinX, WinY);
-    projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 30);
-    camera->ProjectionMatrix(projectionMatrix);
-    freeCamera->ProjectionMatrix(projectionMatrix);
+    glViewport( 0, 0, WinX, WinY );
+    if( lastWinX != WinX || lastWinY != WinY ){
+        projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
+        camera->ProjectionMatrix( projectionMatrix );
+        freeCamera->ProjectionMatrix( projectionMatrix );
+        lastWinX = WinX;
+        lastWinY = WinY;
+    }
 }
 
 void timer(int value) {
@@ -624,43 +621,64 @@ void createScene() {
     trpc3->setColor(blue);
     tangram->addNode(trpc3);
 
-    trpc6 = new SceneNode(meshManager->get(Mesh::TRIANGLE), prog, tr6);
-    trpc6->setColor(cyan);
-    tangram->addNode(trpc6);
-
-    trpc9 = new SceneNode(meshManager->get(Mesh::TRIANGLE), prog, tr9);
-    trpc9->setColor(magenta);
-    tangram->addNode(trpc9);
-
-    sqpc78 = new SceneNode(meshManager->get(Mesh::TRIANGLE), shaderProgramManager->get("ColorTextureProgram"), sq78);
-    //sqpc78->addTexture(Texture::WOOD);
-    sqpc78->setColor(yellow);
-    tangram->addNode(sqpc78);
-
-    plpc45 = new SceneNode(meshManager->get(Mesh::PARALLELOGRAM), shaderProgramManager->get("ColorTextureProgram"), pl45);
-    //plpc45->addTexture(Texture::WOOD);
-    plpc45->setColor(white);
-    tangram->addNode(plpc45);
 }
+
 
 void createParticleSystem() {
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-    /** /
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, -0.8f, 0.0f ) );
+
+    particlesOne = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
+    particlesOne->InitParticleSystem();
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryLightParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
-    /** /
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, -0.4f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    particlesTwo = new ParticleSystem( shaderProgramManager->get( "GeometryParticleProgram" ), camera, vec3( 0.0f, 0.5f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
-    /** /
-    particlesOne = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( 0.2f, -0.4f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
-    particlesTwo = new ParticleSystem( shaderProgramManager->get( "ParticleProgram" ), camera, vec3( -0.2f, -0.4f, 0.0f ) );
-    checkOpenGLError( "ERROR: Could not create ParticleSystemOne." );
-    /**/
+
+}
+
+void setupLight(){
+    pointLights[0] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
+        vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+
+    pointLights[1] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
+        vec3( 1.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+
+    pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 100.5f,
+        vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+
+    float endX = 1.0f;
+    float beginX = -1.0f;
+    float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
+    vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
+    vec3 dropoff = vec3( 0.0f, 5.0f, 100.5f );
+
+    //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
+    //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
+    vec3 ambient = vec3( 1.0f, 0.0f, 0.0f );
+    vec3 diffuse = vec3( 1.0f, 0.0f, 0.0f );
+    vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
+
+    for( int i = 3; i < NR_NEON_LIGHTS + 3; i++ ){
+        pointLights[i] = PointLight( pos, dropoff, ambient, diffuse, specular );
+        pos.x += offset;
+    }
+
+}
+
+void activateLights(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    ShaderProgram* shader = shaderProgramManager->get( "TFBDraw" );
+
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
+
+    shader = shaderProgramManager->get( "TFBDraw" );
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
 }
 
 void init(int argc, char* argv[]) {
@@ -669,13 +687,15 @@ void init(int argc, char* argv[]) {
     setupOpenGL();
 
     setupCamera();
-
+    setupLight();
     setupCallbacks();
+
 
     loadMeshes();
     loadTextures();
 
     createShaderProgram();
+    activateLights();
 
     //createScene();
     //createAnimationThreeStep();
