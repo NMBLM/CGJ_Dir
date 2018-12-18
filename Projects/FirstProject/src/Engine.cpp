@@ -537,41 +537,6 @@ void loadTextures() {
 }
 
 vec4 YY = vec4(0, 1, 0, 1);
-const mat4 tr1 = MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, -0.8f) *
-MatrixFactory::createRotationMatrix4(-90.0f, YY);
-
-const mat4 tr2 = MatrixFactory::createTranslationMatrix(-0.4f, 0.0f, 0.2f);
-
-const mat4 tr3 = MatrixFactory::createTranslationMatrix(0.2f, 0.0f, 0.0f) *
-MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
-MatrixFactory::createRotationMatrix4(90.0f, YY);
-
-const mat4 pl45 = MatrixFactory::createTranslationMatrix(0.2f, 0.0f, -0.4f) *
-MatrixFactory::createRotationMatrix4(90.0f, YY);
-
-const mat4 tr6 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, -0.6f) *
-MatrixFactory::createScaleMatrix4(0.5f, 1, 0.5f) *
-MatrixFactory::createRotationMatrix4(90.0f, YY);
-
-const mat4 sq78 = MatrixFactory::createTranslationMatrix(0.0f, 0.0f, 0.34f) * // '.14f is half the side of the square
-MatrixFactory::createRotationMatrix4(45.0f, YY) * //rotate 45 degrees
-MatrixFactory::createTranslationMatrix(-0.2f, 0.0f, 0.0f); // center in the origin
-
-const mat4 tr9 = MatrixFactory::createTranslationMatrix(0.4f * 0.707f, 0.0f, 0.48f) * // 0.8f * 0.707f / 2  is the center of the hypotenuse to the origin
-MatrixFactory::createScaleMatrix4(0.707f, 1, 0.707f) *
-MatrixFactory::createRotationMatrix4(-180.0f, YY);
-
-const vec4 red = vec4(1.0f, 0.0f, 0.0f, 1.0f);
-const vec4 green = vec4(0.0f, 1.0f, 0.0f, 1.0f);
-const vec4 blue = vec4(0.0f, 0.0f, 1.0f, 1.0f);
-const vec4 cyan = vec4(0.0f, 1.0f, 1.0f, 1.0f);
-const vec4 magenta = vec4(1.0f, 0.0f, 1.0f, 1.0f);
-const vec4 yellow = vec4(1.0f, 1.0f, 0.0f, 1.0f);
-const vec4 white = vec4(1.0f, 1.0f, 1.0f, 1.0f);
-const vec4 orange = vec4(1.0f, 0.2f, 0.0f, 1.0f);
-const vec4 purple = vec4(0.4f, 0.0f, 0.4f, 1.0f);
-SceneNode* tangram;
-SceneNode  *trpc1, *trpc2, *trpc3, *trpc6, *trpc9, *plpc45, *sqpc78;
 
 void createSceneMapping() {
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
@@ -592,36 +557,6 @@ void createSceneMapping() {
     scene->addNode(quad);
 }
 
-void createScene() {
-    Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
-    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-    ShaderProgram* dfault = shaderProgramManager->get("default");
-    ShaderProgram* prog = shaderProgramManager->get("ColorProgram");
-
-    scene = new Scene(dfault, camera);
-
-    //TABLE SETUP
-    table = new SceneNode(meshManager->get(Mesh::TABLE), shaderProgramManager->get("ColorTextureProgram"));
-    //table->addTexture(Texture::WOOD);
-    table->setColor(orange);
-    scene->addNode(table);
-
-    tangram = new SceneNode(nullptr, prog, MatrixFactory::createIdentityMatrix4());
-    table->addNode(tangram);
-
-    trpc1 = new SceneNode(meshManager->get(Mesh::TRIANGLE), prog, tr1);
-    trpc1->setColor(red);
-    tangram->addNode(trpc1);
-
-    trpc2 = new SceneNode(meshManager->get(Mesh::TRIANGLE), prog, tr2);
-    trpc2->setColor(green);
-    tangram->addNode(trpc2);
-
-    trpc3 = new SceneNode(meshManager->get(Mesh::TRIANGLE), prog, tr3);
-    trpc3->setColor(blue);
-    tangram->addNode(trpc3);
-
-}
 
 
 void createParticleSystem() {
@@ -697,11 +632,9 @@ void init(int argc, char* argv[]) {
     createShaderProgram();
     activateLights();
 
-    //createScene();
-    //createAnimationThreeStep();
     createSceneMapping();
 
-    //createParticleSystem();
+    createParticleSystem();
 }
 
 int main(int argc, char* argv[]) {

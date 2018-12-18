@@ -146,3 +146,5 @@ bin/x64/FirstProject.iobj
 bin/x64/FirstProject.ipdb
 Projects/FirstProject/x64/Release/LightSource.obj
 *.doc#
+Projects/FirstProject/x64/Debug/TextureInfo.obj
+Projects/FirstProject/x64/Debug/LightSource.obj
