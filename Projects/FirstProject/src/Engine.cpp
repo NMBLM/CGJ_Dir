@@ -46,6 +46,7 @@ PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
 SceneNode  *table;
 SceneNode  *quad;
+SceneNode  *sphere;
 ParticleSystemTransform* particlesOne;
 
 float lastFrame = 0.0f;
@@ -376,8 +377,9 @@ void destroyMeshes() {
 }
 
 void destroyTextures() {
-    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-    //TODO kill
+    Catalog<Texture*> *textureCatalog= Catalog<Texture*>::instance();
+    
+    textureCatalog->getValues();
 
 }
 /////////////////////////////////////////////////////////////////////// SCENE
@@ -521,7 +523,7 @@ void loadMeshes() {
     //meshManager->insert(Mesh::PARALLELOGRAM, meshLoader.createMesh(std::string("Mesh/Parallelogram.obj")));
     //meshManager->insert(Mesh::TABLE, meshLoader.createMesh(std::string("Mesh/Table.obj")));
     //meshManager->insert(Mesh::CUBE, meshLoader.createMesh(std::string("Mesh/Cube.obj")));
-    //meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
+    meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
     meshManager->insert(Mesh::SPHERE, meshLoader.createMesh(std::string("Mesh/Sphere.obj")));
 }
 
@@ -536,7 +538,9 @@ void loadTextures() {
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
 }
 
+vec4 XX = vec4(1, 0, 0, 1);
 vec4 YY = vec4(0, 1, 0, 1);
+vec4 ZZ = vec4(0, 0, 1, 1);
 
 void createSceneMapping() {
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
@@ -550,10 +554,15 @@ void createSceneMapping() {
 
     scene = new Scene(dfault, camera);
 
-    quad = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("Mapping"), MatrixFactory::createRotationMatrix4(-90, YY));
-    quad->addTexture(noodleTextureInfo);
-    quad->addTexture(noodleNormalInfo);
-    quad->addTexture(noodleSpecularInfo);
+    quad = new SceneNode(meshManager->get(Mesh::QUAD), dfault, MatrixFactory::createRotationMatrix4(-90, ZZ));
+    
+    sphere = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("Mapping"));
+    
+    sphere->addTexture(noodleTextureInfo);
+    sphere->addTexture(noodleNormalInfo);
+    sphere->addTexture(noodleSpecularInfo);
+
+    quad->addNode(sphere);
     scene->addNode(quad);
 }
 

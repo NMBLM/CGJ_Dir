@@ -37,8 +37,8 @@ namespace engine{
 
         std::vector<T>* getValues(){
             std::vector<T>* ts = new std::vector<T>();
-            for( auto& pair : cat ){
-                ts->push_back( pair->second() );
+            for(std::pair<std::string, T> pair : cat ){
+                ts->push_back( pair.second );
             }
             return ts;
         }
