@@ -1,7 +1,7 @@
 #version 330
 layout(points) in;
 layout(points) out;
-#define PARTICLES 100
+#define PARTICLES 128
 layout(max_vertices = PARTICLES) out;
 
 in vec3 Position0[];
@@ -23,7 +23,7 @@ uniform float rnd3;
 #define LIFE 1.5f
 #define TIMER 0.01f
 #define VELOCITY vec3(0.0f,1.0f,0.0f)
-#define SCALE 2.0f
+#define SCALE 1.5f
 #define PARTICLE_LAUNCHER 0.0f
 #define PARTICLE_TYPE 1.0f
 

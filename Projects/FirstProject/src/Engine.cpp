@@ -810,7 +810,7 @@ void setupLight(){
     //vec3 diffuse = vec3( 0.0f, 0.0f, 0.0f );
     //vec3 ambient = vec3( 0.3f, 0.0f, 0.0f );
     //vec3 diffuse = vec3( 0.3f, 0.0f, 0.0f );
-    color = vec3( 6.0f, 0.0f, 0.0f );
+    color = vec3( 15.0f, 0.0f, 0.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );

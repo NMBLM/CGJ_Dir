@@ -14,7 +14,7 @@ out vec3 vertex;
 out vec3 normal;
 out vec2 texCoord;
 
-#define POINT 0.01f
+#define POINT 0.002f
 void build_quad(vec4 pos)
 {    
 	

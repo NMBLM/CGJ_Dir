@@ -85,7 +85,7 @@ void main()
 		op += someFunctionToCalculatePointLight(pointLights[i]);
 	}
 
-	out_color = vec4(op, 0.5f);
+	out_color = vec4(op, 0.8f);
     float brightness = dot(out_color.rgb, vec3(0.2126, 0.7152, 0.0722));
     if(brightness > 1.0){
         bright_color = vec4(out_color.rgb, 1.0);
