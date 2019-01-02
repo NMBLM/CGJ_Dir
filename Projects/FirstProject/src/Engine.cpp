@@ -761,7 +761,7 @@ void setupLight(){
     /**/
     //Cyan
     pos = vec3( -3.0f / scale, 0.4f, 4.0f / scale );
-    color = vec3( 0.0f, 10.0f, 10.0f );
+    color = vec3( 0.0f, 50.0f, 50.0f );
     pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
         color, color, vec3( 0.1f, 0.1f, 0.1f ) );
     //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
@@ -773,7 +773,7 @@ void setupLight(){
 
     //Magenta
     pos = vec3( 4.0f / scale, 0.4f, 4.0f / scale );
-    color = vec3( 10.0f, .0f, 10.0f );
+    color = vec3( 50.0f, .0f, 50.0f );
     pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
         color, color, vec3( 0.1f, 0.1f, 0.1f ) );
     //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
@@ -786,7 +786,7 @@ void setupLight(){
 
     //Yellow
     pos = vec3( 0.0f / scale, 0.4f, -5.0f / scale );
-    color = vec3( 10.0f, 10.0f, 0.0f );
+    color = vec3( 50.0f, 50.0f, 0.0f );
     pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
         color, color, vec3( 0.1f, 0.1f, 0.1f ) );
     //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
@@ -810,7 +810,7 @@ void setupLight(){
     //vec3 diffuse = vec3( 0.0f, 0.0f, 0.0f );
     //vec3 ambient = vec3( 0.3f, 0.0f, 0.0f );
     //vec3 diffuse = vec3( 0.3f, 0.0f, 0.0f );
-    color = vec3( 1.0f, 0.0f, 0.0f );
+    color = vec3( 6.0f, 0.0f, 0.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
@@ -820,7 +820,7 @@ void setupLight(){
         temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
             MatrixFactory::createTranslationMatrix( pos ) * boxScale );
         pos.x += offset;
-        temp->setColor( vec4( ambient, 1.0f ) );
+        temp->setColor( vec4( color, 1.0f ) );
         lights->addNode( temp );
     }
     /**/
