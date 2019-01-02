@@ -142,9 +142,13 @@
     <None Include="Shaders\FragmentShader.glsl" />
     <None Include="Shaders\FragmentShaderCamera.glsl" />
     <None Include="Shaders\glow_fs.glsl" />
+    <None Include="Shaders\glow_mapping_fs.glsl" />
+    <None Include="Shaders\glow_mapping_vs.glsl" />
     <None Include="Shaders\glow_vs.glsl" />
     <None Include="Shaders\hdr_fs.glsl" />
     <None Include="Shaders\hdr_vs.glsl" />
+    <None Include="Shaders\lightbox_fs.glsl" />
+    <None Include="Shaders\lightbox_vs.glsl" />
     <None Include="shaders\mapping_fs.glsl" />
     <None Include="Shaders\mapping_vs.glsl" />
     <None Include="Shaders\particle_light_fs.glsl" />

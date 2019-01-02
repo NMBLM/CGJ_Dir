@@ -22,6 +22,6 @@ void main()
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(Position,1.0f);
 	vertex = (ModelMatrix * vec4(Position,1.0f)).xyz;
     normal = (normalMatrix * vec4(Normal, 0.0)).xyz;
-	normal = Normal;
+	//normal = Normal;
 	texCoord = Texcoord;
 }                                                                                   

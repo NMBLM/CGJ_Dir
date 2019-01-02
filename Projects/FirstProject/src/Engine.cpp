@@ -59,7 +59,9 @@ mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( 
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
 
 unsigned int hdrFBO;
+//unsigned int colorBuffer[2];
 unsigned int colorBuffer;
+
 unsigned int rboDepth;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
@@ -357,6 +359,23 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "Mapping", prog );
 
+    prog = new ShaderProgram();
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/glow_mapping_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/glow_mapping_fs.glsl" );
+
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->bindAttribLocation( TEXCOORDS, "inTexcoord" );
+    prog->bindAttribLocation( NORMALS, "inNormal" );
+    prog->bindAttribLocation( TANGENTS, "inTangent" );
+    prog->bindAttribLocation( BI_TANGENTS, "inBiTangent" );
+
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "GlowMapping", prog );
+
     //Glow
     prog = new ShaderProgram();
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/glow_vs.glsl" );
@@ -388,9 +407,25 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     prog->use();
-    prog->addUniform( "hdrBuffer", 0 );
+    prog->addUniform( "hdrBuffer", 3 );
     prog->stop();
     shaderProgramManager->insert( "HDR", prog );
+
+    //HDR
+    prog = new ShaderProgram();
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/lightbox_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/lightbox_fs.glsl" );
+
+    prog->bindAttribLocation( VERTICES, "Position" );
+    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    prog->bindAttribLocation( NORMALS, "Normal" );
+
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "LightBox", prog );
 
     checkOpenGLError( "ERROR: Could not create shaders." );
 
@@ -450,7 +485,7 @@ void drawScene(){
     glClearColor( 0, 0, 0, 0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     scene->draw();
-    particlesOne->draw();
+    //particlesOne->draw();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
@@ -620,20 +655,24 @@ void createSceneMapping(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
 
-    //TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0 );
-    //TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1 );
-    //TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2 );
-
     scene = new Scene( dfault, camera );
 
-    //quad = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("Mapping"), MatrixFactory::createRotationMatrix4(-90, YY));
-    //quad->addTexture(noodleTextureInfo);
-    //quad->addTexture(noodleNormalInfo);
-    //quad->addTexture(noodleSpecularInfo);
     quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "GlowOne" ),
-        MatrixFactory::createTranslationMatrix(0.0f,0.5f,0.0f) * MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+        MatrixFactory::createTranslationMatrix( 0.0f, 0.5f, 0.0f ) * MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
 
+    //scene->addNode( quad );
+
+    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0 );
+    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1 );
+    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2 );
+
+    quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "GlowMapping" ),
+         MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    quad->addTexture( noodleTextureInfo );
+    quad->addTexture( noodleNormalInfo );
+    quad->addTexture( noodleSpecularInfo );
     scene->addNode( quad );
+
 }
 
 
@@ -649,40 +688,82 @@ void createParticleSystem(){
 }
 
 void setupLight(){
+    mat4 boxScale = MatrixFactory::createScaleMatrix4( 0.1f, 0.1f, 0.1f );
+    Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    SceneNode* lights = new SceneNode( nullptr, shaderProgramManager->get( "default" ) );
+    SceneNode* temp;
+    vec3 pos;
+    vec3 color;
     int i = 0;
+    float scale = 1.5f;
     /**/
-    pointLights[i] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 20.0f, 10.0f, 100.5f,
-        vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+    //Cyan
+    pos = vec3( -3.0f / scale, 0.4f, 4.0f / scale );
+    color = vec3( 0.0f, 10.0f, 10.0f );
+    pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
+        color, color, vec3( 0.1f, 0.1f, 0.1f ) );
     //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
+    temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
+        MatrixFactory::createTranslationMatrix( pos ) * boxScale );
+    temp->setColor( vec4( color, 1.0f ) );
+    lights->addNode( temp );
     i++;
-    pointLights[i] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 20.0f, 10.0f, 100.5f,
-        vec3( 1.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
-   // vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
+
+    //Magenta
+    pos = vec3( 4.0f / scale, 0.4f, 4.0f / scale );
+    color = vec3( 10.0f, .0f, 10.0f );
+    pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
+        color, color, vec3( 0.1f, 0.1f, 0.1f ) );
+    //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
+
+    temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
+        MatrixFactory::createTranslationMatrix( pos ) * boxScale );
+    temp->setColor( vec4( color, 1.0f ) );
+    lights->addNode( temp );
     i++;
-    pointLights[i] = PointLight( vec3( 0.1f, 0.4f, -0.5f ), 20.0f, 10.0f, 100.5f,
-        vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
-     //   vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
+
+    //Yellow
+    pos = vec3( 0.0f / scale, 0.4f, -5.0f / scale );
+    color = vec3( 10.0f, 10.0f, 0.0f );
+    pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
+        color, color, vec3( 0.1f, 0.1f, 0.1f ) );
+    //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
+
+    temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
+        MatrixFactory::createTranslationMatrix( pos )* boxScale );
+    temp->setColor( vec4( color, 1.0f ) );
+    lights->addNode( temp );
     i++;
+
     /**/
     float endX = 1.0f;
     float beginX = -1.0f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
-    vec3 pos = vec3( 0.0f, 1.0f, 0.0f );
+    pos = vec3( beginX, 1.0f, 0.0f );
     vec3 dropoff = vec3( 0.0f, 5.0f, 100.0f );
 
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 ambient = vec3( 0.0f, 0.0f, 0.0f );
     //vec3 diffuse = vec3( 0.0f, 0.0f, 0.0f );
-    vec3 ambient = vec3( 1.0f, 0.0f, 0.0f );
-    vec3 diffuse = vec3( 1.0f, 0.0f, 0.0f );
+    //vec3 ambient = vec3( 0.3f, 0.0f, 0.0f );
+    //vec3 diffuse = vec3( 0.3f, 0.0f, 0.0f );
+    color = vec3( 0.50f, 0.0f, 0.0f );
+    vec3 ambient = color;
+    vec3 diffuse = color;
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
 
-    for( int j = i; j < NR_NEON_LIGHTS + 3; j++ , i++ ){
+    for( int j = i; j < NR_NEON_LIGHTS + 3; j++, i++ ){
         pointLights[j] = PointLight( pos, dropoff, ambient, diffuse, specular );
+        temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
+            MatrixFactory::createTranslationMatrix( pos ) * boxScale );
         pos.x += offset;
+        temp->setColor( vec4( ambient, 1.0f ) );
+        lights->addNode( temp );
     }
     /**/
+    scene->addNode( lights );
 }
 
 void activateLights(){
@@ -703,6 +784,14 @@ void activateLights(){
     }
     shader->stop();
 
+    shader = shaderProgramManager->get( "GlowMapping" );
+
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
+
 }
 
 
@@ -710,19 +799,40 @@ void setupHDR(){
     // configure floating point framebuffer
     // ------------------------------------
     glGenFramebuffers( 1, &hdrFBO );
+    glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
+
     // create floating point color buffer
     glGenTextures( 1, &colorBuffer );
     glBindTexture( GL_TEXTURE_2D, colorBuffer );
     glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+    // attach buffers
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0 );
+
+    //glGenTextures( 2, colorBuffer );
+    //for( unsigned int i = 0; i < 2; i++ ){
+    //    glBindTexture( GL_TEXTURE_2D, colorBuffer[i] );
+    //    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
+    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+
+    //    // attach buffers
+    //    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffer[i], 0 );
+    //}
     // create depth buffer (renderbuffer)
     glGenRenderbuffers( 1, &rboDepth );
     glBindRenderbuffer( GL_RENDERBUFFER, rboDepth );
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
-    // attach buffers
-    glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0 );
+
+    //unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    //glDrawBuffers( 2, attachments );
+
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth );
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
         std::cout << "Framebuffer not complete!" << std::endl;
@@ -735,20 +845,20 @@ void init( int argc, char* argv[] ){
     setupOpenGL();
 
     setupCamera();
-    setupLight();
     setupCallbacks();
 
 
     loadMeshes();
-    //loadTextures();
+    loadTextures();
 
     setupHDR();
     createShaderProgram();
-    activateLights();
 
     createSceneMapping();
-
     createParticleSystem();
+
+    setupLight();
+    activateLights();
 }
 
 int main( int argc, char* argv[] ){
