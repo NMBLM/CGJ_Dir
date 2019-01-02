@@ -114,6 +114,12 @@
     <None Include="Shaders\tfb_update_fs.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="shaders\mapping_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\mapping_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">
@@ -159,6 +165,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\LightSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
