@@ -20,7 +20,7 @@ using namespace engine;
 class ShaderProgram{
     public:
 
-         
+
     GLuint id;
     std::map<std::string, GLint> shaderid = std::map< std::string, GLint>();
     std::map<std::string, mat4> unimat4 = std::map< std::string, mat4>();
@@ -43,7 +43,8 @@ class ShaderProgram{
     void addUniform( const char* name, vec4 v );
     void addUniform( const char* name, vec3 v );
     void addUniform( const char* name, vec2 v );
-    void addUniform( const char* name, float v );
+    void addUniform( const char* name, float f );
+    void addUniform( const char* name, int i );
     void addUniform( const char* name, mat3 v );
     void addUniform( const char* name, mat4 v );
     void use();

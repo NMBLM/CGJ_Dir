@@ -20,7 +20,7 @@ void main()
 {              
 	//mat4 normalMatrix = transpose(inverse(ModelMatrix));
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(Position,1.0f);
-	vertex = Position;
+	vertex = (ModelMatrix * vec4(Position,1.0f)).xyz;
     //normal = (normalMatrix * vec4(Normal, 0.0)).xyz;
 	normal = Normal;
 	texCoord = Texcoord;

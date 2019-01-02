@@ -58,6 +58,9 @@ bool freecam = false;
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
 
+unsigned int hdrFBO;
+unsigned int colorBuffer;
+unsigned int rboDepth;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -302,8 +305,6 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "ColorTextureProgram", prog );
 
-
-
     //PartTransformProgram
     prog = new ShaderProgram();
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_billboard_gs.glsl" );
@@ -371,6 +372,26 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "GlowOne", prog );
+
+    //HDR
+    prog = new ShaderProgram();
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/hdr_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/hdr_fs.glsl" );
+
+    prog->bindAttribLocation( VERTICES, "Position" );
+    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    prog->bindAttribLocation( NORMALS, "Normal" );
+
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    prog->use();
+    prog->addUniform( "hdrBuffer", 0 );
+    prog->stop();
+    shaderProgramManager->insert( "HDR", prog );
+
     checkOpenGLError( "ERROR: Could not create shaders." );
 
 }
@@ -396,11 +417,50 @@ void destroyTextures(){
 
 }
 /////////////////////////////////////////////////////////////////////// SCENE
+unsigned int quadVAO = 0;
+unsigned int quadVBO;
+void renderQuad(){
+    if( quadVAO == 0 ){
+        float quadVertices[] = {
+            // positions        // texture Coords
+            -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+            -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+             1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+             1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+        };
+        // setup plane VAO
+        glGenVertexArrays( 1, &quadVAO );
+        glGenBuffers( 1, &quadVBO );
+        glBindVertexArray( quadVAO );
+        glBindBuffer( GL_ARRAY_BUFFER, quadVBO );
+        glBufferData( GL_ARRAY_BUFFER, sizeof( quadVertices ), &quadVertices, GL_STATIC_DRAW );
+        glEnableVertexAttribArray( 0 );
+        glVertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof( float ), ( void* )0 );
+        glEnableVertexAttribArray( 1 );
+        glVertexAttribPointer( 1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof( float ), ( void* )( 3 * sizeof( float ) ) );
+    }
+    glBindVertexArray( quadVAO );
+    glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
+    glBindVertexArray( 0 );
+}
 
 void drawScene(){
-
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
+    glClearColor( 0, 0, 0, 0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     scene->draw();
-    //particlesOne->draw();
+    particlesOne->draw();
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    ShaderProgram* hdr = shaderProgramManager->get( "HDR" );
+    hdr->use();
+    glActiveTexture( GL_TEXTURE3 );
+    glBindTexture( GL_TEXTURE_2D, colorBuffer );
+    renderQuad();
+    hdr->stop();
+
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -541,12 +601,14 @@ void loadMeshes(){
 }
 
 void loadTextures(){
+
     Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
     //textureCatalog->insert(Texture::WOOD, new Texture("Textures/wood.jpg"));
     textureCatalog->insert( Texture::DEFAULT, new Texture( "Textures/errorTexture.jpg" ) );
     textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture.jpg" ) );
     textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
     textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
+    //textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
     //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
 }
@@ -558,9 +620,9 @@ void createSceneMapping(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
 
-    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0 );
-    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1 );
-    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2 );
+    //TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0 );
+    //TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1 );
+    //TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2 );
 
     scene = new Scene( dfault, camera );
 
@@ -569,7 +631,7 @@ void createSceneMapping(){
     //quad->addTexture(noodleNormalInfo);
     //quad->addTexture(noodleSpecularInfo);
     quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "GlowOne" ),
-        MatrixFactory::createScaleMatrix4( 0.5f, 0.5f, 0.5f ) );
+        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
 
     scene->addNode( quad );
 }
@@ -587,20 +649,23 @@ void createParticleSystem(){
 }
 
 void setupLight(){
-    pointLights[0] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
+    int i = 0;
+    /**/
+    pointLights[i] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
         vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
-
-    pointLights[1] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
+    i++;
+    pointLights[i] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
         vec3( 1.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
-
-    pointLights[2] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 100.5f,
+    i++;
+    pointLights[i] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 100.5f,
         vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
-
+    i++;
+    /**/
     float endX = 1.0f;
     float beginX = -1.0f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
     vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
-    vec3 dropoff = vec3( 0.0f, 5.0f, 10.5f );
+    vec3 dropoff = vec3( 0.0f, 5.0f, 50.0f );
 
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
@@ -608,11 +673,11 @@ void setupLight(){
     vec3 diffuse = vec3( 1.0f, 0.0f, 0.0f );
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
 
-    for( int i = 3; i < NR_NEON_LIGHTS + 3; i++ ){
-        pointLights[i] = PointLight( pos, dropoff, ambient, diffuse, specular );
+    for( int j = i; j < NR_NEON_LIGHTS + 3; j++ , i++ ){
+        pointLights[j] = PointLight( pos, dropoff, ambient, diffuse, specular );
         pos.x += offset;
     }
-
+    /**/
 }
 
 void activateLights(){
@@ -635,6 +700,30 @@ void activateLights(){
 
 }
 
+
+void setupHDR(){
+    // configure floating point framebuffer
+    // ------------------------------------
+    glGenFramebuffers( 1, &hdrFBO );
+    // create floating point color buffer
+    glGenTextures( 1, &colorBuffer );
+    glBindTexture( GL_TEXTURE_2D, colorBuffer );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+    // create depth buffer (renderbuffer)
+    glGenRenderbuffers( 1, &rboDepth );
+    glBindRenderbuffer( GL_RENDERBUFFER, rboDepth );
+    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
+    // attach buffers
+    glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0 );
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth );
+    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+        std::cout << "Framebuffer not complete!" << std::endl;
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+}
+
 void init( int argc, char* argv[] ){
     setupGLUT( argc, argv );
     setupGLEW();
@@ -646,8 +735,9 @@ void init( int argc, char* argv[] ){
 
 
     loadMeshes();
-    loadTextures();
+    //loadTextures();
 
+    setupHDR();
     createShaderProgram();
     activateLights();
 

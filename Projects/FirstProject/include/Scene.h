@@ -19,16 +19,16 @@ namespace engine{
 
     class SceneNode {
         Mesh* mesh = nullptr;
-        ShaderProgram* shaderProgram = nullptr;
         qtrn qDir = qtrn();
         mat4 model = MatrixFactory::createIdentityMatrix4();
         std::vector <SceneNode*> nodes;
         vec4 color = vec4(-1, 0, 0, 1);
         Animator* anime = nullptr;
-       
+
         std::vector<TextureInfo*> textures;
 
     public:
+        ShaderProgram* shaderProgram = nullptr;
         SceneNode();
         SceneNode(Mesh* m = nullptr, ShaderProgram* shaders= nullptr, mat4 model = MatrixFactory::createIdentityMatrix4());
         void draw( mat4 fm);

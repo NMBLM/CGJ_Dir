@@ -126,6 +126,12 @@
     <None Include="Shaders\mapping_vs.glsl">
       <Filter>Shader Files</Filter>
     </None>
+    <None Include="Shaders\hdr_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="Shaders\hdr_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">
