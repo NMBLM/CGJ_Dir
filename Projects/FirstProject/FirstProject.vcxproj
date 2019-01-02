@@ -130,6 +130,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="Shaders\bloom_final_fs.glsl" />
+    <None Include="Shaders\bloom_final_vs.glsl" />
+    <None Include="Shaders\bloom_fs.glsl" />
+    <None Include="Shaders\bloom_vs.glsl" />
+    <None Include="Shaders\blur_fs.glsl" />
+    <None Include="Shaders\blur_vs.glsl" />
     <None Include="Shaders\cube_fs.glsl" />
     <None Include="Shaders\cube_fs_extra.glsl" />
     <None Include="Shaders\cube_vs.glsl" />

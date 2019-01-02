@@ -59,8 +59,11 @@ mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( 
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
 
 unsigned int hdrFBO;
-//unsigned int colorBuffer[2];
+unsigned int colorBuffers[2];
 unsigned int colorBuffer;
+
+unsigned int pingpongFBO[2];
+unsigned int pingpongColorbuffers[2];
 
 unsigned int rboDepth;
 
@@ -275,22 +278,6 @@ void createShaderProgram(){
     shaderProgramManager->insert( "default", dfault );
     checkOpenGLError( "ERROR: Could not create default shaders." );
 
-    // Non default
-    prog = new ShaderProgram();//2
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/force_color_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/force_color_rcv_fs.glsl" );
-
-
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->bindAttribLocation( TEXCOORDS, "inTexcoord" );
-    prog->bindAttribLocation( NORMALS, "inNormal" );
-
-    prog->link();
-
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "ColorProgram", prog );
 
     prog = new ShaderProgram();
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/texShader_color_vs.glsl" );
@@ -308,7 +295,7 @@ void createShaderProgram(){
     shaderProgramManager->insert( "ColorTextureProgram", prog );
 
     //PartTransformProgram
-    prog = new ShaderProgram();
+    prog = new ShaderProgram(); //2
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_billboard_gs.glsl" );
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_billboard_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_billboard_fs.glsl" );
@@ -320,7 +307,7 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "TFBDraw", prog );
-    prog = new ShaderProgram();
+    prog = new ShaderProgram(); //3
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_gs.glsl" );
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/tfb_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/tfb_fs.glsl" );
@@ -342,7 +329,7 @@ void createShaderProgram(){
     checkOpenGLError( "ERROR: Could not create Transform shaders." );
 
     // mapping
-    prog = new ShaderProgram();//8
+    prog = new ShaderProgram();//4
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/mapping_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/mapping_fs.glsl" );
 
@@ -359,7 +346,7 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "Mapping", prog );
 
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//5
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/glow_mapping_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/glow_mapping_fs.glsl" );
 
@@ -377,7 +364,7 @@ void createShaderProgram(){
     shaderProgramManager->insert( "GlowMapping", prog );
 
     //Glow
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//6
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/glow_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/glow_fs.glsl" );
 
@@ -393,7 +380,7 @@ void createShaderProgram(){
     shaderProgramManager->insert( "GlowOne", prog );
 
     //HDR
-    prog = new ShaderProgram();
+    prog = new ShaderProgram();//7
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/hdr_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/hdr_fs.glsl" );
 
@@ -407,12 +394,11 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     prog->use();
-    prog->addUniform( "hdrBuffer", 3 );
     prog->stop();
     shaderProgramManager->insert( "HDR", prog );
 
-    //HDR
-    prog = new ShaderProgram();
+    //LightBox
+    prog = new ShaderProgram();//8
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/lightbox_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/lightbox_fs.glsl" );
 
@@ -426,16 +412,63 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "LightBox", prog );
+    //Blur Bloom(hdr aswell)
+    prog = new ShaderProgram();//9
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/blur_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/blur_fs.glsl" );
+
+    prog->bindAttribLocation( VERTICES, "Position" );
+    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    prog->bindAttribLocation( NORMALS, "Normal" );
+
+    prog->link();
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "Blur", prog );
+
+    prog = new ShaderProgram();//10
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
+
+    prog->bindAttribLocation( VERTICES, "Position" );
+    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    prog->bindAttribLocation( NORMALS, "Normal" );
+
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "Bloom", prog );
+
+    prog = new ShaderProgram();//10
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_final_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_final_fs.glsl" );
+
+    prog->bindAttribLocation( VERTICES, "Position" );
+    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    prog->bindAttribLocation( NORMALS, "Normal" );
+
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "BloomFinal", prog );
+
+
+
 
     checkOpenGLError( "ERROR: Could not create shaders." );
 
 }
+
 void destroyShaderProgram(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
 
     glUseProgram( 0 );
     glDeleteProgram( shaderProgramManager->get( "default" )->id );
-    glDeleteProgram( shaderProgramManager->get( "ColorProgram" )->id );
 
     checkOpenGLError( "ERROR: Could not destroy shaders." );
 }
@@ -451,9 +484,9 @@ void destroyTextures(){
     //TODO kill
 
 }
-/////////////////////////////////////////////////////////////////////// SCENE
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
+
 void renderQuad(){
     if( quadVAO == 0 ){
         float quadVertices[] = {
@@ -478,24 +511,52 @@ void renderQuad(){
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
     glBindVertexArray( 0 );
 }
+/////////////////////////////////////////////////////////////////////// SCENE
 
 void drawScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    // 1. render scene into floating point framebuffer
+    // -----------------------------------------------
     glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
-    glClearColor( 0, 0, 0, 0 );
+    glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     scene->draw();
-    //particlesOne->draw();
+    particlesOne->draw();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-    ShaderProgram* hdr = shaderProgramManager->get( "HDR" );
-    hdr->use();
+    /**/
+    // 2. blur bright fragments with two-pass Gaussian Blur
+    // --------------------------------------------------
+    bool horizontal = true, first_iteration = true;
+    unsigned int amount = 10;
+    ShaderProgram* blur = shaderProgramManager->get( "Blur" );
+    blur->use();
     glActiveTexture( GL_TEXTURE3 );
-    glBindTexture( GL_TEXTURE_2D, colorBuffer );
+    blur->addUniform( "image", 3 ); // 3 because GL_texture3
+    for( unsigned int i = 0; i < amount; i++ ){
+        glBindFramebuffer( GL_FRAMEBUFFER, pingpongFBO[horizontal] );
+        blur->addUniform( "horizontal", horizontal );
+        glBindTexture( GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal] );  // bind texture of other framebuffer (or scene if first iteration)
+        renderQuad();
+        horizontal = !horizontal;
+        if( first_iteration )
+            first_iteration = false;
+    }
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    blur->stop();
+    /**/
+    // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+    // --------------------------------------------------------------------------------------------------------------------------
+    ShaderProgram* bloomFinal = shaderProgramManager->get( "BloomFinal" );
+    bloomFinal->use();
+    glActiveTexture( GL_TEXTURE3 );
+    glBindTexture( GL_TEXTURE_2D, colorBuffers[0] );
+    bloomFinal->addUniform( "scene", 3 ); // 3 because GL_TEXTURE3
+    glActiveTexture( GL_TEXTURE4 );
+    glBindTexture( GL_TEXTURE_2D, pingpongColorbuffers[!horizontal] );
+    bloomFinal->addUniform( "bloomBlur", 4 ); // 4 because GL_TEXTURE4
     renderQuad();
-    hdr->stop();
-
+    bloomFinal->stop();
+    /**/
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -656,23 +717,23 @@ void createSceneMapping(){
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
 
     scene = new Scene( dfault, camera );
-
+    /** /
     quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "GlowOne" ),
         MatrixFactory::createTranslationMatrix( 0.0f, 0.5f, 0.0f ) * MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
 
     //scene->addNode( quad );
-
+    /**/
     TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0 );
     TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1 );
     TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2 );
 
-    quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "GlowMapping" ),
-         MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
+        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
     quad->addTexture( noodleTextureInfo );
     quad->addTexture( noodleNormalInfo );
     quad->addTexture( noodleSpecularInfo );
     scene->addNode( quad );
-
+    /**/
 }
 
 
@@ -737,8 +798,8 @@ void setupLight(){
     i++;
 
     /**/
-    float endX = 1.0f;
-    float beginX = -1.0f;
+    float endX = 0.5f;
+    float beginX = -0.5f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
     pos = vec3( beginX, 1.0f, 0.0f );
     vec3 dropoff = vec3( 0.0f, 5.0f, 100.0f );
@@ -749,7 +810,7 @@ void setupLight(){
     //vec3 diffuse = vec3( 0.0f, 0.0f, 0.0f );
     //vec3 ambient = vec3( 0.3f, 0.0f, 0.0f );
     //vec3 diffuse = vec3( 0.3f, 0.0f, 0.0f );
-    color = vec3( 0.50f, 0.0f, 0.0f );
+    color = vec3( 1.0f, 0.0f, 0.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
@@ -792,6 +853,16 @@ void activateLights(){
     }
     shader->stop();
 
+    shader = shaderProgramManager->get( "Bloom" );
+
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
+
+
+
 }
 
 
@@ -800,7 +871,7 @@ void setupHDR(){
     // ------------------------------------
     glGenFramebuffers( 1, &hdrFBO );
     glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
-
+    /** /
     // create floating point color buffer
     glGenTextures( 1, &colorBuffer );
     glBindTexture( GL_TEXTURE_2D, colorBuffer );
@@ -812,31 +883,53 @@ void setupHDR(){
 
     // attach buffers
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0 );
+    /**/
+    glGenTextures( 2, colorBuffers );
+    for( unsigned int i = 0; i < 2; i++ ){
+        glBindTexture( GL_TEXTURE_2D, colorBuffers[i] );
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
 
-    //glGenTextures( 2, colorBuffer );
-    //for( unsigned int i = 0; i < 2; i++ ){
-    //    glBindTexture( GL_TEXTURE_2D, colorBuffer[i] );
-    //    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
-    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    //    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    //    // attach buffers
-    //    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffer[i], 0 );
-    //}
+        // attach buffers
+        glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0 );
+    }
     // create depth buffer (renderbuffer)
     glGenRenderbuffers( 1, &rboDepth );
     glBindRenderbuffer( GL_RENDERBUFFER, rboDepth );
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
 
-    //unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-    //glDrawBuffers( 2, attachments );
+    unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+    glDrawBuffers( 2, attachments );
 
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth );
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    // ping-pong-framebuffer for blurring
+
+    glGenFramebuffers( 2, pingpongFBO );
+    glGenTextures( 2, pingpongColorbuffers );
+    for( unsigned int i = 0; i < 2; i++ ){
+        glBindFramebuffer( GL_FRAMEBUFFER, pingpongFBO[i] );
+        glBindTexture( GL_TEXTURE_2D, pingpongColorbuffers[i] );
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0 );
+        // also check if framebuffers are complete (no need for depth buffer)
+        if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+            std::cout << "Framebuffer not complete!" << std::endl;
+    }
+    glBindFramebuffer( GL_FRAMEBUFFER,0 );
+
+
+
 }
 
 void init( int argc, char* argv[] ){
