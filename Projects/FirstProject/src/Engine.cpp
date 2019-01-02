@@ -631,7 +631,7 @@ void createSceneMapping(){
     //quad->addTexture(noodleNormalInfo);
     //quad->addTexture(noodleSpecularInfo);
     quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "GlowOne" ),
-        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+        MatrixFactory::createTranslationMatrix(0.0f,0.5f,0.0f) * MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
 
     scene->addNode( quad );
 }
@@ -651,24 +651,29 @@ void createParticleSystem(){
 void setupLight(){
     int i = 0;
     /**/
-    pointLights[i] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
+    pointLights[i] = PointLight( vec3( -0.3f, 0.4f, 0.4f ), 20.0f, 10.0f, 100.5f,
         vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.0f, 1.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+    //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
     i++;
-    pointLights[i] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 1.0f, 1.0f, 100.5f,
+    pointLights[i] = PointLight( vec3( 0.3f, 0.4f, 0.4f ), 20.0f, 10.0f, 100.5f,
         vec3( 1.0f, 0.0f, 1.0f ), vec3( 1.0f, 0.0f, 1.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+   // vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
     i++;
-    pointLights[i] = PointLight( vec3( 0.0f, 0.4f, -0.5f ), 1.0f, 1.0f, 100.5f,
+    pointLights[i] = PointLight( vec3( 0.1f, 0.4f, -0.5f ), 20.0f, 10.0f, 100.5f,
         vec3( 1.0f, 1.0f, 0.0f ), vec3( 1.0f, 1.0f, 0.0f ), vec3( 0.5f, 0.5f, 0.5f ) );
+     //   vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
     i++;
     /**/
     float endX = 1.0f;
     float beginX = -1.0f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
-    vec3 pos = vec3( 0.0f, 1.5f, 0.0f );
-    vec3 dropoff = vec3( 0.0f, 5.0f, 50.0f );
+    vec3 pos = vec3( 0.0f, 1.0f, 0.0f );
+    vec3 dropoff = vec3( 0.0f, 5.0f, 100.0f );
 
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
     //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
+    //vec3 ambient = vec3( 0.0f, 0.0f, 0.0f );
+    //vec3 diffuse = vec3( 0.0f, 0.0f, 0.0f );
     vec3 ambient = vec3( 1.0f, 0.0f, 0.0f );
     vec3 diffuse = vec3( 1.0f, 0.0f, 0.0f );
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );

@@ -36,8 +36,8 @@ vec3 eye;
 
 void setupMaterial(){
 	material.shininess = 0.5f;
-	material.diffuse = normalize(vec3(1.0f,0.17735f,0.07735f));
-    material.specular = normalize(vec3(0.27735f,0.07735f,1.07735f));
+	material.diffuse = vec3(1.0f,1.2f,1.0f);
+    material.specular = vec3(0.1f,0.1f,0.1f);
 }
 vec3 someFunctionToCalculatePointLight(PointLight p){
 	vec3 lightPos = vec3( vec4(p.position,1.0f)); //WorldSpace
@@ -49,6 +49,7 @@ vec3 someFunctionToCalculatePointLight(PointLight p){
 	float dist = length(L);
 	L = normalize(L);
 	float attenuation = 1/(p.constant + p.linear * dist + p.quadratic * pow(dist,2));
+
     // diffuse shading
     float diff = max(dot(N, L), 0.0);
     // specular shading

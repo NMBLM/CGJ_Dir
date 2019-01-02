@@ -19,7 +19,7 @@ namespace engine{
 
         vec3 ambient;
         vec3 diffuse;
-        vec3 specular;   
+        vec3 specular;
 
         PointLight();
         PointLight( vec3 pos, float constantDrop, float linearDrop, float quadraticDrop,
