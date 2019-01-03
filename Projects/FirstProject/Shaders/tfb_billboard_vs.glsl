@@ -4,7 +4,7 @@ in vec3 Position;
 #define SPEEDX 60
 #define SPEEDZ -60
 #define SCALEX 0.03f
-#define SCALEZ 0.02f
+#define SCALEZ 0.024f
 void main()                                                                         
 {                                                                                   
     gl_Position = vec4(Position, 1.0);  

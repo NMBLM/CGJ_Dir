@@ -22,7 +22,7 @@
 #include "GL/freeglut.h"
 
 #define CAPTION "CyberNoodles"
-#define NR_NEON_LIGHTS 5
+#define NR_NEON_LIGHTS 8
 #define NR_POINT_LIGHTS 3 + NR_NEON_LIGHTS
 
 
@@ -484,6 +484,7 @@ void destroyTextures(){
     //TODO kill
 
 }
+
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
 
@@ -520,7 +521,9 @@ void drawScene(){
     glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
     glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
     scene->draw();
+
     particlesOne->draw();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     /**/
@@ -554,7 +557,9 @@ void drawScene(){
     glActiveTexture( GL_TEXTURE4 );
     glBindTexture( GL_TEXTURE_2D, pingpongColorbuffers[!horizontal] );
     bloomFinal->addUniform( "bloomBlur", 4 ); // 4 because GL_TEXTURE4
+
     renderQuad();
+
     bloomFinal->stop();
     /**/
     checkOpenGLError( "ERROR: Could not draw scene." );
@@ -749,7 +754,8 @@ void createParticleSystem(){
 }
 
 void setupLight(){
-    mat4 boxScale = MatrixFactory::createScaleMatrix4( 0.1f, 0.1f, 0.1f );
+    float scale = 0.05f;
+    mat4 boxScale = MatrixFactory::createScaleMatrix4( scale, scale, scale );
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     SceneNode* lights = new SceneNode( nullptr, shaderProgramManager->get( "default" ) );
@@ -757,7 +763,7 @@ void setupLight(){
     vec3 pos;
     vec3 color;
     int i = 0;
-    float scale = 1.5f;
+    scale = 1.5f;
     /**/
     //Cyan
     pos = vec3( -3.0f / scale, 0.4f, 4.0f / scale );
@@ -798,10 +804,10 @@ void setupLight(){
     i++;
 
     /**/
-    float endX = 0.5f;
-    float beginX = -0.5f;
+    float endX = 0.3f;
+    float beginX = -0.3f;
     float offset = ( endX - beginX ) / ( NR_NEON_LIGHTS - 1 );
-    pos = vec3( beginX, 1.0f, 0.0f );
+    pos = vec3( beginX, 0.5f, 0.0f );
     vec3 dropoff = vec3( 0.0f, 5.0f, 100.0f );
 
     //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
@@ -810,7 +816,7 @@ void setupLight(){
     //vec3 diffuse = vec3( 0.0f, 0.0f, 0.0f );
     //vec3 ambient = vec3( 0.3f, 0.0f, 0.0f );
     //vec3 diffuse = vec3( 0.3f, 0.0f, 0.0f );
-    color = vec3( 15.0f, 0.0f, 0.0f );
+    color = vec3( 5.0f, 0.0f, 0.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );

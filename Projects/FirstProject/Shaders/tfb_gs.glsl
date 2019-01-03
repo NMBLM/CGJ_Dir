@@ -20,7 +20,7 @@ uniform float rnd1;
 uniform float rnd2;
 uniform float rnd3;
 
-#define LIFE 1.5f
+#define LIFE 0.5f
 #define TIMER 0.01f
 #define VELOCITY vec3(0.0f,1.0f,0.0f)
 #define SCALE 1.5f
@@ -53,7 +53,7 @@ void main(){
 				float strnd3 = random(st + vec2(strnd2,strnd1));
 				Position1 = position + vec3(0.5f - strnd1,0.5f - strnd2,0.5f - strnd3)/2.0f;
 				Velocity1 = VELOCITY + vec3(0.5f - strnd2,0.5f - strnd3,0.5f - strnd1)/2.0f;
-				Life1 = LIFE + rnd2/2.0f ;
+				Life1 = LIFE - strnd3/8.0f ;
 				Type1 = PARTICLE_TYPE;
 				EmitVertex();
 				EndPrimitive();

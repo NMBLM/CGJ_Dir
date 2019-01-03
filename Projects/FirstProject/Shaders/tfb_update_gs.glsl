@@ -16,7 +16,7 @@ out Particle particle1;
 
 uniform float delta;
 uniform vec3 position;
-#define LIFE 1.0f
+#define LIFE 0.1f
 #define VELOCITY vec3(0.1f,2.0f,0.1f)
 #define MaxParticles 10
 float random (vec2 st) {

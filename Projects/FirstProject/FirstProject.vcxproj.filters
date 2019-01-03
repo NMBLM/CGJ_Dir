@@ -120,15 +120,6 @@
     <None Include="Shaders\tfb_gs.glsl">
       <Filter>Shader Files\Particles</Filter>
     </None>
-    <None Include="Shaders\tfb_update_fs.glsl">
-      <Filter>Shader Files\Particles</Filter>
-    </None>
-    <None Include="Shaders\tfb_update_gs.glsl">
-      <Filter>Shader Files\Particles</Filter>
-    </None>
-    <None Include="Shaders\tfb_update_vs.glsl">
-      <Filter>Shader Files\Particles</Filter>
-    </None>
     <None Include="Shaders\tfb_vs.glsl">
       <Filter>Shader Files\Particles</Filter>
     </None>
@@ -173,6 +164,15 @@
     </None>
     <None Include="Shaders\bloom_final_vs.glsl">
       <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_gs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
