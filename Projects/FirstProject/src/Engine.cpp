@@ -429,7 +429,8 @@ void createShaderProgram(){
 
     prog = new ShaderProgram();//10
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
+    //prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_cube_fs.glsl" );
 
     prog->bindAttribLocation( VERTICES, "Position" );
     prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
@@ -521,9 +522,7 @@ void drawScene(){
     glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
     glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
     scene->draw();
-
     particlesOne->draw();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     /**/
@@ -533,8 +532,8 @@ void drawScene(){
     unsigned int amount = 10;
     ShaderProgram* blur = shaderProgramManager->get( "Blur" );
     blur->use();
-    glActiveTexture( GL_TEXTURE3 );
-    blur->addUniform( "image", 3 ); // 3 because GL_texture3
+    glActiveTexture( GL_TEXTURE0 );
+    blur->addUniform( "image", 0 ); // 3 because GL_texture3
     for( unsigned int i = 0; i < amount; i++ ){
         glBindFramebuffer( GL_FRAMEBUFFER, pingpongFBO[horizontal] );
         blur->addUniform( "horizontal", horizontal );
@@ -551,12 +550,12 @@ void drawScene(){
     // --------------------------------------------------------------------------------------------------------------------------
     ShaderProgram* bloomFinal = shaderProgramManager->get( "BloomFinal" );
     bloomFinal->use();
-    glActiveTexture( GL_TEXTURE3 );
+    glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, colorBuffers[0] );
-    bloomFinal->addUniform( "scene", 3 ); // 3 because GL_TEXTURE3
-    glActiveTexture( GL_TEXTURE4 );
+    bloomFinal->addUniform( "scene", 0 ); // 3 because GL_TEXTURE3
+    glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, pingpongColorbuffers[!horizontal] );
-    bloomFinal->addUniform( "bloomBlur", 4 ); // 4 because GL_TEXTURE4
+    bloomFinal->addUniform( "bloomBlur", 1 ); // 4 because GL_TEXTURE4
 
     renderQuad();
 
@@ -695,7 +694,7 @@ void loadMeshes(){
     //meshManager->insert(Mesh::SQUARE, meshLoader.createMesh(std::string("Mesh/Square.obj")));
     //meshManager->insert(Mesh::PARALLELOGRAM, meshLoader.createMesh(std::string("Mesh/Parallelogram.obj")));
     //meshManager->insert(Mesh::TABLE, meshLoader.createMesh(std::string("Mesh/Table.obj")));
-    //meshManager->insert(Mesh::CUBE, meshLoader.createMesh(std::string("Mesh/Cube.obj")));
+    meshManager->insert( Mesh::CUBE, meshLoader.createMesh( std::string( "Mesh/Cube.obj" ) ) );
     //meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
     meshManager->insert( Mesh::SPHERE, meshLoader.createMesh( std::string( "Mesh/Sphere.obj" ) ) );
 }
@@ -704,10 +703,14 @@ void loadTextures(){
 
     Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
     //textureCatalog->insert(Texture::WOOD, new Texture("Textures/wood.jpg"));
-    textureCatalog->insert( Texture::DEFAULT, new Texture( "Textures/errorTexture.jpg" ) );
-    textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture.jpg" ) );
-    textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
-    textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
+    //textureCatalog->insert( Texture::DEFAULT, new Texture( "Textures/errorTexture.jpg" ) );
+    //textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture.jpg" ) );
+    //textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
+    //textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
+
+    textureCatalog->insert( Texture::WORLD_CUBE, new TextureCube( "Textures/cubemap/world_", ".png" ) );
+    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/beach_", ".jpg" ) );
+
     //textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
     //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
@@ -727,14 +730,15 @@ void createSceneMapping(){
 
     //scene->addNode( quad );
     /**/
-    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0 );
-    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1 );
-    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2 );
-    //GL_TEXTURE3 is used for hdr
-    //GL_TEXTURE4 is used for saving brightnessvalues and blurring
-    //
-    quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
-        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    //GL_TEXTURE0 is used for hdr
+    //GL_TEXTURE1 is used for saving brightnessvalues and blurring
+    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::BEACH_BOX, "noodleTex", GL_TEXTURE2, 2 );
+    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::BEACH_BOX, "noodleNormal", GL_TEXTURE3, 3 );
+    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::BEACH_BOX, "noodleSpec", GL_TEXTURE4, 4 );
+
+
+    quad = new SceneNode( meshManager->get( Mesh::CUBE ), shaderProgramManager->get( "Bloom" ),
+        MatrixFactory::createScaleMatrix4( -8.0f, -8.0f, -8.0f ) );
     quad->addTexture( noodleTextureInfo );
     quad->addTexture( noodleNormalInfo );
     quad->addTexture( noodleSpecularInfo );
@@ -933,7 +937,7 @@ void setupHDR(){
         if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
             std::cout << "Framebuffer not complete!" << std::endl;
     }
-    glBindFramebuffer( GL_FRAMEBUFFER,0 );
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
 
 

@@ -13,6 +13,7 @@ uniform SharedMatrices
     mat4 ProjectionMatrix;
 };
 
+out vec3 TexCoords;
 out vec2 TexCoord;
 out vec3 PassNormal;
 out vec3 WorldPos;
@@ -21,6 +22,7 @@ out vec3 BiTangent;
 
 void main(void){
     mat4 normalMatrix = transpose(inverse(ModelMatrix));
+	TexCoords = inPosition;
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(inPosition,1.0f);
     TexCoord = inTexcoord;
     PassNormal = (normalMatrix * vec4(inNormal, 0.0)).xyz;

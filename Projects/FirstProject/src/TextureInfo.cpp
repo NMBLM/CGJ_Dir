@@ -14,7 +14,7 @@ namespace engine {
 
     void TextureInfo::Activate(ShaderProgram* sp) {
         glActiveTexture(unit);
+        glBindTexture( texture->getType(), texture->getId() );
         glUniform1i(sp->UniformId(uniform.c_str()), index);
-        glBindTexture(GL_TEXTURE_2D, texture->getId());//TODO permitir diferentes tipos de textures
     }
 }

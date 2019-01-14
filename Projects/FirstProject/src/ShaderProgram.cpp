@@ -61,10 +61,6 @@ GLint ShaderProgram::UniformId( const char * uniformName ){
     return glGetUniformLocation( id, uniformName );
 }
 
-GLint ShaderProgram::UniformLocation( const char * uniformName ){
-    return glGetUniformLocation( id, uniformName );
-}
-
 GLint ShaderProgram::uniformBlockIndex( const char * uniformName ){
     return glGetUniformBlockIndex( id, uniformName );
 }

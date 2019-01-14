@@ -38,7 +38,6 @@ class ShaderProgram{
     void bindAttribLocation( const int atnum, const char* atname );
     void uniformBlockBinding( GLint bid, GLuint bpo );
     GLint UniformId( const char* uniformName );
-    GLint UniformLocation( const char* uniformName );
     GLint uniformBlockIndex( const char* uniformName );
     void addUniform( const char* name, vec4 v );
     void addUniform( const char* name, vec3 v );

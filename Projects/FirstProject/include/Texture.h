@@ -27,6 +27,8 @@ namespace engine {
         int nrChannels;
 
         static constexpr const char* const WOOD = "WOOD";
+        static constexpr const char* const WORLD_CUBE = "WORLD_CUBE";
+        static constexpr const char* const BEACH_BOX = "BEACH_BOX";
         static constexpr const char* const DEFAULT = "ERROR";
         static constexpr const char* const NOODLE_TEXTURE = "NOODLE_TEXTURE";
         static constexpr const char* const NOODLE_MAP_NORMAL = "NOODLE_MAP_NORMAL";
@@ -40,17 +42,18 @@ namespace engine {
 
         void LoadDefault();
         unsigned int getId();
+        virtual GLuint getType();
     };
 
     class TextureCube: public Texture{
 
-        public:
-            std::vector<std::string> textures_faces;
+    public:
+        std::vector<std::string> textures_faces;
 
-            TextureCube();
-            TextureCube( const char* filename,const char* filetype );
-            ~TextureCube() = default;
-
+        TextureCube();
+        TextureCube( const char* filename,const char* filetype );
+        ~TextureCube() = default;
+        virtual GLuint getType();
 
     };
 }

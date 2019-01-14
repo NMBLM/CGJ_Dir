@@ -33,6 +33,7 @@ namespace engine{
 
     void Texture::LoadDefault(){
         unsigned char *data = stbi_load( DEFAULT_TEXTURE, &width, &height, &nrChannels, 0 );
+        std::cout << "Width " << width << " Height" << height << std::endl;
         if( data ){
             glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
             glGenerateMipmap( GL_TEXTURE_2D );
@@ -46,18 +47,23 @@ namespace engine{
         return textureId;
     }
 
-    TextureCube::TextureCube(){
+    GLuint Texture::getType(){
+        return GL_TEXTURE_2D;
+    }
 
+    TextureCube::TextureCube(){
     }
 
     TextureCube::TextureCube( const char* filename, const char* filetype ){
         glGenTextures( 1, &textureId );
         glBindTexture( GL_TEXTURE_CUBE_MAP, textureId );
+        std::cout << "CUBE TEXTURE " << textureId;
         // set the texture wrapping/filtering options (on the currently bound texture object)
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
         //Generate textures faces name
         /*
                      ___________
@@ -86,16 +92,23 @@ namespace engine{
             textures_faces[i].append( sides[i] );
             textures_faces[i].append( filetype );
         }
-        //int width, height, nrChannels;
         unsigned char *data = nullptr;
         for( GLuint i = 0; i < textures_faces.size(); i++ ){
             data = stbi_load( textures_faces[i].c_str(), &width, &height, &nrChannels, 0 );
-            glTexImage2D(
-                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-                0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-            );
+            std::cout << " MAP " << GL_TEXTURE_CUBE_MAP_POSITIVE_X + i << " name: " << textures_faces[i].c_str() << std::endl;
+            if( data ){
+                glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
+                    width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+            } else{
+                std::cout << "Failed to load cubemap texture" << std::endl;
+                exit( -10 );
+            }
         }
         stbi_image_free( data );
+    }
+
+    GLuint TextureCube::getType(){
+        return GL_TEXTURE_CUBE_MAP;
     }
 
 }

@@ -174,6 +174,9 @@
     <None Include="Shaders\tfb_update_vs.glsl">
       <Filter>Shader Files\OldShaders</Filter>
     </None>
+    <None Include="Shaders\bloom_cube_fs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">

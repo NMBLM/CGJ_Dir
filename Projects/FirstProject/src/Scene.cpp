@@ -53,7 +53,7 @@ void engine::SceneNode::draw(mat4 fm) {
         shaderProgram->use();
         glUniformMatrix4fv(shaderProgram->UniformId("ModelMatrix"), 1, GL_FALSE, m.data());
         if (!fcmp(color.x, -1)) {
-            glUniform4fv(shaderProgram->UniformLocation("forcedColor"), 1, color.data());
+            glUniform4fv(shaderProgram->UniformId("forcedColor"), 1, color.data());
         }
 
         for (auto& tex : textures) {
