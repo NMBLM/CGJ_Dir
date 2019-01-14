@@ -28,5 +28,6 @@ void main()
              result += texture(image, TexCoords - vec2(0.0, tex_offset.y * i)).rgb * weight[i];
          }
      }
+	 //result = texture(image, TexCoords).rgb;// this is to not blur
      FragColor = vec4(result, 1.0);
 }

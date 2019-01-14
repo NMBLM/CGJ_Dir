@@ -23,7 +23,7 @@ uniform float rnd3;
 #define LIFE 0.5f
 #define TIMER 0.01f
 #define VELOCITY vec3(0.0f,1.0f,0.0f)
-#define SCALE 1.5f
+#define SCALE 3.0f
 #define PARTICLE_LAUNCHER 0.0f
 #define PARTICLE_TYPE 1.0f
 
@@ -51,8 +51,8 @@ void main(){
 				float strnd1 = random(st);
 				float strnd2 = random(st + vec2(rnd2,strnd1));
 				float strnd3 = random(st + vec2(strnd2,strnd1));
-				Position1 = position + vec3(0.5f - strnd1,0.5f - strnd2,0.5f - strnd3)/2.0f;
-				Velocity1 = VELOCITY + vec3(0.5f - strnd2,0.5f - strnd3,0.5f - strnd1)/2.0f;
+				Position1 = position + vec3(0.5f - strnd1,0.5f - strnd2,0.5f - strnd3)/SCALE;
+				Velocity1 = VELOCITY + vec3(0.5f - strnd2,0.5f - strnd3,0.5f - strnd1)/SCALE;
 				Life1 = LIFE - strnd3/8.0f ;
 				Type1 = PARTICLE_TYPE;
 				EmitVertex();

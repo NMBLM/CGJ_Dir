@@ -3,6 +3,7 @@
 #define TEXTURE_H
 
 #include <string>
+#include <vector>
 #include "GL/glew.h"
 #include "stb_image.h"
 #include <iostream>
@@ -13,16 +14,18 @@
 namespace engine {
 
     class Texture {
-        int width;
-        int height;
-        int nrChannels;
-        unsigned int textureId;
 
-        unsigned int thisUnit;
+        
+
 
     public:
         static unsigned int unit;
-        
+        unsigned int thisUnit;
+        unsigned int textureId;
+        int width;
+        int height;
+        int nrChannels;
+
         static constexpr const char* const WOOD = "WOOD";
         static constexpr const char* const DEFAULT = "ERROR";
         static constexpr const char* const NOODLE_TEXTURE = "NOODLE_TEXTURE";
@@ -37,6 +40,18 @@ namespace engine {
 
         void LoadDefault();
         unsigned int getId();
+    };
+
+    class TextureCube: public Texture{
+
+        public:
+            std::vector<std::string> textures_faces;
+
+            TextureCube();
+            TextureCube( const char* filename,const char* filetype );
+            ~TextureCube() = default;
+
+
     };
 }
 #endif // !TEXTURE_H

@@ -15,7 +15,7 @@ void main()
 	hdrColor += bloomColor; // additive blending
 	//hdrColor += 2*bloomColor; // additive blending
 	//hdrColor *= bloomColor; // Mult blending
-	//hdrColor = bloomColor; // brightness only
+	//hdrColor = bloomColor; // blur/brightparts only
 	//hdrColor = hdrColor; // no blending
 	//hdrColor /= bloomColor; // div blending
 	//hdrColor = bloomColor/hdrColor; // div2 blending

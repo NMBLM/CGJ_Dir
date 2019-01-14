@@ -178,9 +178,11 @@ void ParticleSystemTransform::UpdateParticles(){
     m_updateTechnique->use();
     m_updateTechnique->addUniform( "delta", delta );
     m_updateTechnique->addUniform( "position", position );
+
     m_updateTechnique->addUniform( "rnd1", rnd1 );
     m_updateTechnique->addUniform( "rnd2", rnd2 );
     m_updateTechnique->addUniform( "rnd3", rnd3 );
+
 
     glEnable( GL_RASTERIZER_DISCARD );
 
@@ -226,9 +228,15 @@ void ParticleSystemTransform::UpdateParticles(){
 
 
 void ParticleSystemTransform::RenderParticles(){
+    float rnd1 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    float rnd2 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+    float rnd3 = ( ( rand() % 100 ) - 50 ) / 100.0f;
+
     m_billboardTechnique->use();
     m_billboardTechnique->addUniform( "delta", delta );
-
+    m_billboardTechnique->addUniform( "rnd1", rnd1 );
+    m_billboardTechnique->addUniform( "rnd2", rnd2 );
+    m_billboardTechnique->addUniform( "rnd3", rnd3 );
     glEnable( GL_BLEND );
     glDepthMask( GL_FALSE );
     glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );

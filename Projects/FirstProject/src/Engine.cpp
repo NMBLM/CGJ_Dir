@@ -587,7 +587,6 @@ void idle(){
     lastFrame = ( float )currentFrame;
     scene->update( delta );
     particlesOne->update( delta );
-
     glutPostRedisplay();
 }
 
@@ -731,7 +730,9 @@ void createSceneMapping(){
     TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE0, 0 );
     TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE1, 1 );
     TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE2, 2 );
-
+    //GL_TEXTURE3 is used for hdr
+    //GL_TEXTURE4 is used for saving brightnessvalues and blurring
+    //
     quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
         MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
     quad->addTexture( noodleTextureInfo );
