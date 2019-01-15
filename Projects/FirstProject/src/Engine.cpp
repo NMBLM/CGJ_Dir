@@ -45,7 +45,6 @@ MeshLoader meshLoader;
 PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
 SceneNode  *table;
-SceneNode  *quad;
 ParticleSystemTransform* particlesOne;
 
 float lastFrame = 0.0f;
@@ -279,21 +278,6 @@ void createShaderProgram(){
     checkOpenGLError( "ERROR: Could not create default shaders." );
 
 
-    prog = new ShaderProgram();
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/texShader_color_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/texShader_color_fs.glsl" );
-
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->bindAttribLocation( TEXCOORDS, "inTexcoord" );
-    prog->bindAttribLocation( NORMALS, "inNormal" );
-
-    prog->link();
-
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "ColorTextureProgram", prog );
-
     //PartTransformProgram
     prog = new ShaderProgram(); //2
     prog->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/tfb_billboard_gs.glsl" );
@@ -328,74 +312,19 @@ void createShaderProgram(){
     shaderProgramManager->insert( "TFBUpdate", prog );
     checkOpenGLError( "ERROR: Could not create Transform shaders." );
 
-    // mapping
-    prog = new ShaderProgram();//4
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/mapping_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/mapping_fs.glsl" );
-
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->bindAttribLocation( TEXCOORDS, "inTexcoord" );
-    prog->bindAttribLocation( NORMALS, "inNormal" );
-    prog->bindAttribLocation( TANGENTS, "inTangent" );
-    prog->bindAttribLocation( BI_TANGENTS, "inBiTangent" );
-
-    prog->link();
-
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "Mapping", prog );
-
-    prog = new ShaderProgram();//5
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/glow_mapping_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/glow_mapping_fs.glsl" );
-
-    prog->bindAttribLocation( VERTICES, "inPosition" );
-    prog->bindAttribLocation( TEXCOORDS, "inTexcoord" );
-    prog->bindAttribLocation( NORMALS, "inNormal" );
-    prog->bindAttribLocation( TANGENTS, "inTangent" );
-    prog->bindAttribLocation( BI_TANGENTS, "inBiTangent" );
-
-    prog->link();
-
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    shaderProgramManager->insert( "GlowMapping", prog );
-
-    //Glow
-    prog = new ShaderProgram();//6
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/glow_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/glow_fs.glsl" );
+    //SkyBox
+    prog = new ShaderProgram();//8
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/skybox_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/skybox_fs.glsl" );
 
     prog->bindAttribLocation( VERTICES, "Position" );
-    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
-    prog->bindAttribLocation( NORMALS, "Normal" );
 
     prog->link();
 
     prog->detachShader( "vertex" );
     prog->detachShader( "fragment" );
 
-    shaderProgramManager->insert( "GlowOne", prog );
-
-    //HDR
-    prog = new ShaderProgram();//7
-    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/hdr_vs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/hdr_fs.glsl" );
-
-    prog->bindAttribLocation( VERTICES, "Position" );
-    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
-    prog->bindAttribLocation( NORMALS, "Normal" );
-
-    prog->link();
-
-    prog->detachShader( "vertex" );
-    prog->detachShader( "fragment" );
-
-    prog->use();
-    prog->stop();
-    shaderProgramManager->insert( "HDR", prog );
+    shaderProgramManager->insert( "SkyBox", prog );
 
     //LightBox
     prog = new ShaderProgram();//8
@@ -412,6 +341,7 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "LightBox", prog );
+
     //Blur Bloom(hdr aswell)
     prog = new ShaderProgram();//9
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/blur_vs.glsl" );
@@ -427,10 +357,11 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "Blur", prog );
 
+
+
     prog = new ShaderProgram();//10
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_vs.glsl" );
-    //prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
-    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_cube_fs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
 
     prog->bindAttribLocation( VERTICES, "Position" );
     prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
@@ -457,8 +388,6 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "BloomFinal", prog );
-
-
 
 
     checkOpenGLError( "ERROR: Could not create shaders." );
@@ -514,7 +443,6 @@ void renderQuad(){
     glBindVertexArray( 0 );
 }
 /////////////////////////////////////////////////////////////////////// SCENE
-bool horizontal = true;
 void renderBasicScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 1. render scene into floating point framebuffer
@@ -529,8 +457,7 @@ void renderBasicScene(){
 void blurBrightScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 2. blur bright fragments with two-pass Gaussian Blur
-    horizontal = true;
-    bool first_iteration = true;
+    bool horizontal = true, first_iteration = true;
     unsigned int amount = 10;
     ShaderProgram* blur = shaderProgramManager->get( "Blur" );
     blur->use();
@@ -539,7 +466,7 @@ void blurBrightScene(){
     for( unsigned int i = 0; i < amount; i++ ){
         glBindFramebuffer( GL_FRAMEBUFFER, pingpongFBO[horizontal] );
         blur->addUniform( "horizontal", horizontal );
-        glBindTexture( GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal] );  // bind texture of other framebuffer (or scene if first iteration)
+        glBindTexture( GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[horizontal] );  // bind texture of other framebuffer (or scene if first iteration)
         renderQuad();
         horizontal = !horizontal;
         if( first_iteration )
@@ -557,11 +484,9 @@ void drawQuadWithScene(){
     glBindTexture( GL_TEXTURE_2D, colorBuffers[0] );
     bloomFinal->addUniform( "scene", 0 ); // 0 because GL_TEXTURE0
     glActiveTexture( GL_TEXTURE1 );
-    glBindTexture( GL_TEXTURE_2D, pingpongColorbuffers[!horizontal] );
+    glBindTexture( GL_TEXTURE_2D, pingpongColorbuffers[0] );
     bloomFinal->addUniform( "bloomBlur", 1 ); // 1 because GL_TEXTURE1
-
     renderQuad();
-
     bloomFinal->stop();
 }
 void drawScene(){
@@ -621,7 +546,7 @@ void drawScene(){
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     2.2 Do Normal draws of what you want it to keep
         scene->draw();
-        particlesOne->draw();
+        particlesOne->draw();   
     2.3 Unbind it so next draw goes to basic buffer that is used for pc screen
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     3 Now to use the texure on specific shaders
@@ -775,8 +700,8 @@ void loadMeshes(){
     //meshManager->insert(Mesh::SQUARE, meshLoader.createMesh(std::string("Mesh/Square.obj")));
     //meshManager->insert(Mesh::PARALLELOGRAM, meshLoader.createMesh(std::string("Mesh/Parallelogram.obj")));
     //meshManager->insert(Mesh::TABLE, meshLoader.createMesh(std::string("Mesh/Table.obj")));
-    meshManager->insert( Mesh::CUBE, meshLoader.createMesh( std::string( "Mesh/Cube.obj" ) ) );
     //meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
+    meshManager->insert( Mesh::CUBE, meshLoader.createMesh( std::string( "Mesh/Cube.obj" ) ) );
     meshManager->insert( Mesh::SPHERE, meshLoader.createMesh( std::string( "Mesh/Sphere.obj" ) ) );
     meshManager->insert( Mesh::CUBE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/skybox.obj" ) ) );
     meshManager->insert( Mesh::SPHERE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/sphereSkybox.obj" ) ) );
@@ -787,15 +712,16 @@ void loadTextures(){
     Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
     //textureCatalog->insert(Texture::WOOD, new Texture("Textures/wood.jpg"));
     //textureCatalog->insert( Texture::DEFAULT, new Texture( "Textures/errorTexture.jpg" ) );
-    //textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture.jpg" ) );
-    //textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
-    //textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
-
-    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/beach_", ".jpg" ) );
-
-    //textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
+    /**/
+    textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
     //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
+    /**/
+    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/urban-skyboxes/Sodermalmsallen2/", ".jpg" , false ,true) );
+
+    
 }
 
 vec4 YY = vec4( 0, 1, 0, 1 );
@@ -804,27 +730,29 @@ void createSceneMapping(){
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
-
+    
     scene = new Scene( dfault, camera );
-    /** /
-    quad = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "GlowOne" ),
-        MatrixFactory::createTranslationMatrix( 0.0f, 0.5f, 0.0f ) * MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
 
-    //scene->addNode( quad );
-    /**/
     //GL_TEXTURE0 is used for hdr
     //GL_TEXTURE1 is used for saving brightnessvalues and blurring
-    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::BEACH_BOX, "noodleTex", GL_TEXTURE2, 2 );
-    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::BEACH_BOX, "noodleNormal", GL_TEXTURE3, 3 );
-    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::BEACH_BOX, "noodleSpec", GL_TEXTURE4, 4 );
+    /**/
+    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE2, 2 );
+    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
+    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
+    SceneNode  *noodle = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
+        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    noodle->addTexture( noodleTextureInfo );
+    noodle->addTexture( noodleNormalInfo );
+    noodle->addTexture( noodleSpecularInfo );
+    scene->addNode( noodle );
+    /**/
+    TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE5, 5 );
 
-    quad = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "Bloom" ),
+    SceneNode  *skybox = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "SkyBox" ),
         MatrixFactory::createScaleMatrix4( 3.5f, 3.5f, 3.5f ) );
-    quad->addTexture( noodleTextureInfo );
-    quad->addTexture( noodleNormalInfo );
-    quad->addTexture( noodleSpecularInfo );
-    scene->addNode( quad );
+    skybox->addTexture( skyboxTexture );
+    scene->addNode( skybox );
     /**/
 }
 
@@ -863,7 +791,7 @@ void setupLight(){
     i++;
 
     //Magenta
-    pos = vec3( 4.0f / scale, 0.4f, 4.0f / scale );
+    pos = vec3( 3.0f / scale, 0.4f, 4.0f / scale );
     color = vec3( 50.0f, .0f, 50.0f );
     pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
         color, color, vec3( 0.1f, 0.1f, 0.1f ) );
@@ -921,22 +849,6 @@ void setupLight(){
 void activateLights(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* shader = shaderProgramManager->get( "TFBDraw" );
-
-    shader->use();
-    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
-        pointLights[i].addItself( shader, i );
-    }
-    shader->stop();
-
-    shader = shaderProgramManager->get( "GlowOne" );
-
-    shader->use();
-    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
-        pointLights[i].addItself( shader, i );
-    }
-    shader->stop();
-
-    shader = shaderProgramManager->get( "GlowMapping" );
 
     shader->use();
     for( int i = 0; i < NR_POINT_LIGHTS; i++ ){

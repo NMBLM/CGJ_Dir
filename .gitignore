@@ -148,3 +148,5 @@ Projects/FirstProject/x64/Release/LightSource.obj
 *.doc#
 Projects/FirstProject/x64/Debug/TextureInfo.obj
 Projects/FirstProject/x64/Debug/LightSource.obj
+Projects/FirstProject/x64/Debug/texture.obj.enc
+Projects/FirstProject/x64/Release/TextureInfo.obj

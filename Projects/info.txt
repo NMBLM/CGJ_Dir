@@ -1,0 +1,6 @@
+negx -> left
+negy -> bottom
+negz -> back
+posx -> right
+posy -> top
+posz -> front

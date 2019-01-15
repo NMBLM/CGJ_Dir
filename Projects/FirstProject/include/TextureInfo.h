@@ -21,6 +21,7 @@ namespace engine {
         ~TextureInfo() = default;
 
         void Activate(ShaderProgram* sp);
+        void ActivateForBuffer( );
 
     };
 

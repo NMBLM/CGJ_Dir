@@ -17,4 +17,8 @@ namespace engine {
         glBindTexture( texture->getType(), texture->getId() );
         glUniform1i(sp->UniformId(uniform.c_str()), index);
     }
+    void TextureInfo::ActivateForBuffer( ){
+        glActiveTexture( unit );
+        glBindTexture( texture->getType(), texture->getId() );
+    }
 }

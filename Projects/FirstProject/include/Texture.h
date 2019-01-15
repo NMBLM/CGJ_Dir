@@ -51,10 +51,22 @@ namespace engine {
         std::vector<std::string> textures_faces;
 
         TextureCube();
-        TextureCube( const char* filename,const char* filetype );
+        TextureCube( const char* filename,const char* filetype, bool bigRGB );
+        TextureCube( const char* filename, const char* filetype, bool bigRGB, bool fixed);
         ~TextureCube() = default;
         virtual GLuint getType();
 
+    };
+
+    class BlankTexture: public Texture{
+        /*
+        glActiveTexture(unit);
+        glBindTexture( texture->getType(), texture->getId() );
+        glUniform1i(sp->UniformId(uniform.c_str()), index);
+        */
+        BlankTexture();
+        BlankTexture(int width,int height);
+        virtual GLuint getType();
     };
 }
 #endif // !TEXTURE_H
