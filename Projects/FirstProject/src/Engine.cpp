@@ -536,6 +536,9 @@ void loadTextures() {
     textureCatalog->insert(Texture::NOODLE_MAP_SPECULAR, new Texture("Textures/noodle_specular_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
+
+
+    //TODO create RenderTexture FrameBuffer as the texture
 }
 
 vec4 XX = vec4(1, 0, 0, 1);
