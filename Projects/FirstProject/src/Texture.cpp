@@ -187,9 +187,9 @@ namespace engine{
         return GL_TEXTURE_CUBE_MAP;
     }
 
-    BlankTexture::BlankTexture(){
+    RenderTexture::RenderTexture(){
     }
-    BlankTexture::BlankTexture(int width, int height){
+    RenderTexture::RenderTexture(int width, int height){
         glGenTextures( 1, &textureId );
         glBindTexture( GL_TEXTURE_2D, textureId );
         // set the texture wrapping/filtering options (on the currently bound texture object)
@@ -204,7 +204,7 @@ namespace engine{
         glGenerateMipmap( GL_TEXTURE_2D );
     }
 
-    GLuint BlankTexture::getType(){
+    GLuint RenderTexture::getType(){
         return GL_TEXTURE_2D;
     }
     

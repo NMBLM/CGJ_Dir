@@ -58,14 +58,14 @@ namespace engine {
 
     };
 
-    class BlankTexture: public Texture{
+    class RenderTexture: public Texture{
         /*
         glActiveTexture(unit);
         glBindTexture( texture->getType(), texture->getId() );
         glUniform1i(sp->UniformId(uniform.c_str()), index);
         */
-        BlankTexture();
-        BlankTexture(int width,int height);
+        RenderTexture();
+        RenderTexture(int width,int height);
         virtual GLuint getType();
     };
 }
