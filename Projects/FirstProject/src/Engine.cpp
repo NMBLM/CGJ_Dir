@@ -514,21 +514,23 @@ void renderQuad(){
     glBindVertexArray( 0 );
 }
 /////////////////////////////////////////////////////////////////////// SCENE
-
-void drawScene(){
+bool horizontal = true;
+void renderBasicScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 1. render scene into floating point framebuffer
-    // -----------------------------------------------
     glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
     glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     scene->draw();
     particlesOne->draw();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-    /**/
+
+}
+void blurBrightScene(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 2. blur bright fragments with two-pass Gaussian Blur
-    // --------------------------------------------------
-    bool horizontal = true, first_iteration = true;
+    horizontal = true;
+    bool first_iteration = true;
     unsigned int amount = 10;
     ShaderProgram* blur = shaderProgramManager->get( "Blur" );
     blur->use();
@@ -545,22 +547,101 @@ void drawScene(){
     }
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     blur->stop();
-    /**/
+}
+void drawQuadWithScene(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
-    // --------------------------------------------------------------------------------------------------------------------------
     ShaderProgram* bloomFinal = shaderProgramManager->get( "BloomFinal" );
     bloomFinal->use();
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, colorBuffers[0] );
-    bloomFinal->addUniform( "scene", 0 ); // 3 because GL_TEXTURE3
+    bloomFinal->addUniform( "scene", 0 ); // 0 because GL_TEXTURE0
     glActiveTexture( GL_TEXTURE1 );
     glBindTexture( GL_TEXTURE_2D, pingpongColorbuffers[!horizontal] );
-    bloomFinal->addUniform( "bloomBlur", 1 ); // 4 because GL_TEXTURE4
+    bloomFinal->addUniform( "bloomBlur", 1 ); // 1 because GL_TEXTURE1
 
     renderQuad();
 
     bloomFinal->stop();
+}
+void drawScene(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    //Render Table Reflection
+    // Calculate Table Camera Position
+    // Render scene into floating point framebuffer with table camera
+    // Blur Bright Fragments
+    // Render final scene from camera perspective into a framebuffer
+
+    // Use that framebuffer as texture for table in the next parts.
+    // something like
+    /** /
+    // Need to create new class that is a Texture that goes and grabs from GL_TEXTUREX and not from
+    // a file, goes and grabs from a framebuffer.
+    Catalog<Texture*>::instance()->insert( "TEMP", new TextureCube( "placeholder",".jpg"));
+    TextureInfo* tableRef = new TextureInfo( "reflection", "reflection", GL_TEXTURE10, 10 );
     /**/
+
+    /*
+    HOW TO DRAW INTO FRAMEBUFFER AND MAKE THAT A TEXTURE
+    1. CREATE FRAMEBUFFER
+    1.1 Generate it and bind it so we can attach to it
+        glGenFramebuffers( 1, &bufferId );
+        glBindFramebuffer( GL_FRAMEBUFFER, bufferId );
+    1.2 Generate the Texture
+        glGenTextures( 1, &textureId );
+        glBindTexture( GL_TEXTURE_2D, textureId );
+    1.2.1 define it to be 16F so we can have hdr
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
+    1.2.2 Define its normal parameters
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+    1.3 Attach it to the framebuffer( doesnt mention buffer because it has already been bound) 
+        glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0 );
+    1.4 create depth buffer
+        glGenRenderbuffers( 1, &depthBuffer );
+        glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
+    1.4.1 define its parameters    
+        glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
+    1.4.2 attach it   
+        glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
+    1.5 specify the buffers into which fragment colors or data values will be written
+    // - Tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
+        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
+        glDrawBuffers( 2, attachments );
+    1.6 Finally check if framebuffer is complete
+        if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+            std::cout << "Framebuffer not complete!" << std::endl;
+        glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    2. Draw to framebuffer (each time you want to draw to it do this)
+    2.1 Bind it and clean it
+        glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
+        glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
+        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    2.2 Do Normal draws of what you want it to keep
+        scene->draw();
+        particlesOne->draw();
+    2.3 Unbind it so next draw goes to basic buffer that is used for pc screen
+        glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    3 Now to use the texure on specific shaders
+    3.1 Get the shader
+        Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+        ShaderProgram* relevantShader = shaderProgramManager->get( "Relevant" );
+    3.2 Add the uniform texture to the shader
+        relevantShader->use();
+        glActiveTexture( GL_TEXTUREX ); // use one that isnt being used for anything else and be consistent
+        glBindTexture( GL_TEXTURE_2D, textureId ); // id of the texture you drew into
+        relevantShader->addUniform( "TextureNameInShader", x ); //  x because GL_TEXTUREX
+    4. Draw with that shader normaly
+    */
+    // 1. render scene into floating point framebuffer
+    renderBasicScene();
+    // 2. blur bright fragments with two-pass Gaussian Blur
+    blurBrightScene();
+    // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+    drawQuadWithScene();
+
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -697,6 +778,8 @@ void loadMeshes(){
     meshManager->insert( Mesh::CUBE, meshLoader.createMesh( std::string( "Mesh/Cube.obj" ) ) );
     //meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
     meshManager->insert( Mesh::SPHERE, meshLoader.createMesh( std::string( "Mesh/Sphere.obj" ) ) );
+    meshManager->insert( Mesh::CUBE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/skybox.obj" ) ) );
+    meshManager->insert( Mesh::SPHERE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/sphereSkybox.obj" ) ) );
 }
 
 void loadTextures(){
@@ -708,7 +791,6 @@ void loadTextures(){
     //textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
     //textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
 
-    textureCatalog->insert( Texture::WORLD_CUBE, new TextureCube( "Textures/cubemap/world_", ".png" ) );
     textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/beach_", ".jpg" ) );
 
     //textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
@@ -737,16 +819,14 @@ void createSceneMapping(){
     TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::BEACH_BOX, "noodleSpec", GL_TEXTURE4, 4 );
 
 
-    quad = new SceneNode( meshManager->get( Mesh::CUBE ), shaderProgramManager->get( "Bloom" ),
-        MatrixFactory::createScaleMatrix4( -8.0f, -8.0f, -8.0f ) );
+    quad = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "Bloom" ),
+        MatrixFactory::createScaleMatrix4( 3.5f, 3.5f, 3.5f ) );
     quad->addTexture( noodleTextureInfo );
     quad->addTexture( noodleNormalInfo );
     quad->addTexture( noodleSpecularInfo );
     scene->addNode( quad );
     /**/
 }
-
-
 
 void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
@@ -876,25 +956,13 @@ void activateLights(){
 
 }
 
-
 void setupHDR(){
     // configure floating point framebuffer
-    // ------------------------------------
     glGenFramebuffers( 1, &hdrFBO );
     glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
-    /** /
-    // create floating point color buffer
-    glGenTextures( 1, &colorBuffer );
-    glBindTexture( GL_TEXTURE_2D, colorBuffer );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-
-    // attach buffers
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, colorBuffer, 0 );
-    /**/
+    // create floating point color buffer 2 of them
+    // This is so shaders can output 2 colors, the basic fragment color
+    // and the brightness of that fragment to know if we need to blur or not
     glGenTextures( 2, colorBuffers );
     for( unsigned int i = 0; i < 2; i++ ){
         glBindTexture( GL_TEXTURE_2D, colorBuffers[i] );
@@ -908,20 +976,20 @@ void setupHDR(){
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0 + i, GL_TEXTURE_2D, colorBuffers[i], 0 );
     }
     // create depth buffer (renderbuffer)
+    // for a framebuffer to be complete it needs to have a depth buffer
     glGenRenderbuffers( 1, &rboDepth );
     glBindRenderbuffer( GL_RENDERBUFFER, rboDepth );
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
-
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth );
     unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
     glDrawBuffers( 2, attachments );
 
-    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth );
+    // - Finally check if framebuffer is complete
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
         std::cout << "Framebuffer not complete!" << std::endl;
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     // ping-pong-framebuffer for blurring
-
     glGenFramebuffers( 2, pingpongFBO );
     glGenTextures( 2, pingpongColorbuffers );
     for( unsigned int i = 0; i < 2; i++ ){
@@ -950,7 +1018,6 @@ void init( int argc, char* argv[] ){
 
     setupCamera();
     setupCallbacks();
-
 
     loadMeshes();
     loadTextures();

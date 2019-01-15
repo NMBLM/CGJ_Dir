@@ -40,6 +40,8 @@ namespace engine{
         static constexpr const char* const QUAD = "QUAD";
         static constexpr const char* const CUBE = "CUBE";
         static constexpr const char* const SPHERE = "SPHERE";
+        static constexpr const char* const CUBE_SKYBOX = "CUBE_SKYBOX";
+        static constexpr const char* const SPHERE_SKYBOX = "SPHERE_SKYBOX";
 
         bool TexcoordsLoaded, NormalsLoaded;
         GLuint VaoId;

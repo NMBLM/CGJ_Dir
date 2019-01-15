@@ -93,11 +93,13 @@ void main()
 	// define an output color value
 	vec3 op = vec3(0.0f,0.0f,0.0f);
 	// do the same for all point lights
-	for (int i= 0; i < NR_POINT_LIGHTS; i++){
-		op += someFunctionToCalculatePointLight(pointLights[i]);
-	}
+//	for (int i= 0; i < NR_POINT_LIGHTS; i++){
+//		op += someFunctionToCalculatePointLight(pointLights[i]);
+//	}
 
 	out_color = texture(noodleTex, TexCoords) * vec4(op, 1.0f);
+	out_color = texture(noodleTex, TexCoords) * 1.2f;
+	out_color = texture(noodleTex, TexCoords);
 
 	float brightness = dot(out_color.xyz, vec3(0.2126, 0.7152, 0.0722));
 	if(brightness > 1.0){
