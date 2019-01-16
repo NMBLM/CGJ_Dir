@@ -13,6 +13,7 @@ using namespace engine;
 
 class Camera{
     public:
+    virtual ~Camera () = default;
     static GLuint CamVboId[1];
     
     protected:
@@ -33,12 +34,14 @@ class Camera{
     virtual mat4 ViewMatrix() = 0;
     mat4 ProjectionMatrix();
 
+    void getReflected();
     virtual void ProjectionMatrix( mat4 proj );
-    virtual void cameraLookAround( float x, float y, const float deltatime ) = 0;
-    virtual void cameraMoveRight( const float deltatime ) = 0;
-    virtual void cameraMoveLeft( const float deltatime ) = 0;
-    virtual void cameraMoveForward( const float deltatime ) = 0;
-    virtual void cameraMoveBack( const float deltatime ) = 0;
+    virtual void cameraLookAround( float x, float y, const float deltaTime ) = 0;
+    virtual void cameraMoveRight( const float deltaTime ) = 0;
+    virtual void cameraMoveLeft( const float deltaTime ) = 0;
+    virtual void cameraMoveForward( const float deltaTime ) = 0;
+    virtual void cameraMoveBack( const float deltaTime ) = 0;
+
     void initalizeVbo();
     void setMatrix();
     mat3 rotation(){
@@ -64,7 +67,7 @@ class FixedCamera: public Camera{
     void gimbalLockSwitch();
     virtual mat4 ViewMatrix();
     virtual void cameraLookAround( float x, float y, const float deltatime );
-    virtual void cameraMoveRight( const float deltatime );
+    virtual void cameraMoveRight( const float deltaTime );
     virtual void cameraMoveLeft( const float deltatime );
     virtual void cameraMoveForward( const float deltatime );
     virtual void cameraMoveBack( const float deltatime );
@@ -73,6 +76,8 @@ class FixedCamera: public Camera{
     void zoom( const int dir, const float deltatime );
     //virtual void setMatrix();
 
+    ~FixedCamera () override;
+    void ProjectionMatrix ( mat4 proj ) override;
 };
 
 class FreeCamera: public Camera{

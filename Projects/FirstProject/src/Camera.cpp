@@ -4,8 +4,7 @@ using namespace engine;
 
 GLuint Camera::CamVboId[1];
 
-Camera::Camera() {
-}
+Camera::Camera() = default;
 
 Camera::Camera(const vec3 eye, const vec3 center, const vec3 up) {
     this->eye = eye;
@@ -51,8 +50,7 @@ void Camera::setMatrix() {
 
 // FIXED CAMERA
 
-FixedCamera::FixedCamera() {
-}
+FixedCamera::FixedCamera() = default;
 
 FixedCamera::FixedCamera(const vec3 eye, const vec3 center, const vec3 up) {
     initalizeVbo();
@@ -102,14 +100,14 @@ void FixedCamera::cameraLookAround(float x, float y, const float deltatime) {
 
 }
 
-void FixedCamera::cameraMoveRight(const float deltatime) {
+void FixedCamera::cameraMoveRight(const float deltaTime) {
     qtrn qX, q;
     if (!gLock) {
 
-        qX = qtrn(-3.0f * deltatime * SPEED, vec3(0.0f, 1.0f, 0.0f));
+        qX = qtrn(-3.0f * deltaTime * SPEED, vec3(0.0f, 1.0f, 0.0f));
         qPos = qX * qPos;
     } else {
-        yaw += 3.0f * deltatime * SPEED;
+        yaw += 3.0f * deltaTime * SPEED;
     }
 
 }
@@ -181,6 +179,8 @@ void FixedCamera::zoom(const int dir, const float deltatime) {
     }
 
 }
+
+FixedCamera::~FixedCamera () = default;
 
 
 
