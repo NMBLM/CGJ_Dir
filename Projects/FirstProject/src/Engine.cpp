@@ -53,6 +53,8 @@ int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
 float k = 0.0f;
 bool freecam = false;
+float exposure = 1.0f;
+float gamma = 2.2f;
 
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
@@ -233,7 +235,29 @@ void update(){
         table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 1.0f * delta ) );
         particlesOne->position += vec3( 0.0f, 0.0f, 1.0f * delta );
     }
-
+    float scale = 0.4f;
+    if( KeyBuffer::instance()->isKeyDown( 'k' ) || KeyBuffer::instance()->isKeyDown( 'K' ) ){
+        exposure += delta * scale;
+        std::cout << "Exposure: " << exposure << std::endl;
+    }
+    if( KeyBuffer::instance()->isKeyDown( 'l' ) || KeyBuffer::instance()->isKeyDown( 'L' ) ){
+        if( exposure > 1.0f ){
+            exposure -= delta * scale * 4;
+        } else{
+            exposure -= delta * scale /20;
+        }
+        exposure = ( exposure > 0.0f ) ? exposure : 0.0f;
+        std::cout << "Exposure: " << exposure << std::endl;
+    }
+    if( KeyBuffer::instance()->isKeyDown( 'h' ) || KeyBuffer::instance()->isKeyDown( 'H' ) ){
+        gamma += delta * scale;
+        std::cout << "Gamma: " << gamma << std::endl;
+    }
+    if( KeyBuffer::instance()->isKeyDown( 'j' ) || KeyBuffer::instance()->isKeyDown( 'J' ) ){
+        gamma -= delta * scale;
+        gamma = ( gamma > 0.0f ) ? gamma : 0.0f;
+        std::cout << "Gamma: " << gamma << std::endl;
+    }
 }
 
 
@@ -480,6 +504,8 @@ void drawQuadWithScene(){
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
     ShaderProgram* bloomFinal = shaderProgramManager->get( "BloomFinal" );
     bloomFinal->use();
+    bloomFinal->addUniform( "exposure", exposure );
+    bloomFinal->addUniform( "gamma", gamma );
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, colorBuffers[0] );
     bloomFinal->addUniform( "scene", 0 ); // 0 because GL_TEXTURE0
@@ -522,14 +548,14 @@ void drawScene(){
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    1.3 Attach it to the framebuffer( doesnt mention buffer because it has already been bound) 
+    1.3 Attach it to the framebuffer( doesnt mention buffer because it has already been bound)
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0 );
     1.4 create depth buffer
         glGenRenderbuffers( 1, &depthBuffer );
         glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-    1.4.1 define its parameters    
+    1.4.1 define its parameters
         glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
-    1.4.2 attach it   
+    1.4.2 attach it
         glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
     1.5 specify the buffers into which fragment colors or data values will be written
     // - Tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
@@ -546,7 +572,7 @@ void drawScene(){
         glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
     2.2 Do Normal draws of what you want it to keep
         scene->draw();
-        particlesOne->draw();   
+        particlesOne->draw();
     2.3 Unbind it so next draw goes to basic buffer that is used for pc screen
         glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     3 Now to use the texure on specific shaders
@@ -719,9 +745,9 @@ void loadTextures(){
     //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
     /**/
-    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/urban-skyboxes/Sodermalmsallen2/", ".jpg" , false ,true) );
+    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/urban-skyboxes/Sodermalmsallen2/", ".jpg", false, true ) );
 
-    
+
 }
 
 vec4 YY = vec4( 0, 1, 0, 1 );
@@ -730,7 +756,7 @@ void createSceneMapping(){
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
-    
+
     scene = new Scene( dfault, camera );
 
     //GL_TEXTURE0 is used for hdr
