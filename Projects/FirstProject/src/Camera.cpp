@@ -82,11 +82,11 @@ mat4 FixedCamera::ViewMatrix() {
 }
 
 void FixedCamera::cameraLookAround(float x, float y, const float deltatime) {
-
+    #define RANGE 0.1f
     int sideX = (x >= 0) ? 1 : -1;
     int sideY = (y >= 0) ? 1 : -1;
-    float mulX = (x < 1 && x > -1) ? 0.0f : 1.5f;
-    float mulY = (y < 1 && y > -1) ? 0.0f : 1.5f;
+    float mulX = (x < RANGE && x > -RANGE ) ? 0.0f : 1.5f;
+    float mulY = (y < RANGE && y > -RANGE ) ? 0.0f : 1.5f;
     qtrn qX, qY, qZ, q, qV;
     // GIMBAL LOCK ON
 

@@ -466,7 +466,7 @@ void blurBrightScene(){
     for( unsigned int i = 0; i < amount; i++ ){
         glBindFramebuffer( GL_FRAMEBUFFER, pingpongFBO[horizontal] );
         blur->addUniform( "horizontal", horizontal );
-        glBindTexture( GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[horizontal] );  // bind texture of other framebuffer (or scene if first iteration)
+        glBindTexture( GL_TEXTURE_2D, first_iteration ? colorBuffers[1] : pingpongColorbuffers[!horizontal] );  // bind texture of other framebuffer (or scene if first iteration)
         renderQuad();
         horizontal = !horizontal;
         if( first_iteration )
