@@ -51,18 +51,18 @@ vec3 CalcBumpedNormal(){
 
 vec3 someFunctionToCalculatePointLight(PointLight p){
 
-	vec3 lightPos = vec3( vec4(p.position,1.0f)); //WorldSpace
-	vec3 normal = PassNormal;
-	//normal = CalcBumpedNormal();
+    vec3 lightPos = vec3( vec4(p.position,1.0f)); //WorldSpace
+    vec3 normal = PassNormal;
+    //normal = CalcBumpedNormal();
 
-	//Vertex in WorldSpace
-	vec3 E = normalize(eye - WorldPos);
-	//vec3 N = normalize(eye - vertex);
-	vec3 N = normalize(normal);
-	vec3 L =  lightPos - WorldPos;
-	float dist = length(L);
-	L = normalize(L);
-	float attenuation = 1/(p.constant + p.linear * dist + p.quadratic * pow(dist,2));
+    //Vertex in WorldSpace
+    vec3 E = normalize(eye - WorldPos);
+    //vec3 N = normalize(eye - vertex);
+    vec3 N = normalize(normal);
+    vec3 L =  lightPos - WorldPos;
+    float dist = length(L);
+    L = normalize(L);
+    float attenuation = 1/(p.constant + p.linear * dist + p.quadratic * pow(dist,2));
 
     // diffuse shading
     float diff = max(dot(N, L), 0.0);
@@ -86,14 +86,14 @@ vec3 someFunctionToCalculatePointLight(PointLight p){
 
 void main()
 {	
-	mat4 invView = inverse(ViewMatrix);
-	eye = vec3(invView[3])/invView[3][3]; // world space
-	// define an output color value
-	vec3 op = vec3(0.0f,0.0f,0.0f);
-	// do the same for all point lights
-	for (int i= 0; i < NR_POINT_LIGHTS; i++){
-		op += someFunctionToCalculatePointLight(pointLights[i]);
-	}
+    mat4 invView = inverse(ViewMatrix);
+    eye = vec3(invView[3])/invView[3][3]; // world space
+    // define an output color value
+    vec3 op = vec3(0.0f,0.0f,0.0f);
+    // do the same for all point lights
+    for (int i= 0; i < NR_POINT_LIGHTS; i++){
+        op += someFunctionToCalculatePointLight(pointLights[i]);
+    }
 
-	out_color = texture2D(noodleTex, TexCoord.xy) *vec4(op, 1.0f);
+    out_color = texture2D(noodleTex, TexCoord.xy) *vec4(op, 1.0f);
 }

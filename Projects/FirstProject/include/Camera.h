@@ -23,7 +23,7 @@ class Camera{
     mat4 projection;
     vec3 eye;
     qtrn qPos;
-    const float SPEED = 10.0f;
+    const float SPEED = 20.0f;
     const float vSPEED = 10.0f;
     float lastFrame = 0.0f;
 
@@ -34,7 +34,7 @@ class Camera{
     virtual mat4 ViewMatrix() = 0;
     mat4 ProjectionMatrix();
 
-    void getReflected();
+    //void getReflected();
     virtual void ProjectionMatrix( mat4 proj );
     virtual void cameraLookAround( float x, float y, const float deltaTime ) = 0;
     virtual void cameraMoveRight( const float deltaTime ) = 0;
@@ -77,7 +77,7 @@ class FixedCamera: public Camera{
     //virtual void setMatrix();
 
     ~FixedCamera () override;
-    void ProjectionMatrix ( mat4 proj ) override;
+    //void ProjectionMatrix ( mat4 proj ) override;
 };
 
 class FreeCamera: public Camera{

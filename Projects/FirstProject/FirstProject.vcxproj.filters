@@ -183,6 +183,12 @@
     <None Include="Shaders\skybox_vs.glsl">
       <Filter>Shader Files\Bloom</Filter>
     </None>
+    <None Include="shaders\reflection_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shaders\reflection_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">

@@ -33,7 +33,7 @@ namespace engine {
         static constexpr const char* const NOODLE_MAP_AO = "NOODLE_MAP_AO";
         static constexpr const char* const NOODLE_MAP_DISPLACEMENT = "NOODLE_MAP_DISPLACEMENT";
 
-        static constexpr const char* const REFLECTION_RENDER_TEXTURE= "NOODLE_MAP_DISPLACEMENT";
+        static constexpr const char* const  REFLECTION_RENDER_TEXTURE = "REFLECTION_RENDER_TEXTURE";
 
         Texture();
         Texture(const char* filename);

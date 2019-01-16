@@ -164,6 +164,8 @@
     <None Include="Shaders\particle_fs.glsl" />
     <None Include="Shaders\particle_gs.glsl" />
     <None Include="Shaders\particle_vs.glsl" />
+    <None Include="shaders\reflection_fs.glsl" />
+    <None Include="shaders\reflection_vs.glsl" />
     <None Include="Shaders\skybox_fs.glsl" />
     <None Include="Shaders\skybox_vs.glsl" />
     <None Include="Shaders\texShader_color_fs.glsl" />

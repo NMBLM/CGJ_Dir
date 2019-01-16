@@ -52,8 +52,7 @@ namespace engine{
         return GL_TEXTURE_2D;
     }
 
-    TextureCube::TextureCube(){
-    }
+    TextureCube::TextureCube() = default;
 
     TextureCube::TextureCube( const char* filename, const char* filetype, bool bigRGB, bool fixed ){
         glGenTextures( 1, &textureId );

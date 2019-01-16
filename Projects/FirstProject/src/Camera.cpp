@@ -80,21 +80,21 @@ mat4 FixedCamera::ViewMatrix() {
 }
 
 void FixedCamera::cameraLookAround(float x, float y, const float deltatime) {
-
+    float sensitivity = 0.2f;
     int sideX = (x >= 0) ? 1 : -1;
     int sideY = (y >= 0) ? 1 : -1;
-    float mulX = (x < 1 && x > -1) ? 0.0f : 1.5f;
-    float mulY = (y < 1 && y > -1) ? 0.0f : 1.5f;
+    float mulX = (x < sensitivity && x > -sensitivity ) ? 0.0f : 1.5f;
+    float mulY = (y < sensitivity && y > -sensitivity ) ? 0.0f : 1.5f;
     qtrn qX, qY, qZ, q, qV;
     // GIMBAL LOCK ON
 
     if (gLock) {
-        yaw += sideX * mulX * SPEED * 10.0f * deltatime;
-        pitch += sideY * mulY * SPEED * 10.0f  * deltatime;
+        yaw += sideX * mulX * SPEED * deltatime;
+        pitch += sideY * mulY * SPEED * deltatime;
     } else {
         // GIMBAL LOCK OFF
-        qX = qtrn(-sideX * mulX * SPEED * 10.0f  * deltatime, vec3(0.0f, 1.0f, 0.0f));
-        qY = qtrn(-sideY * mulY * SPEED * 10.0f * deltatime, vec3(1.0f, 0.0f, 0.0f));
+        qX = qtrn(-sideX * mulX * SPEED * deltatime, vec3(0.0f, 1.0f, 0.0f));
+        qY = qtrn(-sideY * mulY * SPEED * deltatime, vec3(1.0f, 0.0f, 0.0f));
         qPos = qX * qY * qPos;
     }
 
