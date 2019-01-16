@@ -65,6 +65,8 @@ unsigned int pingpongColorbuffers[2];
 
 unsigned int rboDepth;
 
+unsigned int reflectionBuffer;
+
 /////////////////////////////////////////////////////////////////////// ERRORS
 
 static std::string errorType( GLenum type ){
@@ -448,8 +450,8 @@ void renderBasicScene(){
     scene->draw();
     particlesOne->draw();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
 }
+
 void blurBrightScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 2. blur bright fragments with two-pass Gaussian Blur
@@ -468,6 +470,7 @@ void blurBrightScene(){
         if( first_iteration )
             first_iteration = false;
     }
+
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     blur->stop();
 }
@@ -486,11 +489,6 @@ void drawQuadWithScene(){
     bloomFinal->stop();
 }
 
-void RenderTextures(){
-
-}
-
-unsigned int reflectionBuffer;
 void createFrameBuffers(){
     Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
 
@@ -577,10 +575,9 @@ void drawScene(){
         relevantShader->addUniform( "TextureNameInShader", x ); //  x because GL_TEXTUREX
     4. Draw with that shader normaly
     */
-    RenderTextures();
     // 1. render scene into floating point framebuffer
     SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
-    
+
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
     blurBrightScene();
@@ -773,7 +770,7 @@ void createSceneMapping(){
     TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
     SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
-                                        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+                                         MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
     noodles->addTexture( noodleTextureInfo );
     noodles->addTexture( noodleNormalInfo );
     scene->addNode( noodles );
