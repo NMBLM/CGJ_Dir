@@ -15,7 +15,7 @@
 #include "GL/glew.h"
 #define SCENE_NODE_MANAGER Catalog<SceneNode*>::instance()
 
-namespace engine{
+namespace engine {
 
     class SceneNode {
         Mesh* mesh = nullptr;
@@ -24,7 +24,7 @@ namespace engine{
         std::vector <SceneNode*> nodes;
         vec4 color = vec4(-1, 0, 0, 1);
         Animator* anime = nullptr;
-        bool enabled;
+        bool enabled {};
         std::vector<TextureInfo*> textures;
 
     public:
@@ -32,14 +32,14 @@ namespace engine{
         static constexpr const char* const NOODLES = "NOODLES";
         static constexpr const char* const TABLE = "TABLE";
         static constexpr const char* const ROOT = "ROOT";
-        static constexpr const char* const SKYBOX = "SKYBOX";
+        static constexpr const char* const SKY_BOX = "SKY_BOX";
         static constexpr const char* const LIGHTS = "LIGHTS";
 
 
         ShaderProgram* shaderProgram = nullptr;
         SceneNode();
-        SceneNode(Mesh* m = nullptr, ShaderProgram* shaders= nullptr, mat4 model = MatrixFactory::createIdentityMatrix4());
-        void draw( mat4 fm);
+        SceneNode(Mesh* m = nullptr, ShaderProgram* shaders = nullptr, mat4 model = MatrixFactory::createIdentityMatrix4());
+        void draw(mat4 fm);
         void updateModel(mat4 trs);
         bool hasShaderProgram();
         ShaderProgram * getShaderProgram();
@@ -64,14 +64,14 @@ namespace engine{
         ShaderProgram* dfault;
         Camera * camera = nullptr;
 
-        public:
-        Scene( ShaderProgram* shaders, Camera* cam );
+    public:
+        Scene(ShaderProgram* shaders, Camera* cam);
         void draw();
-        void addNode( SceneNode* node );
-        void updateModel( mat4 trs );
+        void addNode(SceneNode* node);
+        void updateModel(mat4 trs);
         void actOnAnimator();
-        void update( float deltatime );
-        void setCamera( Camera* cam );
+        void update(float deltatime);
+        void setCamera(Camera* cam);
         void activateReflection(vec4 rp);
         void deactivateReflection();
     };
