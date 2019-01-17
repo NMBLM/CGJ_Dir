@@ -185,6 +185,7 @@
     <None Include="Shaders\VertexShaderCamera.glsl" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FrameBuffer.cpp" />
     <ClCompile Include="src\LightSource.cpp" />
     <ClCompile Include="src\Particle.cpp" />
     <ClCompile Include="src\Anime.cpp" />
@@ -203,6 +204,7 @@
     <ClCompile Include="src\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FrameBuffer.h" />
     <ClInclude Include="include\Anime.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\Catalog.h" />

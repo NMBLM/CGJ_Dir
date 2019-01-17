@@ -5,9 +5,9 @@
 
 
 #include "vector.h"
-#include "matrix.h"
+#include "Matrix.h"
 #include "ShaderProgram.h"
-#include "camera.h"
+#include "Camera.h"
 #include "KeyBuffer.h"
 #include "Mesh.h"
 #include "MeshLoader.h"
@@ -20,6 +20,7 @@
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
+#include "../FrameBuffer.h"
 
 #define CAPTION "CyberNoodles"
 #define NR_NEON_LIGHTS 8
@@ -491,21 +492,6 @@ void drawQuadWithScene(){
     bloomFinal->stop();
 }
 
-void createFrameBuffers(){
-    Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
-
-    //1. CREATE FRAMEBUFFER
-    //1.1 Generate it and bind it so we can attach to it
-    glGenFramebuffers( 1, &reflectionBuffer );
-    glBindFramebuffer( GL_FRAMEBUFFER, reflectionBuffer );
-
-    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureCatalog->get( Texture::REFLECTION_RENDER_TEXTURE )->getId(), 0 );
-
-    //1.6 Finally check if frameBuffer is complete
-    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-        std::cout << "FrameBuffer not complete!" << std::endl;
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-}
 
 void drawScene(){
     //Render Table Reflection
@@ -577,14 +563,16 @@ void drawScene(){
         relevantShader->addUniform( "TextureNameInShader", x ); //  x because GL_TEXTUREX
     4. Draw with that shader normaly
     */
+    
+
     // 1. render scene into floating point framebuffer
-    SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
+    //SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
     scene->activateReflection( reflectionPlane );
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
     blurBrightScene();
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
-    glBindFramebuffer( GL_FRAMEBUFFER, reflectionBuffer );
+    glBindFramebuffer( GL_FRAMEBUFFER, FRAME_BUFFER_MANAGER->get(FrameBuffer::REFLECTION)->getId() );
     drawQuadWithScene();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
@@ -754,6 +742,10 @@ void loadTextures(){
 
 }
 
+void createFrameBuffers(){
+    FRAME_BUFFER_MANAGER->insert(FrameBuffer::REFLECTION, new FrameBuffer( Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D ));
+}
+
 vec4 YY = vec4( 0, 1, 0, 1 );
 vec4 ZZ = vec4( 0, 0, 1, 1 );
 
@@ -776,6 +768,7 @@ void createSceneMapping(){
                                          MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
     noodles->addTexture( noodleTextureInfo );
     noodles->addTexture( noodleNormalInfo );
+    noodles->addTexture( noodleSpecularInfo );
     scene->addNode( noodles );
     sceneNodeManager->insert( SceneNode::NOODLES, noodles );
     /**/
@@ -794,7 +787,7 @@ void createSceneMapping(){
     TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6 );
 
     SceneNode  *skybox = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "SkyBox" ),
-                                        MatrixFactory::createScaleMatrix4( 3.5f, 3.5f, 3.5f ) );
+                                        MatrixFactory::createScaleMatrix4( 5.0f, 5.0f, 5.0f ) );
     skybox->addTexture( skyboxTexture );
     scene->addNode( skybox );
     sceneNodeManager->insert( SceneNode::SKYBOX, skybox );

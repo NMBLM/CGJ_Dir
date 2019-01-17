@@ -46,7 +46,7 @@ public:
     virtual void cameraMoveForward( const float deltaTime ) = 0;
     virtual void cameraMoveBack( const float deltaTime ) = 0;
 
-    void initalizeVbo();
+    void InitalizeVbo();
     void setMatrix();
     mat3 rotation(){
         return qToMatrix( qPos );

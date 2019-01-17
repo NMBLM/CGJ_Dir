@@ -13,7 +13,7 @@ Camera::Camera( const vec3 eye, const vec3 center, const vec3 up ){
     s = v.cross( up );
     s = s * ( 1 / s.length() );  // normalize
     u = s.cross( v ); //is a unit vector only because s and v are perpendicular to each other and are unit vectors |s x v| = |s||v|*sin(angle)
-    initalizeVbo();
+    InitalizeVbo();
     reflectionActive = false;
 }
 
@@ -34,7 +34,7 @@ void Camera::ProjectionMatrix( mat4 proj ){
     projection = proj;
 }
 
-void Camera::initalizeVbo(){
+void Camera::InitalizeVbo(){
 
     glGenBuffers( 1, Camera::CamVboId );
     glBindBuffer( GL_UNIFORM_BUFFER, Camera::CamVboId[0] );
@@ -52,8 +52,8 @@ void Camera::setMatrix(){
     const GLsizeiptr matrixSize = sizeof( GLfloat[16] );
     mat4 viewM;
     if( reflectionActive ){
-        viewM = MatrixFactory::createReflectionMatrix( reflectionPlane ) * ViewMatrix();
-            //* MatrixFactory::createReflectionMatrix( vec4( normalize( vec3( 1, 0, 1 ) ), 0 ) );
+        viewM = MatrixFactory::createReflectionMatrix( reflectionPlane ) * ViewMatrix()
+            * MatrixFactory::createReflectionMatrix( vec4( normalize( vec3( 1, 0, 1 ) ), 0 ) );
     } else{
         viewM = ViewMatrix();
     }
@@ -69,7 +69,7 @@ void Camera::setMatrix(){
 FixedCamera::FixedCamera() = default;
 
 FixedCamera::FixedCamera( const vec3 eye, const vec3 center, const vec3 up ){
-    initalizeVbo();
+    InitalizeVbo();
     qPos = qtrn( 1, 0.0f, 0.0f, 0 );
     this->eye = eye;
 }
@@ -202,7 +202,7 @@ FixedCamera::~FixedCamera() = default;
 
 // FREE CAMERA
 FreeCamera::FreeCamera(){
-    initalizeVbo();
+    InitalizeVbo();
 }
 
 FreeCamera::FreeCamera( const vec3 eye, const vec3 center, const vec3 up ){
@@ -213,7 +213,7 @@ FreeCamera::FreeCamera( const vec3 eye, const vec3 center, const vec3 up ){
     s = v.cross( up );
     s = s * ( 1 / s.length() );  // normalize
     u = s.cross( v ); //is a unit vector only because s and v are perpendicular to each other and are unit vectors |s x v| = |s||v|*sin(angle)
-    initalizeVbo();
+    InitalizeVbo();
 }
 
 mat4 FreeCamera::ViewMatrix(){

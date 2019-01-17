@@ -8,13 +8,11 @@ engine::Scene::Scene( ShaderProgram* shaders, Camera* cam ){
     camera = cam;
 }
 
+// ReSharper disable CppMemberFunctionMayBeConst
 void engine::Scene::draw(){
+    // ReSharper restore CppMemberFunctionMayBeConst
     camera->setMatrix();
     root->draw( MatrixFactory::createIdentityMatrix4() );
-}
-
-void Scene::drawReflection( vec4 reflectionPlane ){
-
 }
 
 void engine::Scene::addNode( SceneNode * node ){
