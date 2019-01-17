@@ -44,6 +44,9 @@ MeshLoader meshLoader;
 
 PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
+
+Scene* deferredScene;
+
 ParticleSystemTransform* particlesOne;
 
 float lastFrame = 0.0f;
@@ -51,9 +54,14 @@ float delta = 0.0f;
 int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
 float k = 0.0f;
+
 bool freecam = false;
+bool deferred = true;
+
 float exposure = 1.0f;
 float gamma = 2.2f;
+
+int mode = 0;
 
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
@@ -172,6 +180,13 @@ void keyRelease( unsigned char key, int x, int y ){
     }
     if( KeyBuffer::instance()->isKeyDown( 'r' ) ) scene->actOnAnimator();
     if( KeyBuffer::instance()->isKeyDown( 'R' ) ) scene->actOnAnimator();
+
+    if( KeyBuffer::instance()->isKeyDown( 'n' ) ) deferred = !deferred;
+    if( KeyBuffer::instance()->isKeyDown( 'N' ) ) deferred = !deferred;
+
+    if( KeyBuffer::instance()->isKeyDown( 'm' ) ) mode = ( mode + 1 ) % 4;
+    if( KeyBuffer::instance()->isKeyDown( 'M' ) ) mode = ( mode + 1 ) % 4;
+
     KeyBuffer::instance()->releaseKey( key );
 
 }
@@ -248,7 +263,6 @@ void update(){
 
 }
 
-
 static bool isOpenGLError(){
     bool isError = false;
     GLenum errCode;
@@ -267,7 +281,6 @@ static void checkOpenGLError( std::string error ){
         exit( EXIT_FAILURE );
     }
 }
-
 
 /////////////////////////////////////////////////////////////////////// SHADERs
 
@@ -426,7 +439,24 @@ void createShaderProgram(){
 void createDeferredShaderProgram(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram *temp;
-    temp = new ShaderProgram();//5
+
+
+    temp = new ShaderProgram();
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/default_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/default_deferred_fs.glsl" );
+
+    temp->bindAttribLocation( VERTICES, "Position" );
+    temp->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    temp->bindAttribLocation( NORMALS, "Normal" );
+
+    temp->link();
+
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredSceneRender", temp );
+
+    temp = new ShaderProgram();
     temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/lightbox_deferred_vs.glsl" );
     temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/lightbox_deferred_fs.glsl" );
 
@@ -439,8 +469,24 @@ void createDeferredShaderProgram(){
     temp->detachShader( "vertex" );
     temp->detachShader( "fragment" );
 
-    shaderProgramManager->insert( "LightBox", temp );
+    shaderProgramManager->insert( "DeferredLightBox", temp );
+
+    temp = new ShaderProgram();//5
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/bloom_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/bloom_deferred_fs.glsl" );
+
+    temp->bindAttribLocation( VERTICES, "Position" );
+    temp->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    temp->bindAttribLocation( NORMALS, "Normal" );
+
+    temp->link();
+
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredBloom", temp );
 }
+
 void destroyShaderProgram(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
 
@@ -463,12 +509,12 @@ void destroyTextures(){
 }
 
 /////////////////////////////////////////////////////////////////////// DEFERRED
-
+unsigned int gBuffer;
+unsigned int gPosition, gNormal, gAlbedoSpec;
 void createGBuffer(){
-    unsigned int gBuffer;
     glGenFramebuffers( 1, &gBuffer );
     glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
-    unsigned int gPosition, gNormal, gAlbedoSpec;
+
 
     // - position color buffer
     glGenTextures( 1, &gPosition );
@@ -578,9 +624,39 @@ void drawQuadWithScene(){
     bloomFinal->stop();
 }
 
-void drawScene1(){
+void drawDeferredScene(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+
+
+    glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
+    glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    deferredScene->draw();
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    ShaderProgram* renderShader = shaderProgramManager->get( "DeferredSceneRender" );
+    renderShader->use();
+
+    renderShader->addUniform( "mode",(float) mode );
+
+    glActiveTexture( GL_TEXTURE10 );
+    glBindTexture( GL_TEXTURE_2D, gPosition );
+    renderShader->addUniform( "gPosition", 10 );
+
+    glActiveTexture( GL_TEXTURE11 );
+    glBindTexture( GL_TEXTURE_2D, gNormal );
+    renderShader->addUniform( "gNormal", 11 );
+
+    glActiveTexture( GL_TEXTURE12 );
+    glBindTexture( GL_TEXTURE_2D, gAlbedoSpec );
+    renderShader->addUniform( "gAlbedoSpec", 12 );
+
+
+    renderQuad();
+    renderShader->stop();
 
 }
+
 void drawScene(){
     // 1. render scene into floating point framebuffer
     /**/
@@ -626,7 +702,11 @@ void cleanup(){
 void display(){
     ++FrameCount;
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    drawScene();
+    if( deferred ){
+        drawDeferredScene();
+    } else{
+        drawScene();
+    }
     glutSwapBuffers();
 }
 
@@ -698,9 +778,9 @@ void setupOpenGL(){
     glDepthMask( GL_TRUE );
     glDepthRange( 0.0, 1.0 );
     glClearDepth( 1.0 );
-    //glEnable( GL_CULL_FACE );
-    //glCullFace( GL_BACK );
-    //glFrontFace( GL_CCW );
+    glEnable( GL_CULL_FACE );
+    glCullFace( GL_BACK );
+    glFrontFace( GL_CCW );
 }
 
 void setupGLEW(){
@@ -778,6 +858,28 @@ void createFrameBuffers(){
 vec4 YY = vec4( 0, 1, 0, 1 );
 vec4 ZZ = vec4( 0, 0, 1, 1 );
 
+void createDeferredScene(){
+    Catalog<SceneNode*>* sceneNodeManager = Catalog<SceneNode*>::instance();
+    Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    ShaderProgram* dfault = shaderProgramManager->get( "default" );
+
+    deferredScene = new Scene( dfault, camera );
+
+    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE2, 2 );
+    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
+    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
+
+    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "DeferredBloom" ),
+        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    noodles->addTexture( noodleTextureInfo );
+    noodles->addTexture( noodleNormalInfo );
+    noodles->addTexture( noodleSpecularInfo );
+    deferredScene->addNode( noodles );
+    sceneNodeManager->insert( "DEFERRED_NOODLES", noodles );
+
+}
+
 void createSceneMapping(){
     Catalog<SceneNode*>* sceneNodeManager = Catalog<SceneNode*>::instance();
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
@@ -852,7 +954,7 @@ void setupLight(){
     vec3 dropoff = vec3( 0.0f, 10.0f, 200.0f );
 
 
-    color = vec3( 186.0f, 85.0f, 211.0f )*(1/ 100.0f);
+    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 100.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
@@ -882,6 +984,14 @@ void activateLights(){
     shader->stop();
 
     shader = shaderProgramManager->get( "Bloom" );
+
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
+
+    shader = shaderProgramManager->get( "DeferredSceneRender" );
 
     shader->use();
     for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
@@ -961,9 +1071,12 @@ void init( int argc, char* argv[] ){
 
     setupHDR();
     createShaderProgram();
+    createDeferredShaderProgram();
     createFrameBuffers();
+    createGBuffer();
 
     createSceneMapping();
+    createDeferredScene();
     createParticleSystem();
 
     setupLight();

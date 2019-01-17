@@ -38,6 +38,8 @@ void main()
 {	
 	gPosition = WorldPos;
 	gNormal = CalcBumpedNormal();
+	//gNormal = PassNormal;
 	gAlbedoSpec.rgb = texture(noodleTex,TexCoord).rgb;
 	gAlbedoSpec.a = texture(noodleSpec,TexCoord).x;
+
 }

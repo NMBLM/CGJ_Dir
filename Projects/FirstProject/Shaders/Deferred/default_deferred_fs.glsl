@@ -23,6 +23,8 @@ uniform PointLight pointLights[NR_POINT_LIGHTS];
 
 uniform vec3 viewPos;
 
+uniform float mode;
+
 void main()
 {             
     // retrieve data from gbuffer
@@ -50,5 +52,16 @@ void main()
         specular *= attenuation;
         lighting += diffuse + specular;        
     }
-    FragColor = vec4(lighting, 1.0);
+	if(mode < 0.9f){
+		FragColor = vec4(lighting, 1.0);
+	}else if(mode > 0.9f && mode < 1.9f){
+		FragColor = vec4(texture(gPosition, TexCoords).rgb,1.0f);
+	}else if(mode > 1.9f && mode < 2.9f){
+		FragColor = vec4(texture(gNormal, TexCoords).rgb,1.0f);
+	}else if(mode > 2.9f && mode < 3.9f){
+		FragColor = texture(gAlbedoSpec, TexCoords).rgba;
+	}
+
+
+
 }
