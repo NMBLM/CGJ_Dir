@@ -183,6 +183,12 @@
     <None Include="Shaders\skybox_vs.glsl">
       <Filter>Shader Files\Bloom</Filter>
     </None>
+    <None Include="shaders\reflection_vs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="shaders\reflection_fs.glsl">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">
@@ -231,6 +237,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\TextureInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -284,6 +293,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\Engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

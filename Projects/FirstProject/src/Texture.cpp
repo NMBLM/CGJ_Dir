@@ -52,8 +52,7 @@ namespace engine{
         return GL_TEXTURE_2D;
     }
 
-    TextureCube::TextureCube(){
-    }
+    TextureCube::TextureCube() = default;
 
     TextureCube::TextureCube( const char* filename, const char* filetype, bool bigRGB, bool fixed ){
         glGenTextures( 1, &textureId );
@@ -187,8 +186,8 @@ namespace engine{
         return GL_TEXTURE_CUBE_MAP;
     }
 
-    RenderTexture::RenderTexture(){
-    }
+    RenderTexture::RenderTexture() = default;
+
     RenderTexture::RenderTexture(int width, int height){
         glGenTextures( 1, &textureId );
         glBindTexture( GL_TEXTURE_2D, textureId );
@@ -200,7 +199,7 @@ namespace engine{
         //generate the texture
         unit++;
         thisUnit = int( unit );
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL );
+        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
         glGenerateMipmap( GL_TEXTURE_2D );
     }
 
@@ -208,5 +207,4 @@ namespace engine{
         return GL_TEXTURE_2D;
     }
     
-
 }

@@ -15,16 +15,13 @@ namespace engine {
 
     class Texture {
 
-        
-
-
     public:
         static unsigned int unit;
-        unsigned int thisUnit;
-        unsigned int textureId;
-        int width;
-        int height;
-        int nrChannels;
+        unsigned int thisUnit{};
+        unsigned int textureId{};
+        int width{};
+        int height{};
+        int nrChannels{};
 
         static constexpr const char* const WOOD = "WOOD";
         static constexpr const char* const WORLD_CUBE = "WORLD_CUBE";
@@ -35,37 +32,43 @@ namespace engine {
         static constexpr const char* const NOODLE_MAP_SPECULAR = "NOODLE_MAP_SPECULAR";
         static constexpr const char* const NOODLE_MAP_AO = "NOODLE_MAP_AO";
         static constexpr const char* const NOODLE_MAP_DISPLACEMENT = "NOODLE_MAP_DISPLACEMENT";
-        
+
+        static constexpr const char* const  REFLECTION_RENDER_TEXTURE = "REFLECTION_RENDER_TEXTURE";
+
         Texture();
         Texture(const char* filename);
+    protected:
         ~Texture() = default;
 
+    public:
         void LoadDefault();
         unsigned int getId();
         virtual GLuint getType();
     };
 
-    class TextureCube: public Texture{
+    class TextureCube : public Texture {
 
     public:
         std::vector<std::string> textures_faces;
 
         TextureCube();
-        TextureCube( const char* filename,const char* filetype, bool bigRGB );
-        TextureCube( const char* filename, const char* filetype, bool bigRGB, bool fixed);
+        TextureCube(const char* filename, const char* filetype, bool bigRGB);
+        TextureCube(const char* filename, const char* filetype, bool bigRGB, bool fixed);
         ~TextureCube() = default;
         virtual GLuint getType();
 
     };
 
-    class RenderTexture: public Texture{
+    class RenderTexture : public Texture {
         /*
         glActiveTexture(unit);
         glBindTexture( texture->getType(), texture->getId() );
         glUniform1i(sp->UniformId(uniform.c_str()), index);
         */
+
+    public:
         RenderTexture();
-        RenderTexture(int width,int height);
+        RenderTexture(int width, int height);
         virtual GLuint getType();
     };
 }

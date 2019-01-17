@@ -5,9 +5,9 @@
 
 
 #include "vector.h"
-#include "matrix.h"
+#include "Matrix.h"
 #include "ShaderProgram.h"
-#include "camera.h"
+#include "Camera.h"
 #include "KeyBuffer.h"
 #include "Mesh.h"
 #include "MeshLoader.h"
@@ -20,6 +20,7 @@
 
 #include "GL/glew.h"
 #include "GL/freeglut.h"
+#include "../FrameBuffer.h"
 
 #define CAPTION "CyberNoodles"
 #define NR_NEON_LIGHTS 8
@@ -38,13 +39,14 @@ const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
 
 FixedCamera* camera;
+FixedCamera* reflectedCamera;
+
 Camera* freeCamera;
 
 MeshLoader meshLoader;
 
 PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
-SceneNode  *table;
 ParticleSystemTransform* particlesOne;
 
 float lastFrame = 0.0f;
@@ -67,6 +69,10 @@ unsigned int pingpongFBO[2];
 unsigned int pingpongColorbuffers[2];
 
 unsigned int rboDepth;
+
+unsigned int reflectionBuffer;
+
+vec4 reflectionPlane;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -106,7 +112,7 @@ static std::string errorSeverity( GLenum severity ){
 }
 
 static void error( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-    const GLchar *message, const void *userParam ){
+                   const GLchar *message, const void *userParam ){
     std::cerr << "ERROR:" << std::endl;
     std::cerr << "  source:     " << errorSource( source ) << std::endl;
     std::cerr << "  type:       " << errorType( type ) << std::endl;
@@ -138,6 +144,8 @@ void mouse_input( int x, int y ){
         freeCamera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
     } else{
         camera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
+        reflectedCamera->cameraLookAround( xoffset * sen, -yoffset * sen, delta );
+
     }
 
 }
@@ -201,6 +209,24 @@ void update(){
 
         if( KeyBuffer::instance()->isKeyDown( 'e' ) ) camera->cameraRollRight( delta );
         if( KeyBuffer::instance()->isKeyDown( 'E' ) ) camera->cameraRollRight( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'd' ) ) reflectedCamera->cameraMoveLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'D' ) ) reflectedCamera->cameraMoveLeft( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'a' ) ) reflectedCamera->cameraMoveRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'A' ) ) reflectedCamera->cameraMoveRight( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'w' ) ) reflectedCamera->cameraMoveBack( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'W' ) ) reflectedCamera->cameraMoveBack( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 's' ) ) reflectedCamera->cameraMoveForward( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'S' ) ) reflectedCamera->cameraMoveForward( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'q' ) ) reflectedCamera->cameraRollLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'Q' ) ) reflectedCamera->cameraRollLeft( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'e' ) ) reflectedCamera->cameraRollRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'E' ) ) reflectedCamera->cameraRollRight( delta );
     }
 
     //FreeCamera
@@ -218,23 +244,6 @@ void update(){
         if( KeyBuffer::instance()->isKeyDown( 'W' ) ) freeCamera->cameraMoveForward( delta );
     }
 
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_LEFT ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( -1.0f * delta, 0.0f, 0.0f ) );
-        particlesOne->position += vec3( -1.0f * delta, 0.0f, 0.0f );
-    }
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_UP ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, -1.0f * delta ) );
-        particlesOne->position += vec3( 0.0f, 0.0f, -1.0f * delta );
-    }
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_RIGHT ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( 1.0f * delta, 0.0f, 0.0f ) );
-        particlesOne->position += vec3( 1.0f * delta, 0.0f, 0.0f );
-
-    }
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_DOWN ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 1.0f * delta ) );
-        particlesOne->position += vec3( 0.0f, 0.0f, 1.0f * delta );
-    }
     float scale = 0.4f;
     if( KeyBuffer::instance()->isKeyDown( 'k' ) || KeyBuffer::instance()->isKeyDown( 'K' ) ){
         exposure += delta * scale;
@@ -258,6 +267,7 @@ void update(){
         gamma = ( gamma > 0.0f ) ? gamma : 0.0f;
         std::cout << "Gamma: " << gamma << std::endl;
     }
+
 }
 
 
@@ -382,7 +392,7 @@ void createShaderProgram(){
     shaderProgramManager->insert( "Blur", prog );
 
 
-
+    //
     prog = new ShaderProgram();//10
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
@@ -398,6 +408,7 @@ void createShaderProgram(){
 
     shaderProgramManager->insert( "Bloom", prog );
 
+    //
     prog = new ShaderProgram();//10
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_final_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_final_fs.glsl" );
@@ -412,6 +423,21 @@ void createShaderProgram(){
     prog->detachShader( "fragment" );
 
     shaderProgramManager->insert( "BloomFinal", prog );
+
+    //Refelction shaders
+    prog = new ShaderProgram();//10
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/reflection_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/reflection_fs.glsl" );
+
+    prog->bindAttribLocation( VERTICES, "Position" );
+    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
+
+    prog->link();
+
+    prog->detachShader( "vertex" );
+    prog->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "ReflectionShader", prog );
 
 
     checkOpenGLError( "ERROR: Could not create shaders." );
@@ -476,8 +502,8 @@ void renderBasicScene(){
     scene->draw();
     particlesOne->draw();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
 }
+
 void blurBrightScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 2. blur bright fragments with two-pass Gaussian Blur
@@ -496,6 +522,7 @@ void blurBrightScene(){
         if( first_iteration )
             first_iteration = false;
     }
+
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     blur->stop();
 }
@@ -515,8 +542,9 @@ void drawQuadWithScene(){
     renderQuad();
     bloomFinal->stop();
 }
+
+
 void drawScene(){
-    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     //Render Table Reflection
     // Calculate Table Camera Position
     // Render scene into floating point framebuffer with table camera
@@ -586,13 +614,33 @@ void drawScene(){
         relevantShader->addUniform( "TextureNameInShader", x ); //  x because GL_TEXTUREX
     4. Draw with that shader normaly
     */
+    
+
     // 1. render scene into floating point framebuffer
+
+    SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
+    scene->activateReflection( reflectionPlane );
+    //reflectedCamera->
+    //scene->setCamera( reflectedCamera );
+
+    renderBasicScene();
+    // 2. blur bright fragments with two-pass Gaussian Blur
+    blurBrightScene();
+    // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
+    glBindFramebuffer( GL_FRAMEBUFFER, FRAME_BUFFER_MANAGER->get(FrameBuffer::REFLECTION)->getId() );
+    drawQuadWithScene();
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    // 1. render scene into floating point framebuffer
+
+    SCENE_NODE_MANAGER->get( SceneNode::TABLE )->enable();
+    scene->deactivateReflection();
+    //scene->setCamera( camera );
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
     blurBrightScene();
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
     drawQuadWithScene();
-
     checkOpenGLError( "ERROR: Could not draw scene." );
 }
 
@@ -715,8 +763,10 @@ void setupGLUT( int argc, char* argv[] ){
 
 void setupCamera(){
     camera = new FixedCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
+    reflectedCamera = new FixedCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
     freeCamera = new FreeCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
     camera->ProjectionMatrix( projectionMatrix );
+    reflectedCamera->ProjectionMatrix( projectionMatrix );
     freeCamera->ProjectionMatrix( projectionMatrix );
 }
 
@@ -726,7 +776,7 @@ void loadMeshes(){
     //meshManager->insert(Mesh::SQUARE, meshLoader.createMesh(std::string("Mesh/Square.obj")));
     //meshManager->insert(Mesh::PARALLELOGRAM, meshLoader.createMesh(std::string("Mesh/Parallelogram.obj")));
     //meshManager->insert(Mesh::TABLE, meshLoader.createMesh(std::string("Mesh/Table.obj")));
-    //meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
+    meshManager->insert( Mesh::QUAD, meshLoader.createMesh( std::string( "Mesh/Quad.obj" ) ) );
     meshManager->insert( Mesh::CUBE, meshLoader.createMesh( std::string( "Mesh/Cube.obj" ) ) );
     meshManager->insert( Mesh::SPHERE, meshLoader.createMesh( std::string( "Mesh/Sphere.obj" ) ) );
     meshManager->insert( Mesh::CUBE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/skybox.obj" ) ) );
@@ -746,13 +796,21 @@ void loadTextures(){
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
     /**/
     textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/urban-skyboxes/Sodermalmsallen2/", ".jpg", false, true ) );
+    
+    textureCatalog->insert( Texture::REFLECTION_RENDER_TEXTURE, new RenderTexture( WinX, WinY ) );
 
 
 }
 
+void createFrameBuffers(){
+    FRAME_BUFFER_MANAGER->insert(FrameBuffer::REFLECTION, new FrameBuffer( Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D ));
+}
+
 vec4 YY = vec4( 0, 1, 0, 1 );
+vec4 ZZ = vec4( 0, 0, 1, 1 );
 
 void createSceneMapping(){
+    Catalog<SceneNode*>* sceneNodeManager = Catalog<SceneNode*>::instance();
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     ShaderProgram* dfault = shaderProgramManager->get( "default" );
@@ -766,19 +824,34 @@ void createSceneMapping(){
     TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
     TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
-    SceneNode  *noodle = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
-        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
-    noodle->addTexture( noodleTextureInfo );
-    noodle->addTexture( noodleNormalInfo );
-    noodle->addTexture( noodleSpecularInfo );
-    scene->addNode( noodle );
+    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
+                                         MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    noodles->addTexture( noodleTextureInfo );
+    noodles->addTexture( noodleNormalInfo );
+    noodles->addTexture( noodleSpecularInfo );
+    scene->addNode( noodles );
+    sceneNodeManager->insert( SceneNode::NOODLES, noodles );
     /**/
-    TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE5, 5 );
+    TextureInfo* reflectionRenderTextureInfo = new TextureInfo( Texture::REFLECTION_RENDER_TEXTURE, "reflection", GL_TEXTURE5, 5 );
+    SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), shaderProgramManager->get( "ReflectionShader" ),
+                                       MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.2f, 0.0f ) ) *
+                                       MatrixFactory::createScaleMatrix4( 2.0f, 0.0f, 2.0f ) *
+                                       MatrixFactory::createRotationMatrix4( 180, YY ) *
+                                       MatrixFactory::createRotationMatrix4( 90, ZZ ) );
+
+    table->addTexture( reflectionRenderTextureInfo );
+    scene->addNode( table );
+    sceneNodeManager->insert( SceneNode::TABLE, table );
+
+    reflectionPlane = vec4(YY, 0);
+    /**/
+    TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6 );
 
     SceneNode  *skybox = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "SkyBox" ),
-        MatrixFactory::createScaleMatrix4( 3.5f, 3.5f, 3.5f ) );
+                                        MatrixFactory::createScaleMatrix4( 5.0f, 5.0f, 5.0f ) );
     skybox->addTexture( skyboxTexture );
     scene->addNode( skybox );
+    sceneNodeManager->insert( SceneNode::SKYBOX, skybox );
     /**/
 }
 
@@ -786,7 +859,7 @@ void createParticleSystem(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
 
     particlesOne = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
-        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
+                                                shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
     particlesOne->InitParticleSystem();
     checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
 
@@ -808,10 +881,10 @@ void setupLight(){
     pos = vec3( -3.0f / scale, 0.4f, 4.0f / scale );
     color = vec3( 0.0f, 50.0f, 50.0f );
     pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
-        color, color, vec3( 0.1f, 0.1f, 0.1f ) );
+                                 color, color, vec3( 0.1f, 0.1f, 0.1f ) );
     //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
     temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
-        MatrixFactory::createTranslationMatrix( pos ) * boxScale );
+                          MatrixFactory::createTranslationMatrix( pos ) * boxScale );
     temp->setColor( vec4( color, 1.0f ) );
     lights->addNode( temp );
     i++;
@@ -820,11 +893,11 @@ void setupLight(){
     pos = vec3( 3.0f / scale, 0.4f, 4.0f / scale );
     color = vec3( 50.0f, .0f, 50.0f );
     pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
-        color, color, vec3( 0.1f, 0.1f, 0.1f ) );
+                                 color, color, vec3( 0.1f, 0.1f, 0.1f ) );
     //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
 
     temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
-        MatrixFactory::createTranslationMatrix( pos ) * boxScale );
+                          MatrixFactory::createTranslationMatrix( pos ) * boxScale );
     temp->setColor( vec4( color, 1.0f ) );
     lights->addNode( temp );
     i++;
@@ -833,11 +906,11 @@ void setupLight(){
     pos = vec3( 0.0f / scale, 0.4f, -5.0f / scale );
     color = vec3( 50.0f, 50.0f, 0.0f );
     pointLights[i] = PointLight( pos, 20.0f, 10.0f, 10.5f,
-        color, color, vec3( 0.1f, 0.1f, 0.1f ) );
+                                 color, color, vec3( 0.1f, 0.1f, 0.1f ) );
     //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
 
     temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
-        MatrixFactory::createTranslationMatrix( pos )* boxScale );
+                          MatrixFactory::createTranslationMatrix( pos )* boxScale );
     temp->setColor( vec4( color, 1.0f ) );
     lights->addNode( temp );
     i++;
@@ -863,7 +936,7 @@ void setupLight(){
     for( int j = i; j < NR_NEON_LIGHTS + 3; j++, i++ ){
         pointLights[j] = PointLight( pos, dropoff, ambient, diffuse, specular );
         temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
-            MatrixFactory::createTranslationMatrix( pos ) * boxScale );
+                              MatrixFactory::createTranslationMatrix( pos ) * boxScale );
         pos.x += offset;
         temp->setColor( vec4( color, 1.0f ) );
         lights->addNode( temp );
@@ -939,9 +1012,9 @@ void setupHDR(){
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE ); // we clamp to the edge as the blur filter would otherwise sample repeated texture values!
         glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, pingpongColorbuffers[i], 0 );
-        // also check if framebuffers are complete (no need for depth buffer)
+        // also check if frameBuffers are complete (no need for depth buffer)
         if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-            std::cout << "Framebuffer not complete!" << std::endl;
+            std::cout << "FrameBuffer not complete!" << std::endl;
     }
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
@@ -962,6 +1035,7 @@ void init( int argc, char* argv[] ){
 
     setupHDR();
     createShaderProgram();
+    createFrameBuffers();
 
     createSceneMapping();
     createParticleSystem();

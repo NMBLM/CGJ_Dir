@@ -13,7 +13,7 @@
 #include "Catalog.h"
 
 #include "GL/glew.h"
-
+#define SCENE_NODE_MANAGER Catalog<SceneNode*>::instance()
 
 namespace engine{
 
@@ -24,10 +24,18 @@ namespace engine{
         std::vector <SceneNode*> nodes;
         vec4 color = vec4(-1, 0, 0, 1);
         Animator* anime = nullptr;
-
+        bool enabled;
         std::vector<TextureInfo*> textures;
 
     public:
+
+        static constexpr const char* const NOODLES = "NOODLES";
+        static constexpr const char* const TABLE = "TABLE";
+        static constexpr const char* const ROOT = "ROOT";
+        static constexpr const char* const SKYBOX = "SKYBOX";
+        static constexpr const char* const LIGHTS = "LIGHTS";
+
+
         ShaderProgram* shaderProgram = nullptr;
         SceneNode();
         SceneNode(Mesh* m = nullptr, ShaderProgram* shaders= nullptr, mat4 model = MatrixFactory::createIdentityMatrix4());
@@ -44,6 +52,10 @@ namespace engine{
         void addTexture(TextureInfo* t);
         Animator* getAnimator();
         void actOnAnimator();
+
+        void enable();
+        void disable();
+        bool isEnabled();
     };
 
 
@@ -60,7 +72,8 @@ namespace engine{
         void actOnAnimator();
         void update( float deltatime );
         void setCamera( Camera* cam );
-
+        void activateReflection(vec4 rp);
+        void deactivateReflection();
     };
 }
 

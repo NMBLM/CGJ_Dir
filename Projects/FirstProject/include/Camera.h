@@ -13,6 +13,7 @@ using namespace engine;
 
 class Camera{
     public:
+    virtual ~Camera () = default;
     static GLuint CamVboId[1];
     
     protected:
@@ -22,24 +23,30 @@ class Camera{
     mat4 projection;
     vec3 eye;
     qtrn qPos;
-    const float SPEED = 10.0f;
+    const float SPEED = 20.0f;
     const float vSPEED = 10.0f;
     float lastFrame = 0.0f;
 
-    public:
+    vec4 reflectionPlane;
+    bool reflectionActive{};
+
+public:
     Camera();
     Camera( const vec3 eye, const vec3 center, const vec3 up );
 
     virtual mat4 ViewMatrix() = 0;
     mat4 ProjectionMatrix();
 
+    void activateReflection(vec4 rp);
+    void deactivateReflection();
     virtual void ProjectionMatrix( mat4 proj );
-    virtual void cameraLookAround( float x, float y, const float deltatime ) = 0;
-    virtual void cameraMoveRight( const float deltatime ) = 0;
-    virtual void cameraMoveLeft( const float deltatime ) = 0;
-    virtual void cameraMoveForward( const float deltatime ) = 0;
-    virtual void cameraMoveBack( const float deltatime ) = 0;
-    void initalizeVbo();
+    virtual void cameraLookAround( float x, float y, const float deltaTime ) = 0;
+    virtual void cameraMoveRight( const float deltaTime ) = 0;
+    virtual void cameraMoveLeft( const float deltaTime ) = 0;
+    virtual void cameraMoveForward( const float deltaTime ) = 0;
+    virtual void cameraMoveBack( const float deltaTime ) = 0;
+
+    void InitalizeVbo();
     void setMatrix();
     mat3 rotation(){
         return qToMatrix( qPos );
@@ -64,7 +71,7 @@ class FixedCamera: public Camera{
     void gimbalLockSwitch();
     virtual mat4 ViewMatrix();
     virtual void cameraLookAround( float x, float y, const float deltatime );
-    virtual void cameraMoveRight( const float deltatime );
+    virtual void cameraMoveRight( const float deltaTime );
     virtual void cameraMoveLeft( const float deltatime );
     virtual void cameraMoveForward( const float deltatime );
     virtual void cameraMoveBack( const float deltatime );
@@ -73,6 +80,8 @@ class FixedCamera: public Camera{
     void zoom( const int dir, const float deltatime );
     //virtual void setMatrix();
 
+    ~FixedCamera () override;
+    //void ProjectionMatrix ( mat4 proj ) override;
 };
 
 class FreeCamera: public Camera{
