@@ -171,6 +171,7 @@ namespace engine{
             const float bottom, const float top,
             const float near, const float far );
         static const mat4 createPerspectiveProjectionMatrix( const float fovY, const float aspect, const float near, const float far );// aspect = width / height
+        static const mat4 createReflectionMatrix(vec4 reflectionPlane );// aspect = width / height
     };
 
 }

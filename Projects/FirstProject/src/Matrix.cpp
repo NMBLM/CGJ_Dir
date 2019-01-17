@@ -632,4 +632,12 @@ namespace engine{
         return res;
     }
 
+    const mat4 MatrixFactory::createReflectionMatrix( vec4 rp ){
+        mat4 res = mat4( 1 - 2 * rp.x * rp.x, -2 * rp.x*rp.y, -2 * rp.x * rp.z, -2 * rp.x * rp.w,
+                         -2 * rp.x * rp.y, 1 - 2 * rp.y * rp.y, -2 * rp.y * rp.z, -2 * rp.y * rp.w,
+                         -2 * rp.x * rp.z, -2 * rp.y * rp.z, 1 - 2 * rp.z * rp.z, -2 * rp.z * rp.w,
+                         0, 0, 0, 1 );
+        res.clean();
+        return res;
+    }
 }

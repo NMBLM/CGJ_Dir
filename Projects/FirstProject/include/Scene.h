@@ -67,12 +67,15 @@ namespace engine{
         public:
         Scene( ShaderProgram* shaders, Camera* cam );
         void draw();
+        void drawReflection(vec4 reflectionPlane);
         void addNode( SceneNode* node );
         void updateModel( mat4 trs );
         void actOnAnimator();
         void update( float deltatime );
         void setCamera( Camera* cam );
-
+        void activateReflection(vec4 rp);
+        void activateReflection(vec4* vec4);
+        void deactivateReflection();
     };
 }
 

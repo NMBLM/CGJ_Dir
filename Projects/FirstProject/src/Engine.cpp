@@ -28,7 +28,7 @@
 
 using namespace engine;
 
-int WinX = 1920, WinY = 1080;
+int WinX = 1080, WinY = 1080;
 int lastWinX = WinX, lastWinY = WinY;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
@@ -66,6 +66,8 @@ unsigned int pingpongColorbuffers[2];
 unsigned int rboDepth;
 
 unsigned int reflectionBuffer;
+
+vec4 reflectionPlane;
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -577,7 +579,7 @@ void drawScene(){
     */
     // 1. render scene into floating point framebuffer
     SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
-
+    scene->activateReflection( reflectionPlane );
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
     blurBrightScene();
@@ -587,6 +589,7 @@ void drawScene(){
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     SCENE_NODE_MANAGER->get( SceneNode::TABLE )->enable();
+    scene->deactivateReflection();
     // 1. render scene into floating point framebuffer
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
@@ -778,13 +781,15 @@ void createSceneMapping(){
     /**/
     TextureInfo* reflectionRenderTextureInfo = new TextureInfo( Texture::REFLECTION_RENDER_TEXTURE, "reflection", GL_TEXTURE5, 5 );
     SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), shaderProgramManager->get( "ReflectionShader" ),
-                                       MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.2f, 0.0f ) ) *
+                                       //MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.2f, 0.0f ) ) *
                                        MatrixFactory::createScaleMatrix4( 2.0f, 0.0f, 2.0f ) *
                                        MatrixFactory::createRotationMatrix4( 90, ZZ ) );
 
     table->addTexture( reflectionRenderTextureInfo );
     scene->addNode( table );
     sceneNodeManager->insert( SceneNode::TABLE, table );
+
+    reflectionPlane = vec4(YY, 0);
     /**/
     TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6 );
 

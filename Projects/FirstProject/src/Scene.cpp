@@ -13,6 +13,10 @@ void engine::Scene::draw(){
     root->draw( MatrixFactory::createIdentityMatrix4() );
 }
 
+void Scene::drawReflection( vec4 reflectionPlane ){
+
+}
+
 void engine::Scene::addNode( SceneNode * node ){
     root->addNode( node );
 }
@@ -31,6 +35,14 @@ void engine::Scene::update( float deltatime ){
 
 void engine::Scene::setCamera( Camera * cam ){
     camera = cam;
+}
+
+void Scene::activateReflection( const vec4 rp ){
+    camera->activateReflection( rp );
+}
+
+void Scene::deactivateReflection(){
+    camera->deactivateReflection();
 }
 
 engine::SceneNode::SceneNode(){

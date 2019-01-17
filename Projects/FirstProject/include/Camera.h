@@ -27,14 +27,18 @@ class Camera{
     const float vSPEED = 10.0f;
     float lastFrame = 0.0f;
 
-    public:
+    vec4 reflectionPlane;
+    bool reflectionActive{};
+
+public:
     Camera();
     Camera( const vec3 eye, const vec3 center, const vec3 up );
 
     virtual mat4 ViewMatrix() = 0;
     mat4 ProjectionMatrix();
 
-    //void getReflected();
+    void activateReflection(vec4 rp);
+    void deactivateReflection();
     virtual void ProjectionMatrix( mat4 proj );
     virtual void cameraLookAround( float x, float y, const float deltaTime ) = 0;
     virtual void cameraMoveRight( const float deltaTime ) = 0;
