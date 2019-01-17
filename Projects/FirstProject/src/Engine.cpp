@@ -780,6 +780,7 @@ void loadMeshes(){
     meshManager->insert( Mesh::SPHERE, meshLoader.createMesh( std::string( "Mesh/Sphere.obj" ) ) );
     meshManager->insert( Mesh::CUBE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/skybox.obj" ) ) );
     meshManager->insert( Mesh::SPHERE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/sphereSkybox.obj" ) ) );
+    meshManager->insert( Mesh::NOODLES, meshLoader.createMesh( std::string( "mesh/Noodles.obj" ) ) );
 }
 
 void loadTextures(){
@@ -822,8 +823,8 @@ void createSceneMapping(){
     TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
     TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
-    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
-                                         MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::NOODLES ), shaderProgramManager->get( "Bloom" ),
+                                         MatrixFactory::createScaleMatrix4( 1.0f, 1.0f, 1.0f ) );
     noodles->addTexture( noodleTextureInfo );
     noodles->addTexture( noodleNormalInfo );
     noodles->addTexture( noodleSpecularInfo );
@@ -832,7 +833,7 @@ void createSceneMapping(){
     /**/
     TextureInfo* reflectionRenderTextureInfo = new TextureInfo( Texture::REFLECTION_RENDER_TEXTURE, "reflection", GL_TEXTURE5, 5 );
     SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), shaderProgramManager->get( "ReflectionShader" ),
-                                       MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.2f, 0.0f ) ) *
+                                       MatrixFactory::createTranslationMatrix( vec3( 0.0f, -1.0f, 0.0f ) ) *
                                        MatrixFactory::createScaleMatrix4( 2.0f, 0.0f, 2.0f ) *
                                        MatrixFactory::createRotationMatrix4( 180, YY ) *
                                        MatrixFactory::createRotationMatrix4( 90, ZZ ) );
