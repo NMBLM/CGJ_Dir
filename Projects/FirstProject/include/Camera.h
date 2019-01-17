@@ -75,6 +75,7 @@ class FixedCamera: public Camera{
     virtual void cameraMoveLeft( const float deltatime );
     virtual void cameraMoveForward( const float deltatime );
     virtual void cameraMoveBack( const float deltatime );
+    void switchToFace( int i );
     void cameraRollRight( const float deltatime );
     void cameraRollLeft( const float deltatime );
     void zoom( const int dir, const float deltatime );

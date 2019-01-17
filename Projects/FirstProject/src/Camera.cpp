@@ -164,6 +164,33 @@ void FixedCamera::cameraMoveBack( const float deltatime ){
 
 }
 
+void FixedCamera::switchToFace( int i ){
+    qtrn qMul;
+    switch( i ){
+        case 0:
+        {
+            qMul = qtrn( 1, 0.0f, 0.0f, 0 );
+        }
+        case 1:
+        {
+            qMul = qtrn( 180, vec3( 0, 1, 0 ) );
+        }case 2:
+        {
+            qMul = qtrn( 90, vec3( 1, 0, 0 ) );
+        }case 3:
+        {
+            qMul = qtrn( -90, vec3( 1, 0, 0 ) );
+        }case 4:
+        {
+            qMul = qtrn( 90, vec3( 0, 1, 0 ) );
+        }case 5:
+        {
+            qMul = qtrn( -90, vec3( 0, 1, 0 ) );
+        }
+        qPos = qMul * qtrn( 1, 0.0f, 0.0f, 0 );
+    }
+}
+
 void FixedCamera::cameraRollRight( const float deltatime ){
     qtrn qZ, q;
     if( gLock ){
