@@ -55,7 +55,7 @@ vec3 someFunctionToCalculatePointLight(PointLight p){
 
     vec3 lightPos = vec3( vec4(p.position,1.0f)); //WorldSpace
     vec3 normal = PassNormal;
-    //normal = CalcBumpedNormal();
+    normal = CalcBumpedNormal();
 
     //Vertex in WorldSpace
     vec3 E = normalize(eye - WorldPos);

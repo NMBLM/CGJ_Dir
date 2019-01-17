@@ -20,7 +20,7 @@ uniform float rnd1;
 uniform float rnd2;
 uniform float rnd3;
 
-#define LIFE 0.5f
+#define LIFE 0.7f
 #define TIMER 0.01f
 #define VELOCITY vec3(0.0f,1.0f,0.0f)
 #define SCALE 3.0f
