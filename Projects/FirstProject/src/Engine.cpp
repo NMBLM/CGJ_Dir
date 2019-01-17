@@ -53,6 +53,8 @@ int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
 float k = 0.0f;
 bool freecam = false;
+float exposure = 1.0f;
+float gamma = 2.2f;
 
 mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
 mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
@@ -218,6 +220,47 @@ void update(){
 
         if( KeyBuffer::instance()->isKeyDown( 'w' ) ) freeCamera->cameraMoveForward( delta );
         if( KeyBuffer::instance()->isKeyDown( 'W' ) ) freeCamera->cameraMoveForward( delta );
+    }
+
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_LEFT ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( -1.0f * delta, 0.0f, 0.0f ) );
+        particlesOne->position += vec3( -1.0f * delta, 0.0f, 0.0f );
+    }
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_UP ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, -1.0f * delta ) );
+        particlesOne->position += vec3( 0.0f, 0.0f, -1.0f * delta );
+    }
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_RIGHT ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( 1.0f * delta, 0.0f, 0.0f ) );
+        particlesOne->position += vec3( 1.0f * delta, 0.0f, 0.0f );
+
+    }
+    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_DOWN ) ){
+        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 1.0f * delta ) );
+        particlesOne->position += vec3( 0.0f, 0.0f, 1.0f * delta );
+    }
+    float scale = 0.4f;
+    if( KeyBuffer::instance()->isKeyDown( 'k' ) || KeyBuffer::instance()->isKeyDown( 'K' ) ){
+        exposure += delta * scale;
+        std::cout << "Exposure: " << exposure << std::endl;
+    }
+    if( KeyBuffer::instance()->isKeyDown( 'l' ) || KeyBuffer::instance()->isKeyDown( 'L' ) ){
+        if( exposure > 1.0f ){
+            exposure -= delta * scale * 4;
+        } else{
+            exposure -= delta * scale /20;
+        }
+        exposure = ( exposure > 0.0f ) ? exposure : 0.0f;
+        std::cout << "Exposure: " << exposure << std::endl;
+    }
+    if( KeyBuffer::instance()->isKeyDown( 'h' ) || KeyBuffer::instance()->isKeyDown( 'H' ) ){
+        gamma += delta * scale;
+        std::cout << "Gamma: " << gamma << std::endl;
+    }
+    if( KeyBuffer::instance()->isKeyDown( 'j' ) || KeyBuffer::instance()->isKeyDown( 'J' ) ){
+        gamma -= delta * scale;
+        gamma = ( gamma > 0.0f ) ? gamma : 0.0f;
+        std::cout << "Gamma: " << gamma << std::endl;
     }
 }
 
@@ -416,9 +459,10 @@ void destroyTextures(){
 
 }
 
+
+/////////////////////////////////////////////////////////////////////// SCENE
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-
 void renderQuad(){
     if( quadVAO == 0 ){
         float quadVertices[] = {
@@ -443,7 +487,6 @@ void renderQuad(){
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
     glBindVertexArray( 0 );
 }
-/////////////////////////////////////////////////////////////////////// SCENE
 void renderBasicScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 1. render scene into floating point framebuffer
@@ -482,6 +525,8 @@ void drawQuadWithScene(){
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
     ShaderProgram* bloomFinal = shaderProgramManager->get( "BloomFinal" );
     bloomFinal->use();
+    bloomFinal->addUniform( "exposure", exposure );
+    bloomFinal->addUniform( "gamma", gamma );
     glActiveTexture( GL_TEXTURE0 );
     glBindTexture( GL_TEXTURE_2D, colorBuffers[0] );
     bloomFinal->addUniform( "scene", 0 ); // 0 because GL_TEXTURE0
@@ -744,6 +789,7 @@ void loadTextures(){
 
 void createFrameBuffers(){
     FRAME_BUFFER_MANAGER->insert(FrameBuffer::REFLECTION, new FrameBuffer( Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D ));
+
 }
 
 vec4 YY = vec4( 0, 1, 0, 1 );
