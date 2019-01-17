@@ -95,13 +95,13 @@ mat4 FixedCamera::ViewMatrix(){
     }
 }
 
+
 void FixedCamera::cameraLookAround( float x, float y, const float deltatime ){
     float sensitivity = 0.2f;
     int sideX = ( x >= 0 ) ? 1 : -1;
     int sideY = ( y >= 0 ) ? 1 : -1;
     float mulX = ( x < sensitivity && x > -sensitivity ) ? 0.0f : 1.5f;
     float mulY = ( y < sensitivity && y > -sensitivity ) ? 0.0f : 1.5f;
-
     qtrn qX, qY, qZ, q, qV;
     // GIMBAL LOCK ON
 

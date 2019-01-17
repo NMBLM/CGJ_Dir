@@ -29,7 +29,7 @@
 
 using namespace engine;
 
-int WinX = 1080, WinY = 1080;
+int WinX = 640, WinY = 640;
 int lastWinX = WinX, lastWinY = WinY;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;
@@ -39,6 +39,8 @@ const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
 
 FixedCamera* camera;
+FixedCamera* reflectedCamera;
+
 Camera* freeCamera;
 
 MeshLoader meshLoader;
@@ -142,6 +144,8 @@ void mouse_input( int x, int y ){
         freeCamera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
     } else{
         camera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
+        reflectedCamera->cameraLookAround( xoffset * sen, -yoffset * sen, delta );
+
     }
 
 }
@@ -205,6 +209,24 @@ void update(){
 
         if( KeyBuffer::instance()->isKeyDown( 'e' ) ) camera->cameraRollRight( delta );
         if( KeyBuffer::instance()->isKeyDown( 'E' ) ) camera->cameraRollRight( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'd' ) ) reflectedCamera->cameraMoveLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'D' ) ) reflectedCamera->cameraMoveLeft( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'a' ) ) reflectedCamera->cameraMoveRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'A' ) ) reflectedCamera->cameraMoveRight( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'w' ) ) reflectedCamera->cameraMoveBack( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'W' ) ) reflectedCamera->cameraMoveBack( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 's' ) ) reflectedCamera->cameraMoveForward( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'S' ) ) reflectedCamera->cameraMoveForward( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'q' ) ) reflectedCamera->cameraRollLeft( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'Q' ) ) reflectedCamera->cameraRollLeft( delta );
+
+        if( KeyBuffer::instance()->isKeyDown( 'e' ) ) reflectedCamera->cameraRollRight( delta );
+        if( KeyBuffer::instance()->isKeyDown( 'E' ) ) reflectedCamera->cameraRollRight( delta );
     }
 
     //FreeCamera
@@ -222,23 +244,6 @@ void update(){
         if( KeyBuffer::instance()->isKeyDown( 'W' ) ) freeCamera->cameraMoveForward( delta );
     }
 
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_LEFT ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( -1.0f * delta, 0.0f, 0.0f ) );
-        particlesOne->position += vec3( -1.0f * delta, 0.0f, 0.0f );
-    }
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_UP ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, -1.0f * delta ) );
-        particlesOne->position += vec3( 0.0f, 0.0f, -1.0f * delta );
-    }
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_RIGHT ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( 1.0f * delta, 0.0f, 0.0f ) );
-        particlesOne->position += vec3( 1.0f * delta, 0.0f, 0.0f );
-
-    }
-    if( KeyBuffer::instance()->isSpecialKeyDown( GLUT_KEY_DOWN ) ){
-        table->updateModel( MatrixFactory::createTranslationMatrix( 0.0f, 0.0f, 1.0f * delta ) );
-        particlesOne->position += vec3( 0.0f, 0.0f, 1.0f * delta );
-    }
     float scale = 0.4f;
     if( KeyBuffer::instance()->isKeyDown( 'k' ) || KeyBuffer::instance()->isKeyDown( 'K' ) ){
         exposure += delta * scale;
@@ -611,8 +616,12 @@ void drawScene(){
     
 
     // 1. render scene into floating point framebuffer
-    //SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
+
+    SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
     scene->activateReflection( reflectionPlane );
+    //reflectedCamera->
+    //scene->setCamera( reflectedCamera );
+
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
     blurBrightScene();
@@ -621,9 +630,11 @@ void drawScene(){
     drawQuadWithScene();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
+    // 1. render scene into floating point framebuffer
+
     SCENE_NODE_MANAGER->get( SceneNode::TABLE )->enable();
     scene->deactivateReflection();
-    // 1. render scene into floating point framebuffer
+    //scene->setCamera( camera );
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
     blurBrightScene();
@@ -751,8 +762,10 @@ void setupGLUT( int argc, char* argv[] ){
 
 void setupCamera(){
     camera = new FixedCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
+    reflectedCamera = new FixedCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
     freeCamera = new FreeCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
     camera->ProjectionMatrix( projectionMatrix );
+    reflectedCamera->ProjectionMatrix( projectionMatrix );
     freeCamera->ProjectionMatrix( projectionMatrix );
 }
 
@@ -789,7 +802,6 @@ void loadTextures(){
 
 void createFrameBuffers(){
     FRAME_BUFFER_MANAGER->insert(FrameBuffer::REFLECTION, new FrameBuffer( Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D ));
-
 }
 
 vec4 YY = vec4( 0, 1, 0, 1 );
@@ -820,8 +832,9 @@ void createSceneMapping(){
     /**/
     TextureInfo* reflectionRenderTextureInfo = new TextureInfo( Texture::REFLECTION_RENDER_TEXTURE, "reflection", GL_TEXTURE5, 5 );
     SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), shaderProgramManager->get( "ReflectionShader" ),
-                                       //MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.2f, 0.0f ) ) *
+                                       MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.2f, 0.0f ) ) *
                                        MatrixFactory::createScaleMatrix4( 2.0f, 0.0f, 2.0f ) *
+                                       MatrixFactory::createRotationMatrix4( 180, YY ) *
                                        MatrixFactory::createRotationMatrix4( 90, ZZ ) );
 
     table->addTexture( reflectionRenderTextureInfo );
