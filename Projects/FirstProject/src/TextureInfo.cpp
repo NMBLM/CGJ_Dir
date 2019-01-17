@@ -21,4 +21,15 @@ namespace engine {
         glActiveTexture( unit );
         glBindTexture( texture->getType(), texture->getId() );
     }
+
+    /*
+    1.disable table
+    2.alter camera position
+    3.draw the scene except last quad
+    4.activate the framebuffer
+    5.draw the quad with a specific shader
+    6.enable the table
+    7.return camera to original position
+    8.draw the scene in its entirety
+    */
 }

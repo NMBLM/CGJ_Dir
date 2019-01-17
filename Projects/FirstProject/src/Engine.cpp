@@ -439,9 +439,10 @@ void destroyTextures(){
 
 }
 
+
+/////////////////////////////////////////////////////////////////////// SCENE
 unsigned int quadVAO = 0;
 unsigned int quadVBO;
-
 void renderQuad(){
     if( quadVAO == 0 ){
         float quadVertices[] = {
@@ -466,7 +467,6 @@ void renderQuad(){
     glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
     glBindVertexArray( 0 );
 }
-/////////////////////////////////////////////////////////////////////// SCENE
 void renderBasicScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 1. render scene into floating point framebuffer
