@@ -243,6 +243,9 @@
     <None Include="Shaders\ssao_blur_fs.glsl">
       <Filter>Shader Files\SSAO</Filter>
     </None>
+    <None Include="Shaders\ssao_lighting_fs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Anime.cpp">

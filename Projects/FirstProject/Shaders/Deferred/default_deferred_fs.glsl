@@ -36,8 +36,7 @@ void main()
     // then calculate lighting as usual
     vec3 lighting  = Diffuse * 0.1; // hard-coded ambient component
     vec3 viewDir  = normalize(viewPos - FragPos);
-    for(int i = 0; i < NR_POINT_LIGHTS; ++i)
-    {
+    for(int i = 0; i < NR_POINT_LIGHTS; ++i){
         // diffuse
         vec3 lightDir = normalize(pointLights[i].position - FragPos);
         vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * pointLights[i].diffuse;

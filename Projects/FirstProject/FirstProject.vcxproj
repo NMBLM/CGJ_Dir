@@ -181,6 +181,7 @@
     <None Include="Shaders\skybox_vs.glsl" />
     <None Include="Shaders\ssao_blur_fs.glsl" />
     <None Include="Shaders\ssao_fs.glsl" />
+    <None Include="Shaders\ssao_lighting_fs.glsl" />
     <None Include="Shaders\ssao_test_fs.glsl" />
     <None Include="Shaders\ssao_vs.glsl" />
     <None Include="Shaders\texShader_color_fs.glsl" />

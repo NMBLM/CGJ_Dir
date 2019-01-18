@@ -552,6 +552,20 @@ void createDeferredShaderProgram() {
     temp->detachShader("fragment");
 
     shaderProgramManager->insert("SSAO_BLUR", temp);
+
+    //
+    temp = new ShaderProgram();//8
+    temp->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/ssao_lighting_fs.glsl");
+    temp->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/default_deferred_vs.glsl");
+
+    temp->bindAttribLocation(TEXCOORDS, "TexCoord");
+
+    temp->link();
+
+    temp->detachShader("vertex");
+    temp->detachShader("fragment");
+
+    shaderProgramManager->insert("SSAO_LIGHTING", temp);
 }
 
 void destroyShaderProgram() {
@@ -783,31 +797,55 @@ void drawDeferredScene() {
     ssaoBlurShader->addUniform("ssaoInput", 16);
     renderQuad();
     ssaoBlurShader->stop();
+
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
+    ////LIGHTPASS
+    ShaderProgram* ssaoLighting = shaderProgramManager->get("SSAO_LIGHTING");
+    ssaoLighting->use();
 
-    //LIGHTPASS
+    glActiveTexture(GL_TEXTURE20);
+    glBindTexture(GL_TEXTURE_2D, gPosition);
+    ssaoLighting->addUniform("gPosition", 20);
 
-
-    //RENDER QUAD
-    ShaderProgram* ssaoShader_test = shaderProgramManager->get("SSAO_test");
-    ssaoShader_test->use();
-
-
-    glActiveTexture(GL_TEXTURE15);
-    glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-    ssaoShader_test->addUniform("gSSAO", 15);
-
-    glActiveTexture(GL_TEXTURE14);
+    glActiveTexture(GL_TEXTURE21);
+    glBindTexture(GL_TEXTURE_2D, gNormal);
+    ssaoLighting->addUniform("gNormal", 21);
+    
+    glActiveTexture(GL_TEXTURE22);
+    glBindTexture(GL_TEXTURE_2D, gAlbedoSpec);
+    ssaoLighting->addUniform("gAlbedoSpec", 22);
+    
+    glActiveTexture(GL_TEXTURE23);
     glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-    ssaoShader_test->addUniform("gSSAOBlur", 14);
+    ssaoLighting->addUniform("ssao", 23);
 
+    //Add lights uniform
 
-    ssaoShader_test->addUniform("mode",(float) mode);
+    //ssaoLighting->addUniform();
+    ssaoLighting->addUniform("mode", (float)mode);
 
     renderQuad();
 
-    ssaoShader_test->stop();
+    ssaoLighting->stop();
+
+
+    ////RENDER QUAD
+    //ShaderProgram* ssaoShader_test = shaderProgramManager->get("SSAO_test");
+    //ssaoShader_test->use();
+
+
+    //glActiveTexture(GL_TEXTURE15);
+    //glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+    //ssaoShader_test->addUniform("gSSAO", 15);
+
+    //glActiveTexture(GL_TEXTURE14);
+    //glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+    //ssaoShader_test->addUniform("gSSAOBlur", 14);
+
+
+    //ssaoShader_test->addUniform("mode",(float) mode);
+
 
 }
 
@@ -986,7 +1024,7 @@ void loadMeshes() {
     meshManager->insert(Mesh::SPHERE, meshLoader.createMesh(std::string("Mesh/Sphere.obj")));
     meshManager->insert(Mesh::CUBE_SKYBOX, meshLoader.createMesh(std::string("Mesh/skybox.obj")));
     meshManager->insert(Mesh::SPHERE_SKYBOX, meshLoader.createMesh(std::string("Mesh/sphereSkybox.obj")));
-    //meshManager->insert(Mesh::NOODLES, meshLoader.createMesh(std::string("Mesh/Noodles1.obj")));
+    meshManager->insert(Mesh::NOODLES, meshLoader.createMesh(std::string("Mesh/Noodles_mesh.obj")));
 }
 
 void loadTextures() {
@@ -1050,7 +1088,7 @@ void createDeferredScene() {
     TextureInfo* noodleNormalInfo = new TextureInfo(Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3);
     TextureInfo* noodleSpecularInfo = new TextureInfo(Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4);
 
-    SceneNode  *noodles = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("DeferredBloom"),
+    SceneNode  *noodles = new SceneNode(meshManager->get(Mesh::NOODLES), shaderProgramManager->get("DeferredBloom"),
                                         MatrixFactory::createScaleMatrix4(0.2f, 0.2f, 0.2f));
     noodles->addTexture(noodleTextureInfo);
     noodles->addTexture(noodleNormalInfo);
@@ -1080,8 +1118,8 @@ void createSceneMapping() {
     TextureInfo* noodleNormalInfo = new TextureInfo(Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3);
     TextureInfo* noodleSpecularInfo = new TextureInfo(Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4);
 
-    SceneNode  *noodles = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("Bloom"),
-                                        MatrixFactory::createScaleMatrix4(0.2f, 0.2f, 0.2f));
+    SceneNode  *noodles = new SceneNode(meshManager->get(Mesh::NOODLES), shaderProgramManager->get("Bloom"));
+                                        //MatrixFactory::createScaleMatrix4(0.2f, 0.2f, 0.2f));
     noodles->addTexture(noodleTextureInfo);
     noodles->addTexture(noodleNormalInfo);
     noodles->addTexture(noodleSpecularInfo);
