@@ -42,6 +42,7 @@ namespace engine{
         static constexpr const char* const SPHERE = "SPHERE";
         static constexpr const char* const CUBE_SKYBOX = "CUBE_SKYBOX";
         static constexpr const char* const SPHERE_SKYBOX = "SPHERE_SKYBOX";
+        static constexpr const char* const NOODLES = "NOODLES";
 
         bool TexcoordsLoaded, NormalsLoaded;
         GLuint VaoId;

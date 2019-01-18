@@ -22,7 +22,10 @@ class Camera{
     vec3 u;
     mat4 projection;
     vec3 eye;
+    
     qtrn qPos;
+ 
+
     const float SPEED = 20.0f;
     const float vSPEED = 5.0f;
     float lastFrame = 0.0f;

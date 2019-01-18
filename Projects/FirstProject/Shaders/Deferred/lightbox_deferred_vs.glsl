@@ -17,7 +17,7 @@ out vec3 WorldPos;
 
 
 void main(void){
-    mat4 normalMatrix = transpose(inverse(ModelMatrix));
+    mat4 normalMatrix = transpose(inverse(ViewMatrix * ModelMatrix));
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(inPosition,1.0f);
     TexCoords = inTexcoord;
     PassNormal = (normalMatrix * vec4(inNormal, 0.0)).xyz;

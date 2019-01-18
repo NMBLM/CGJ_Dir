@@ -18,7 +18,7 @@ uniform samplerCube skybox;
 
 void main()
 {	
-	gPosition = vec4(WorldPos,1.0f);
+	gPosition = ViewMatrix * vec4(WorldPos,1.0f);
 	gNormal = vec4(normalize(PassNormal),1.0f);
 	gAlbedoSpec.rgb = texture(skybox,TexCoord).rgb;
 	gAlbedoSpec.a = texture(skybox,TexCoord).x;

@@ -6,8 +6,8 @@ layout (triangle_strip, max_vertices = 4) out;
 
 uniform SharedMatrices
 {
-	mat4 ViewMatrix;
-	mat4 ProjectionMatrix;
+    mat4 ViewMatrix;
+    mat4 ProjectionMatrix;
 };
 
 out vec3 vertex;
@@ -17,35 +17,39 @@ out vec2 texCoord;
 #define POINT 0.008f
 void build_quad(vec4 pos)
 {    
-	
-	mat4 mvp = ProjectionMatrix * ViewMatrix;
-	mat4 ModelMatrix = mat4(1);
-	// place eye in model space slash world space(because model matrix is the identity matrix),
-	// so this is to bring eye from eye space slash view space;
-	mat4 invView = inverse(ViewMatrix * ModelMatrix);
-	vec3 eye = vec3(invView[3])/invView[3][3]; // world space
-	vec3 E = normalize(eye - pos.xyz);
-	vec3 Worldup = vec3(0,1,0);
-	vec3 side = normalize(cross(E,Worldup)) ;
-	vec3 up = normalize(cross(side,E)) ;
+    
+    mat4 mvp = ProjectionMatrix * ViewMatrix;
+    mat4 ModelMatrix = mat4(1);
+    // place eye in model space slash world space(because model matrix is the identity matrix),
+    // so this is to bring eye from eye space slash view space;
+    mat4 invView = inverse(ViewMatrix * ModelMatrix);
+    vec3 eye = vec3(invView[3])/invView[3][3]; // world space
+    vec3 E = normalize(eye - pos.xyz);
+    vec3 Worldup = vec3(0,1,0);
+    vec3 side = normalize(cross(E,Worldup)) ;
+    vec3 up = normalize(cross(side,E)) ;
 
-	//normal = normalize(vec3(mvp* vec4(E,1.0f)));
-	normal = E;
-	vertex = pos.xyz + side* POINT - up* POINT;
+    //normal = normalize(vec3(mvp* vec4(E,1.0f)));
+    normal = vec3(ViewMatrix * vec4(E,1.0f));
+    vertex = pos.xyz + side* POINT - up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-right
-	texCoord = vec2(1,0);
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
+    texCoord = vec2(1,0);
     EmitVertex();   
-	vertex = pos.xyz - side* POINT - up* POINT;
+    vertex = pos.xyz - side* POINT - up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 2:bottom-left
-	texCoord = vec2(0,0);
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
+    texCoord = vec2(0,0);
     EmitVertex();
-	vertex = pos.xyz + side* POINT + up* POINT;
+    vertex = pos.xyz + side* POINT + up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 3:top-right
-	texCoord = vec2(1,1);
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
+    texCoord = vec2(1,1);
     EmitVertex();
-	vertex = pos.xyz - side* POINT + up* POINT;
+    vertex = pos.xyz - side* POINT + up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 4:top-left
-	texCoord = vec2(0,1);
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
+    texCoord = vec2(0,1);
     EmitVertex();
     EndPrimitive();
 }
@@ -53,6 +57,6 @@ void build_quad(vec4 pos)
 
 void main() {
 
-	build_quad(gl_in[0].gl_Position);
+    build_quad(gl_in[0].gl_Position);
 
 }  

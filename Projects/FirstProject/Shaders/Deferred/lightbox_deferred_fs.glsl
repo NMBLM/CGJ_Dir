@@ -9,9 +9,15 @@ in vec3 WorldPos;
 
 uniform vec4 forcedColor;
 
+uniform SharedMatrices
+{
+    mat4 ViewMatrix;
+    mat4 ProjectionMatrix;
+};
+
 void main()
 {           
-	gPosition = vec4(WorldPos,1.0f);
+	gPosition = ViewMatrix * vec4(WorldPos,1.0f);
 	gNormal = vec4(normalize(PassNormal),1.0f);
 	gAlbedoSpec.rgb = forcedColor.rgb;
 	gAlbedoSpec.a = forcedColor.x;

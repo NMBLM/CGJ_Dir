@@ -9,7 +9,6 @@ uniform SharedMatrices
 	mat4 ProjectionMatrix;
 };
 
-void main(void)
-{
+void main(void){
 	gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(inPosition,1.0f);
 }
