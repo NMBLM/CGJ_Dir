@@ -710,7 +710,7 @@ void loadMeshes() {
     meshManager->insert( Mesh::SPHERE, meshLoader.createMesh( std::string( "Mesh/Sphere.obj" ) ) );
     meshManager->insert( Mesh::CUBE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/skybox.obj" ) ) );
     meshManager->insert( Mesh::SPHERE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/sphereSkybox.obj" ) ) );
-    meshManager->insert( Mesh::NOODLES, meshLoader.createMesh( std::string( "mesh/Noodles.obj" ) ) );
+    meshManager->insert( Mesh::NOODLES, meshLoader.createMesh( std::string( "Mesh/Noodles.obj" ) ) );
 }
 
 void loadTextures() {
@@ -738,68 +738,68 @@ unsigned int gPosition, gNormal, gAlbedo;
 void createFrameBuffers() {
     FRAME_BUFFER_MANAGER->insert(FrameBuffer::REFLECTION, new FrameBuffer(Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D));
 
-    glGenFramebuffers(1, &gBuffer);
-    glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-    // position color buffer
-    glGenTextures(1, &gPosition);
-    glBindTexture(GL_TEXTURE_2D, gPosition);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-    // normal color buffer
-    glGenTextures(1, &gNormal);
-    glBindTexture(GL_TEXTURE_2D, gNormal);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-    // color + specular color buffer
-    glGenTextures(1, &gAlbedo);
-    glBindTexture(GL_TEXTURE_2D, gAlbedo);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WinX, WinY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
-    // tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers(3, attachments);
-    // create and attach depth buffer (renderbuffer)
-    glGenRenderbuffers(1, &rboDepth);
-    glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-    // finally check if framebuffer is complete
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "Framebuffer not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //glGenFramebuffers(1, &gBuffer);
+    //glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
+    //// position color buffer
+    //glGenTextures(1, &gPosition);
+    //glBindTexture(GL_TEXTURE_2D, gPosition);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
+    //// normal color buffer
+    //glGenTextures(1, &gNormal);
+    //glBindTexture(GL_TEXTURE_2D, gNormal);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
+    //// color + specular color buffer
+    //glGenTextures(1, &gAlbedo);
+    //glBindTexture(GL_TEXTURE_2D, gAlbedo);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WinX, WinY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
+    //// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+    //unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    //glDrawBuffers(3, attachments);
+    //// create and attach depth buffer (renderbuffer)
+    //glGenRenderbuffers(1, &rboDepth);
+    //glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
+    //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY);
+    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
+    //// finally check if framebuffer is complete
+    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    //    std::cout << "Framebuffer not complete!" << std::endl;
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    // also create framebuffer to hold SSAO processing stage 
-    // -----------------------------------------------------
-    glGenFramebuffers(1, &ssaoFBO);  glGenFramebuffers(1, &ssaoBlurFBO);
-    glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-    // SSAO color buffer
-    glGenTextures(1, &ssaoColorBuffer);
-    glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "SSAO Framebuffer not complete!" << std::endl;
-    // and blur stage
-    glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-    glGenTextures(1, &ssaoColorBufferBlur);
-    glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
-    if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    //// also create framebuffer to hold SSAO processing stage 
+    //// -----------------------------------------------------
+    //glGenFramebuffers(1, &ssaoFBO);  glGenFramebuffers(1, &ssaoBlurFBO);
+    //glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
+    //// SSAO color buffer
+    //glGenTextures(1, &ssaoColorBuffer);
+    //glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
+    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    //    std::cout << "SSAO Framebuffer not complete!" << std::endl;
+    //// and blur stage
+    //glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
+    //glGenTextures(1, &ssaoColorBufferBlur);
+    //glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
+    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
+    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+    //    std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
+    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
 vec4 YY = vec4(0, 1, 0, 1);
@@ -820,9 +820,9 @@ void createSceneMapping() {
     TextureInfo* noodleNormalInfo = new TextureInfo(Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3);
     TextureInfo* noodleSpecularInfo = new TextureInfo(Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4);
 
-    SceneNode  *noodles = new SceneNode(meshManager->get(Mesh::NOODLES), shaderProgramManager->get("Bloom"),
-                                        MatrixFactory::createTranslationMatrix(vec3(0.0f, 0.2f, 0.0f))*
-                                        MatrixFactory::createScaleMatrix4(0.2f, 0.2f, 0.2f));
+    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::NOODLES ), shaderProgramManager->get( "Bloom" ),
+                                         MatrixFactory::createTranslationMatrix( vec3( 0.0f, 0.0f, 0.0f )));
+                                        //MatrixFactory::createScaleMatrix4(0.2f, 0.2f, 0.2f));
     noodles->addTexture(noodleTextureInfo);
     noodles->addTexture(noodleNormalInfo);
     noodles->addTexture(noodleSpecularInfo);
@@ -1031,7 +1031,7 @@ void setUpSSAO (){
         float scale = float(i) / 64.0;
 
         // scale samples s.t. they're more aligned to center of kernel
-        scale = lerp(0.1f, 1.0f, scale * scale);
+        //scale = lerp(0.1f, 1.0f, scale * scale);
         sample *= scale;
         ssaoKernel.push_back(sample);
     }
@@ -1060,12 +1060,12 @@ void init(int argc, char* argv[]) {
     setupCamera();
     setupCallbacks();
 
-    loadMeshes();
     loadTextures();
+    loadMeshes();
 
     setupHDR();
     createShaderProgram();
-    //createFrameBuffers();
+    createFrameBuffers();
 
     setUpSSAO();
     createSceneMapping();
