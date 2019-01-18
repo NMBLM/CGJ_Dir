@@ -27,7 +27,7 @@ class Camera{
  
 
     const float SPEED = 20.0f;
-    const float vSPEED = 10.0f;
+    const float vSPEED = 5.0f;
     float lastFrame = 0.0f;
 
     vec4 reflectionPlane;
@@ -78,6 +78,7 @@ class FixedCamera: public Camera{
     virtual void cameraMoveLeft( const float deltatime );
     virtual void cameraMoveForward( const float deltatime );
     virtual void cameraMoveBack( const float deltatime );
+    void switchToFace( int i );
     void cameraRollRight( const float deltatime );
     void cameraRollLeft( const float deltatime );
     void zoom( const int dir, const float deltatime );

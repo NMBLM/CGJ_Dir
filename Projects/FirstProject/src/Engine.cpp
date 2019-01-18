@@ -24,8 +24,7 @@
 #include <random>
 
 #define CAPTION "CyberNoodles"
-#define NR_NEON_LIGHTS 8
-#define NR_POINT_LIGHTS 3 + NR_NEON_LIGHTS
+#define NR_POINT_LIGHTS 11
 
 
 using namespace engine;
@@ -40,27 +39,34 @@ const GLuint UBO_BP = 0;
 const float PI = 3.14159265f;
 
 FixedCamera* camera;
-FixedCamera* reflectedCamera;
-
 Camera* freeCamera;
 
 MeshLoader meshLoader;
 
 PointLight pointLights[NR_POINT_LIGHTS];
 Scene* scene;
+
+Scene* deferredScene;
+
 ParticleSystemTransform* particlesOne;
+ParticleSystemTransform* deferredParticles;
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
 int lastMouseY = WinX / 2;
 int lastMouseX = WinY / 2;
 float k = 0.0f;
+
 bool freecam = false;
+bool deferred = true;
+
 float exposure = 1.0f;
 float gamma = 2.2f;
 
-mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(90, (float)WinX / (float)WinY, 0.5f, 30);
-mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 30);
+int mode = 0;
+
+mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix( 30, ( float )WinX / ( float )WinY, 1, 30 );
+mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix( -2, 2, -2, 2, 1, 30 );
 
 unsigned int hdrFBO;
 unsigned int colorBuffers[2];
@@ -112,8 +118,8 @@ static std::string errorSeverity(GLenum severity) {
     }
 }
 
-static void error(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
-                  const GLchar *message, const void *userParam) {
+static void error( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length,
+    const GLchar *message, const void *userParam ){
     std::cerr << "ERROR:" << std::endl;
     std::cerr << "  source:     " << errorSource(source) << std::endl;
     std::cerr << "  type:       " << errorType(type) << std::endl;
@@ -141,12 +147,10 @@ void mouse_input(int x, int y) {
     lastMouseX = x;
     lastMouseY = y;
     float sen = 0.25f;
-    if (freecam) {
-        freeCamera->cameraLookAround(xoffset * sen, yoffset * sen, delta);
-    } else {
-        camera->cameraLookAround(xoffset * sen, yoffset * sen, delta);
-        reflectedCamera->cameraLookAround(xoffset * sen, -yoffset * sen, delta);
-
+    if( freecam ){
+        freeCamera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
+    } else{
+        camera->cameraLookAround( xoffset * sen, yoffset * sen, delta );
     }
 
 }
@@ -176,9 +180,16 @@ void keyRelease(unsigned char key, int x, int y) {
         }
         freecam = !freecam;
     }
-    if (KeyBuffer::instance()->isKeyDown('r')) scene->actOnAnimator();
-    if (KeyBuffer::instance()->isKeyDown('R')) scene->actOnAnimator();
-    KeyBuffer::instance()->releaseKey(key);
+    if( KeyBuffer::instance()->isKeyDown( 'r' ) ) scene->actOnAnimator();
+    if( KeyBuffer::instance()->isKeyDown( 'R' ) ) scene->actOnAnimator();
+
+    if( KeyBuffer::instance()->isKeyDown( 'n' ) ) deferred = !deferred;
+    if( KeyBuffer::instance()->isKeyDown( 'N' ) ) deferred = !deferred;
+
+    if( KeyBuffer::instance()->isKeyDown( 'm' ) ) mode = ( mode + 1 ) % 4;
+    if( KeyBuffer::instance()->isKeyDown( 'M' ) ) mode = ( mode + 1 ) % 4;
+
+    KeyBuffer::instance()->releaseKey( key );
 
 }
 
@@ -211,23 +222,6 @@ void update() {
         if (KeyBuffer::instance()->isKeyDown('e')) camera->cameraRollRight(delta);
         if (KeyBuffer::instance()->isKeyDown('E')) camera->cameraRollRight(delta);
 
-        if (KeyBuffer::instance()->isKeyDown('d')) reflectedCamera->cameraMoveLeft(delta);
-        if (KeyBuffer::instance()->isKeyDown('D')) reflectedCamera->cameraMoveLeft(delta);
-
-        if (KeyBuffer::instance()->isKeyDown('a')) reflectedCamera->cameraMoveRight(delta);
-        if (KeyBuffer::instance()->isKeyDown('A')) reflectedCamera->cameraMoveRight(delta);
-
-        if (KeyBuffer::instance()->isKeyDown('w')) reflectedCamera->cameraMoveBack(delta);
-        if (KeyBuffer::instance()->isKeyDown('W')) reflectedCamera->cameraMoveBack(delta);
-
-        if (KeyBuffer::instance()->isKeyDown('s')) reflectedCamera->cameraMoveForward(delta);
-        if (KeyBuffer::instance()->isKeyDown('S')) reflectedCamera->cameraMoveForward(delta);
-
-        if (KeyBuffer::instance()->isKeyDown('q')) reflectedCamera->cameraRollLeft(delta);
-        if (KeyBuffer::instance()->isKeyDown('Q')) reflectedCamera->cameraRollLeft(delta);
-
-        if (KeyBuffer::instance()->isKeyDown('e')) reflectedCamera->cameraRollRight(delta);
-        if (KeyBuffer::instance()->isKeyDown('E')) reflectedCamera->cameraRollRight(delta);
     }
 
     //FreeCamera
@@ -253,7 +247,7 @@ void update() {
     if (KeyBuffer::instance()->isKeyDown('l') || KeyBuffer::instance()->isKeyDown('L')) {
         if (exposure > 1.0f) {
             exposure -= delta * scale * 4;
-        } else {
+        } else{
             exposure -= delta * scale / 20;
         }
         exposure = (exposure > 0.0f) ? exposure : 0.0f;
@@ -270,8 +264,7 @@ void update() {
     }
 }
 
-
-static bool isOpenGLError() {
+static bool isOpenGLError(){
     bool isError = false;
     GLenum errCode;
     const GLubyte *errString;
@@ -289,7 +282,6 @@ static void checkOpenGLError(std::string error) {
         exit(EXIT_FAILURE);
     }
 }
-
 
 /////////////////////////////////////////////////////////////////////// SHADERs
 
@@ -347,9 +339,9 @@ void createShaderProgram() {
     checkOpenGLError("ERROR: Could not create Transform shaders.");
 
     //SkyBox
-    prog = new ShaderProgram();//8
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/skybox_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/skybox_fs.glsl");
+    prog = new ShaderProgram();//4
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/skybox_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/skybox_fs.glsl" );
 
     prog->bindAttribLocation(VERTICES, "Position");
 
@@ -364,6 +356,9 @@ void createShaderProgram() {
     prog = new ShaderProgram();//8
     prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/lightbox_vs.glsl");
     prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/lightbox_fs.glsl");
+    prog = new ShaderProgram();//5
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/lightbox_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/lightbox_fs.glsl" );
 
     prog->bindAttribLocation(VERTICES, "Position");
     prog->bindAttribLocation(TEXCOORDS, "Texcoord");
@@ -377,9 +372,9 @@ void createShaderProgram() {
     shaderProgramManager->insert("LightBox", prog);
 
     //Blur Bloom(hdr aswell)
-    prog = new ShaderProgram();//9
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/blur_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/blur_fs.glsl");
+    prog = new ShaderProgram();//6
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/blur_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/blur_fs.glsl" );
 
     prog->bindAttribLocation(VERTICES, "Position");
     prog->bindAttribLocation(TEXCOORDS, "Texcoord");
@@ -393,9 +388,9 @@ void createShaderProgram() {
 
 
     //
-    prog = new ShaderProgram();//10
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/bloom_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl");
+    prog = new ShaderProgram();//7
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
 
     prog->bindAttribLocation(VERTICES, "Position");
     prog->bindAttribLocation(TEXCOORDS, "Texcoord");
@@ -409,9 +404,9 @@ void createShaderProgram() {
     shaderProgramManager->insert("Bloom", prog);
 
     //
-    prog = new ShaderProgram();//10
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/bloom_final_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_final_fs.glsl");
+    prog = new ShaderProgram();//8
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_final_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_final_fs.glsl" );
 
     prog->bindAttribLocation(VERTICES, "Position");
     prog->bindAttribLocation(TEXCOORDS, "Texcoord");
@@ -425,12 +420,13 @@ void createShaderProgram() {
     shaderProgramManager->insert("BloomFinal", prog);
 
     //Refelction shaders
-    prog = new ShaderProgram();//10
-    prog->attachShader(GL_VERTEX_SHADER, "vertex", "Shaders/reflection_vs.glsl");
-    prog->attachShader(GL_FRAGMENT_SHADER, "fragment", "Shaders/reflection_fs.glsl");
+    prog = new ShaderProgram();//9
+    prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/reflection_vs.glsl" );
+    prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/reflection_fs.glsl" );
 
-    prog->bindAttribLocation(VERTICES, "Position");
-    prog->bindAttribLocation(TEXCOORDS, "Texcoord");
+    prog->bindAttribLocation( VERTICES, "Position" );
+    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    prog->bindAttribLocation( NORMALS, "Normal" );
 
     prog->link();
 
@@ -444,7 +440,72 @@ void createShaderProgram() {
 
 }
 
-void destroyShaderProgram() {
+void createDeferredShaderProgram(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    ShaderProgram *temp;
+
+
+    temp = new ShaderProgram();// Calculates Light
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/default_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/default_deferred_fs.glsl" );
+
+    temp->bindAttribLocation( VERTICES, "Position" );
+    temp->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    temp->bindAttribLocation( NORMALS, "Normal" );
+
+    temp->link();
+
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredSceneRender", temp );
+
+    temp = new ShaderProgram();// Generates the lightboxes that represent where the lights are
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/lightbox_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/lightbox_deferred_fs.glsl" );
+
+    temp->bindAttribLocation( VERTICES, "Position" );
+    temp->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    temp->bindAttribLocation( NORMALS, "Normal" );
+
+    temp->link();
+
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredLightBox", temp );
+
+    temp = new ShaderProgram();// For the noodles
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/bloom_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/bloom_deferred_fs.glsl" );
+
+    temp->bindAttribLocation( VERTICES, "Position" );
+    temp->bindAttribLocation( TEXCOORDS, "Texcoord" );
+    temp->bindAttribLocation( NORMALS, "Normal" );
+
+    temp->link();
+
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredBloom", temp );
+
+    temp = new ShaderProgram();// for the particles
+    temp->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/Deferred/tfb_billboard_deferred_gs.glsl" );
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/tfb_billboard_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/tfb_billboard_deferred_fs.glsl" );
+
+    temp->link();
+
+    temp->detachShader( "geometry" );
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredTFBDraw", temp );
+
+}
+
+void destroyShaderProgram(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
 
     glUseProgram(0);
@@ -465,6 +526,54 @@ void destroyTextures() {
 
 }
 
+/////////////////////////////////////////////////////////////////////// DEFERRED
+unsigned int gBuffer,gDepthBuffer;
+unsigned int gPosition, gNormal, gAlbedoSpec;
+
+void createGBuffer(){
+    glGenFramebuffers( 1, &gBuffer );
+    glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
+
+
+    // - position color buffer
+    glGenTextures( 1, &gPosition );
+    glBindTexture( GL_TEXTURE_2D, gPosition );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0 );
+
+    // - normal color buffer
+    glGenTextures( 1, &gNormal );
+    glBindTexture( GL_TEXTURE_2D, gNormal );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0 );
+
+    // - color + specular color buffer
+    glGenTextures( 1, &gAlbedoSpec );
+    glBindTexture( GL_TEXTURE_2D, gAlbedoSpec );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA, WinX, WinY, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0 );
+
+
+    glGenRenderbuffers( 1, &gDepthBuffer );
+    glBindRenderbuffer( GL_RENDERBUFFER, gDepthBuffer );
+    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, gDepthBuffer );
+
+    // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
+    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
+    glDrawBuffers( 3, attachments );
+
+    // - Finally check if framebuffer is complete
+    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+        std::cout << "Framebuffer not complete!" << std::endl;
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+}
 
 /////////////////////////////////////////////////////////////////////// SCENE
 unsigned int quadVAO = 0;
@@ -493,7 +602,8 @@ void renderQuad() {
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     glBindVertexArray(0);
 }
-void renderBasicScene() {
+
+void renderBasicScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 1. render scene into floating point framebuffer
     glBindFramebuffer(GL_FRAMEBUFFER, hdrFBO);
@@ -526,7 +636,8 @@ void blurBrightScene() {
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
     blur->stop();
 }
-void drawQuadWithScene() {
+
+void drawQuadWithScene(){
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
     ShaderProgram* bloomFinal = shaderProgramManager->get("BloomFinal");
@@ -543,27 +654,67 @@ void drawQuadWithScene() {
     bloomFinal->stop();
 }
 
+void drawDeferredScene(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
 
-void drawScene() {
-    //1. fisrt render fill G-buffer
 
+    glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
+    glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    deferredScene->draw();
+    deferredParticles->draw();
+
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    ShaderProgram* renderShader = shaderProgramManager->get( "DeferredSceneRender" );
+    renderShader->use();
+
+    renderShader->addUniform( "mode",(float) mode );
+
+    glActiveTexture( GL_TEXTURE10 );
+    glBindTexture( GL_TEXTURE_2D, gPosition );
+    renderShader->addUniform( "gPosition", 10 );
+
+    glActiveTexture( GL_TEXTURE11 );
+    glBindTexture( GL_TEXTURE_2D, gNormal );
+    renderShader->addUniform( "gNormal", 11 );
+
+    glActiveTexture( GL_TEXTURE12 );
+    glBindTexture( GL_TEXTURE_2D, gAlbedoSpec );
+    renderShader->addUniform( "gAlbedoSpec", 12 );
+
+
+    renderQuad();
+    renderShader->stop();
+
+}
+
+void drawScene(){
     // 1. render scene into floating point framebuffer
-
-    SCENE_NODE_MANAGER->get(SceneNode::TABLE)->disable();
-    //scene->activateReflection(reflectionPlane);
-    scene->updateModel(MatrixFactory::createScaleMatrix4(1.0f, -1.0f, 1.0f));
+    /**/
+    scene->updateModel( MatrixFactory::createScaleMatrix4( 1.0f, -1.0f, 1.0f ) );
+    glEnable( GL_CULL_FACE );
+    glCullFace( GL_FRONT );
+    glFrontFace( GL_CCW );
+    SCENE_NODE_MANAGER->get( SceneNode::TABLE )->disable();
+    //scene->activateReflection( reflectionPlane );
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
     blurBrightScene();
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
-    glBindFramebuffer(GL_FRAMEBUFFER, FRAME_BUFFER_MANAGER->get(FrameBuffer::REFLECTION)->getId());
+    glBindFramebuffer( GL_FRAMEBUFFER, FRAME_BUFFER_MANAGER->get( FrameBuffer::REFLECTION )->getId() );
+    glCullFace( GL_BACK );
     drawQuadWithScene();
-    glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+    /**/
+    //renderTextures();
     // 1. render scene into floating point framebuffer
 
-    SCENE_NODE_MANAGER->get(SceneNode::TABLE)->enable();
-    scene->updateModel(MatrixFactory::createScaleMatrix4(1.0f, -1.0f, 1.0f));
+    SCENE_NODE_MANAGER->get( SceneNode::TABLE )->enable();
+    scene->updateModel( MatrixFactory::createScaleMatrix4( 1.0f, -1.0f, 1.0f ) );
+    glCullFace( GL_BACK );
+    glFrontFace( GL_CCW );
     //scene->deactivateReflection();
     renderBasicScene();
     // 2. blur bright fragments with two-pass Gaussian Blur
@@ -583,18 +734,24 @@ void cleanup() {
 
 void display() {
     ++FrameCount;
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    drawScene();
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    if( deferred ){
+        drawDeferredScene();
+    } else{
+        drawScene();
+    }
     glutSwapBuffers();
 }
 
 void idle() {
     update();
-    float currentFrame = (float)glutGet(GLUT_ELAPSED_TIME);
-    delta = ((float)currentFrame - (float)lastFrame) / 100;
-    lastFrame = (float)currentFrame;
-    scene->update(delta);
-    particlesOne->update(delta);
+    float currentFrame = ( float )glutGet( GLUT_ELAPSED_TIME );
+    delta = ( ( float )currentFrame - ( float )lastFrame ) / 100;
+    lastFrame = ( float )currentFrame;
+    scene->update( delta );
+    particlesOne->update( delta );
+    deferredParticles->update( delta );
+
     glutPostRedisplay();
 }
 
@@ -690,13 +847,11 @@ void setupGLUT(int argc, char* argv[]) {
     }
 }
 
-void setupCamera() {
-    camera = new FixedCamera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
-    reflectedCamera = new FixedCamera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
-    freeCamera = new FreeCamera(vec3(0, 0, 5), vec3(0, 0, 0), vec3(0, 1, 0));
-    camera->ProjectionMatrix(projectionMatrix);
-    reflectedCamera->ProjectionMatrix(projectionMatrix);
-    freeCamera->ProjectionMatrix(projectionMatrix);
+void setupCamera(){
+    camera = new FixedCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
+    freeCamera = new FreeCamera( vec3( 0, 0, 5 ), vec3( 0, 0, 0 ), vec3( 0, 1, 0 ) );
+    camera->ProjectionMatrix( projectionMatrix );
+    freeCamera->ProjectionMatrix( projectionMatrix );
 }
 
 void loadMeshes() {
@@ -725,87 +880,48 @@ void loadTextures() {
     //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
     /**/
-    textureCatalog->insert(Texture::BEACH_BOX, new TextureCube("Textures/skybox/urban-skyboxes/Sodermalmsallen2/", ".jpg", false, true));
-    textureCatalog->insert(Texture::REFLECTION_RENDER_TEXTURE, new RenderTexture(WinX, WinY));
+    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/urban-skyboxes/Sodermalmsallen2/", ".jpg", false, true ) );
+
+    textureCatalog->insert( Texture::REFLECTION_RENDER_TEXTURE, new RenderTexture( WinX, WinY ) );
 
 
 }
 
-unsigned int gBuffer;
-unsigned int ssaoFBO, ssaoBlurFBO;
-unsigned int ssaoColorBuffer, ssaoColorBufferBlur;
-unsigned int gPosition, gNormal, gAlbedo;
-void createFrameBuffers() {
-    FRAME_BUFFER_MANAGER->insert(FrameBuffer::REFLECTION, new FrameBuffer(Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D));
-
-    //glGenFramebuffers(1, &gBuffer);
-    //glBindFramebuffer(GL_FRAMEBUFFER, gBuffer);
-    //// position color buffer
-    //glGenTextures(1, &gPosition);
-    //glBindTexture(GL_TEXTURE_2D, gPosition);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0);
-    //// normal color buffer
-    //glGenTextures(1, &gNormal);
-    //glBindTexture(GL_TEXTURE_2D, gNormal);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0);
-    //// color + specular color buffer
-    //glGenTextures(1, &gAlbedo);
-    //glBindTexture(GL_TEXTURE_2D, gAlbedo);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WinX, WinY, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedo, 0);
-    //// tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-    //unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    //glDrawBuffers(3, attachments);
-    //// create and attach depth buffer (renderbuffer)
-    //glGenRenderbuffers(1, &rboDepth);
-    //glBindRenderbuffer(GL_RENDERBUFFER, rboDepth);
-    //glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY);
-    //glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rboDepth);
-    //// finally check if framebuffer is complete
-    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    //    std::cout << "Framebuffer not complete!" << std::endl;
-    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    //// also create framebuffer to hold SSAO processing stage 
-    //// -----------------------------------------------------
-    //glGenFramebuffers(1, &ssaoFBO);  glGenFramebuffers(1, &ssaoBlurFBO);
-    //glBindFramebuffer(GL_FRAMEBUFFER, ssaoFBO);
-    //// SSAO color buffer
-    //glGenTextures(1, &ssaoColorBuffer);
-    //glBindTexture(GL_TEXTURE_2D, ssaoColorBuffer);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBuffer, 0);
-    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    //    std::cout << "SSAO Framebuffer not complete!" << std::endl;
-    //// and blur stage
-    //glBindFramebuffer(GL_FRAMEBUFFER, ssaoBlurFBO);
-    //glGenTextures(1, &ssaoColorBufferBlur);
-    //glBindTexture(GL_TEXTURE_2D, ssaoColorBufferBlur);
-    //glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    //glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, ssaoColorBufferBlur, 0);
-    //if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-    //    std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
-    //glBindFramebuffer(GL_FRAMEBUFFER, 0);
+void createFrameBuffers(){
+    FRAME_BUFFER_MANAGER->insert( FrameBuffer::REFLECTION, new FrameBuffer( Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D ) );
 }
 
 vec4 YY = vec4(0, 1, 0, 1);
 vec4 ZZ = vec4(0, 0, 1, 1);
 
-void createSceneMapping() {
+void createDeferredScene(){
+    Catalog<SceneNode*>* sceneNodeManager = Catalog<SceneNode*>::instance();
+    Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+    ShaderProgram* dfault = shaderProgramManager->get( "default" );
+
+    deferredScene = new Scene( dfault, camera );
+
+    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE2, 2 );
+    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
+    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
+
+    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "DeferredBloom" ),
+        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    noodles->addTexture( noodleTextureInfo );
+    noodles->addTexture( noodleNormalInfo );
+    noodles->addTexture( noodleSpecularInfo );
+    deferredScene->addNode( noodles );
+    sceneNodeManager->insert( "DEFERRED_NOODLES", noodles );
+
+    deferredParticles = new ParticleSystemTransform( shaderProgramManager->get( "DeferredTFBDraw" ),
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
+    deferredParticles->InitParticleSystem();
+
+    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
+}
+
+void createSceneMapping(){
     Catalog<SceneNode*>* sceneNodeManager = Catalog<SceneNode*>::instance();
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
@@ -816,47 +932,47 @@ void createSceneMapping() {
     //GL_TEXTURE0 is used for hdr
     //GL_TEXTURE1 is used for saving brightnessvalues and blurring
     /**/
-    TextureInfo* noodleTextureInfo = new TextureInfo(Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE2, 2);
-    TextureInfo* noodleNormalInfo = new TextureInfo(Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3);
-    TextureInfo* noodleSpecularInfo = new TextureInfo(Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4);
+    TextureInfo* noodleTextureInfo = new TextureInfo( Texture::NOODLE_TEXTURE, "noodleTex", GL_TEXTURE2, 2 );
+    TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
+    TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
-    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::NOODLES ), shaderProgramManager->get( "Bloom" ),
-                                         MatrixFactory::createTranslationMatrix( vec3( 0.0f, 0.0f, 0.0f )));
-                                        //MatrixFactory::createScaleMatrix4(0.2f, 0.2f, 0.2f));
-    noodles->addTexture(noodleTextureInfo);
-    noodles->addTexture(noodleNormalInfo);
-    noodles->addTexture(noodleSpecularInfo);
-    scene->addNode(noodles);
-    sceneNodeManager->insert(SceneNode::NOODLES, noodles);
+    SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "Bloom" ),
+        MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
+    noodles->addTexture( noodleTextureInfo );
+    noodles->addTexture( noodleNormalInfo );
+    noodles->addTexture( noodleSpecularInfo );
+    scene->addNode( noodles );
+    sceneNodeManager->insert( SceneNode::NOODLES, noodles );
     /**/
-    TextureInfo* reflectionRenderTextureInfo = new TextureInfo(Texture::REFLECTION_RENDER_TEXTURE, "reflection", GL_TEXTURE5, 5);
-    SceneNode  *table = new SceneNode(meshManager->get(Mesh::QUAD), shaderProgramManager->get("ReflectionShader"),
-                                      //MatrixFactory::createTranslationMatrix(vec3(0.0f, -0.2f, 0.0f)) *
-                                      MatrixFactory::createScaleMatrix4(2.0f, 2.0f, 2.0f) *
-                                      ////MatrixFactory::createRotationMatrix4(90, YY) *
-                                      MatrixFactory::createRotationMatrix4(90, ZZ));
+    TextureInfo* reflectionRenderTextureInfo = new TextureInfo( Texture::REFLECTION_RENDER_TEXTURE, "reflection", GL_TEXTURE5, 5 );
+    SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), shaderProgramManager->get( "ReflectionShader" ),
+        MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.2f, 0.0f ) ) *
+        MatrixFactory::createScaleMatrix4( 1.0f, 0.0f, 1.0f ) *
+        //MatrixFactory::createRotationMatrix4( 180, YY ) *
+        MatrixFactory::createRotationMatrix4( 90, ZZ ) );
+    table->addTexture( reflectionRenderTextureInfo );
+    scene->addNode( table );
+    sceneNodeManager->insert( SceneNode::TABLE, table );
 
-    table->addTexture(reflectionRenderTextureInfo);
-    scene->addNode(table);
-    sceneNodeManager->insert(SceneNode::TABLE, table);
-
-    reflectionPlane = vec4(normalize(vec3(0.0f, 1.0f, 0.0f)), 1.0f);
+    reflectionPlane = vec4( YY, 0 );
     /**/
     TextureInfo* skyboxTexture = new TextureInfo(Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6);
 
-    SceneNode  *skybox = new SceneNode(meshManager->get(Mesh::SPHERE_SKYBOX), shaderProgramManager->get("SkyBox"),
-                                       MatrixFactory::createScaleMatrix4(10.0f, 10.0f, 10.0f));
-    skybox->addTexture(skyboxTexture);
-    scene->addNode(skybox);
-    sceneNodeManager->insert(SceneNode::SKY_BOX, skybox);
+    SceneNode  *skybox = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "SkyBox" ),
+        MatrixFactory::createScaleMatrix4( 5.0f, 5.0f, 5.0f ) );
+    skybox->addTexture( skyboxTexture );
+    //skybox->addTexture( reflectionRenderTextureInfo );
+    scene->addNode( skybox );
+    sceneNodeManager->insert( SceneNode::SKYBOX, skybox );
+
     /**/
 }
 
 void createParticleSystem() {
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
 
-    particlesOne = new ParticleSystemTransform(shaderProgramManager->get("TFBDraw"),
-                                               shaderProgramManager->get("TFBUpdate"), camera, vec3(0.0f, 0.2f, 0.0f));
+    particlesOne = new ParticleSystemTransform( shaderProgramManager->get( "TFBDraw" ),
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
     particlesOne->InitParticleSystem();
     checkOpenGLError("ERROR: Could not create ParticleSystemTwo.");
 
@@ -872,74 +988,30 @@ void setupLight() {
     vec3 pos;
     vec3 color;
     int i = 0;
-    scale = 1.5f;
-    /**/
-    //Cyan
-    pos = vec3(-3.0f / scale, 0.4f, 4.0f / scale);
-    color = vec3(0.0f, 50.0f, 50.0f);
-    pointLights[i] = PointLight(pos, 20.0f, 10.0f, 10.5f,
-                                color, color, vec3(0.1f, 0.1f, 0.1f));
-    //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
-    temp = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("LightBox"),
-                         MatrixFactory::createTranslationMatrix(pos) * boxScale);
-    temp->setColor(vec4(color, 1.0f));
-    lights->addNode(temp);
-    i++;
-
-    //Magenta
-    pos = vec3(3.0f / scale, 0.4f, 4.0f / scale);
-    color = vec3(50.0f, .0f, 50.0f);
-    pointLights[i] = PointLight(pos, 20.0f, 10.0f, 10.5f,
-                                color, color, vec3(0.1f, 0.1f, 0.1f));
-    //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
-
-    temp = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("LightBox"),
-                         MatrixFactory::createTranslationMatrix(pos) * boxScale);
-    temp->setColor(vec4(color, 1.0f));
-    lights->addNode(temp);
-    i++;
-
-    //Yellow
-    pos = vec3(0.0f / scale, 0.4f, -5.0f / scale);
-    color = vec3(50.0f, 50.0f, 0.0f);
-    pointLights[i] = PointLight(pos, 20.0f, 10.0f, 10.5f,
-                                color, color, vec3(0.1f, 0.1f, 0.1f));
-    //vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ), vec3( 0.0f, 0.0f, 0.0f ) );
-
-    temp = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("LightBox"),
-                         MatrixFactory::createTranslationMatrix(pos)* boxScale);
-    temp->setColor(vec4(color, 1.0f));
-    lights->addNode(temp);
-    i++;
-
-    /**/
     float endX = 0.3f;
     float beginX = -0.3f;
-    float offset = (endX - beginX) / (NR_NEON_LIGHTS - 1);
-    pos = vec3(beginX, 0.5f, 0.0f);
-    vec3 dropoff = vec3(0.0f, 5.0f, 100.0f);
+    float offset = ( endX - beginX ) / ( NR_POINT_LIGHTS - 1 );
+    pos = vec3( beginX, 0.7f, 0.0f );
+    vec3 dropoff = vec3( 0.0f, 10.0f, 200.0f );
 
-    //vec3 ambient = vec3( 0.5f, 0.0f, 0.5f );
-    //vec3 diffuse = vec3( 0.5f, 0.0f, 0.5f );
-    //vec3 ambient = vec3( 0.0f, 0.0f, 0.0f );
-    //vec3 diffuse = vec3( 0.0f, 0.0f, 0.0f );
-    //vec3 ambient = vec3( 0.3f, 0.0f, 0.0f );
-    //vec3 diffuse = vec3( 0.3f, 0.0f, 0.0f );
-    color = vec3(5.0f, 0.0f, 0.0f);
+
+    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 100.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3(0.1f, 0.1f, 0.1f);
 
-    for (int j = i; j < NR_NEON_LIGHTS + 3; j++, i++) {
-        pointLights[j] = PointLight(pos, dropoff, ambient, diffuse, specular);
-        temp = new SceneNode(meshManager->get(Mesh::SPHERE), shaderProgramManager->get("LightBox"),
-                             MatrixFactory::createTranslationMatrix(pos) * boxScale);
+    for( int j = i; j < NR_POINT_LIGHTS; j++, i++ ){
+        pointLights[j] = PointLight( pos, dropoff, ambient, diffuse, specular );
+        temp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "LightBox" ),
+            MatrixFactory::createTranslationMatrix( pos ) * boxScale );
         pos.x += offset;
         temp->setColor(vec4(color, 1.0f));
         lights->addNode(temp);
     }
     /**/
-    scene->addNode(lights);
+    scene->addNode( lights );
+    SCENE_NODE_MANAGER->insert( SceneNode::LIGHTS, lights );
+    //SCENE_NODE_MANAGER->get( SceneNode::LIGHTS )->disable();
 }
 
 void activateLights() {
@@ -959,6 +1031,15 @@ void activateLights() {
         pointLights[i].addItself(shader, i);
     }
     shader->stop();
+
+    shader = shaderProgramManager->get( "DeferredSceneRender" );
+
+    shader->use();
+    for( int i = 0; i < NR_POINT_LIGHTS; i++ ){
+        pointLights[i].addItself( shader, i );
+    }
+    shader->stop();
+
 }
 
 void setupHDR() {
@@ -1011,9 +1092,6 @@ void setupHDR() {
             std::cout << "FrameBuffer not complete!" << std::endl;
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-
-
 }
     unsigned int noiseTexture; 
 
@@ -1065,10 +1143,13 @@ void init(int argc, char* argv[]) {
 
     setupHDR();
     createShaderProgram();
+    createDeferredShaderProgram();
     createFrameBuffers();
+    createGBuffer();
 
     setUpSSAO();
     createSceneMapping();
+    createDeferredScene();
     createParticleSystem();
 
     setupLight();

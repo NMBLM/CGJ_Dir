@@ -28,20 +28,14 @@
     <Filter Include="Shader Files\Bloom\Blur">
       <UniqueIdentifier>{ba317882-58a4-418a-abd7-f86358234b59}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader Files\ZZZZZ">
+      <UniqueIdentifier>{552f8476-0478-4f1a-99b6-48b23e14183c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Deferred">
+      <UniqueIdentifier>{40e9b812-7777-4379-b83f-ee347f713c28}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\default_fs.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Shaders\default_vs.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="shaders\mapping_fs.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="Shaders\mapping_vs.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
     <None Include="Shaders\cube_fs.glsl">
       <Filter>Shader Files\OldShaders</Filter>
     </None>
@@ -183,11 +177,56 @@
     <None Include="Shaders\skybox_vs.glsl">
       <Filter>Shader Files\Bloom</Filter>
     </None>
-    <None Include="shaders\reflection_vs.glsl">
-      <Filter>Shader Files</Filter>
+    <None Include="Shaders\default_fs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="Shaders\default_vs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="shaders\mapping_fs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="Shaders\mapping_vs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
     </None>
     <None Include="shaders\reflection_fs.glsl">
-      <Filter>Shader Files</Filter>
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="shaders\reflection_vs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="Shaders\Deferred\default_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\default_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\lightbox_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\lightbox_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\skybox_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\skybox_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_gs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\bloom_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\bloom_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>

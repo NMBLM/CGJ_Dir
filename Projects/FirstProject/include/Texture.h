@@ -34,6 +34,7 @@ namespace engine {
         static constexpr const char* const NOODLE_MAP_DISPLACEMENT = "NOODLE_MAP_DISPLACEMENT";
 
         static constexpr const char* const  REFLECTION_RENDER_TEXTURE = "REFLECTION_RENDER_TEXTURE";
+        static constexpr const char* const  CUBE_REFLECTION_RENDER_TEXTURE = "CUBE_REFLECTION_RENDER_TEXTURE";
 
         Texture();
         Texture(const char* filename);
@@ -69,6 +70,19 @@ namespace engine {
     public:
         RenderTexture();
         RenderTexture(int width, int height);
+        virtual GLuint getType();
+    };
+
+    class RenderCubeTexture: public Texture{
+        /*
+        glActiveTexture(unit);
+        glBindTexture( texture->getType(), texture->getId() );
+        glUniform1i(sp->UniformId(uniform.c_str()), index);
+        */
+
+        public:
+        RenderCubeTexture();
+        RenderCubeTexture( int width, int height );
         virtual GLuint getType();
     };
 }

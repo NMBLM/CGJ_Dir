@@ -188,7 +188,7 @@ namespace engine{
 
     RenderTexture::RenderTexture() = default;
 
-    RenderTexture::RenderTexture(int width, int height){
+    RenderTexture::RenderTexture( int width, int height ){
         glGenTextures( 1, &textureId );
         glBindTexture( GL_TEXTURE_2D, textureId );
         // set the texture wrapping/filtering options (on the currently bound texture object)
@@ -206,5 +206,26 @@ namespace engine{
     GLuint RenderTexture::getType(){
         return GL_TEXTURE_2D;
     }
-    
+
+    RenderCubeTexture::RenderCubeTexture() = default;
+
+    RenderCubeTexture::RenderCubeTexture( int width, int height ){
+        glGenTextures( 1, &textureId );
+        glBindTexture( GL_TEXTURE_CUBE_MAP, textureId );
+        // set the texture wrapping/filtering options (on the currently bound texture object)
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
+        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
+        for( GLuint i = 0; i < 6; i++ ){
+                    glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
+                        width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
+        }
+    }
+
+    GLuint RenderCubeTexture::getType(){
+        return GL_TEXTURE_CUBE_MAP;
+    }
+
 }
