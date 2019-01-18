@@ -495,9 +495,9 @@ void createDeferredShaderProgram(){
     temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/skybox_deferred_vs.glsl" );
     temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/skybox_deferred_fs.glsl" );
 
-    temp->bindAttribLocation( VERTICES, "Position" );
-    temp->bindAttribLocation( TEXCOORDS, "Texcoord" );
-    temp->bindAttribLocation( NORMALS, "Normal" );
+    temp->bindAttribLocation( VERTICES, "inPosition" );
+    temp->bindAttribLocation( TEXCOORDS, "inTexcoord" );
+    temp->bindAttribLocation( NORMALS, "inNormal" );
 
     temp->link();
 
@@ -939,6 +939,13 @@ void createDeferredScene(){
     TextureInfo* noodleNormalInfo = new TextureInfo( Texture::NOODLE_MAP_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
     TextureInfo* noodleSpecularInfo = new TextureInfo( Texture::NOODLE_MAP_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
+    TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6 );
+    SceneNode  *skyboxers = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "DeferredSkybox" ),
+        MatrixFactory::createScaleMatrix4( 5.0f, 5.0f, 5.0f ) );
+    skyboxers->addTexture( skyboxTexture );
+    deferredScene->addNode( skyboxers );
+    sceneNodeManager->insert( "DEFERRED_SKYBOX", skyboxers );
+
     SceneNode  *noodles = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "DeferredBloom" ),
         MatrixFactory::createScaleMatrix4( 0.2f, 0.2f, 0.2f ) );
     noodles->addTexture( noodleTextureInfo );
@@ -947,13 +954,7 @@ void createDeferredScene(){
     deferredScene->addNode( noodles );
     sceneNodeManager->insert( "DEFERRED_NOODLES", noodles );
 
-    TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6 );
-    SceneNode  *skybox = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "DeferredSkybox" ),
-        MatrixFactory::createScaleMatrix4( 5.0f, 5.0f, 5.0f ) );
-    skybox->addTexture( skyboxTexture );
-    deferredScene->addNode( skybox );
-    sceneNodeManager->insert( "DEFERRED_SKYBOX", skybox );
-    skybox->disable();
+
 
     deferredParticles = new ParticleSystemTransform( shaderProgramManager->get( "DeferredTFBDraw" ),
         shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
