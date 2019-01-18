@@ -47,12 +47,12 @@ void main()
 
     // then calculate lighting as usual
 	vec3 lighting  = vec3(0.3f * Diffuse * texture(gSSAOBlur , TexCoords).r);
-	if(mode < 0.9f ){
+	if(mode < 0.9f ){ //Blurred Occlusion
 	    lighting  = vec3( 0.3f * Diffuse * texture(gSSAOBlur , TexCoords).r);
-	}else
+	}else // No Occlusion
 	if( mode > 9.9f && mode < 10.9f){
 		lighting  = Diffuse * 0.3f;
-	}else
+	}else //Unblurred Occlusion
 	if( mode > 10.9f && mode < 11.9f){
 		lighting  = vec3( 0.3f * Diffuse * texture(gSSAO , TexCoords).r);
 	}

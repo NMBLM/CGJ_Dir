@@ -167,21 +167,12 @@ void keyPress(unsigned char key, int x, int y) {
 }
 
 void keyRelease(unsigned char key, int x, int y) {
-    if (KeyBuffer::instance()->isKeyDown('g') || KeyBuffer::instance()->isKeyDown('G')) camera->gimbalLockSwitch();
-    if (KeyBuffer::instance()->isKeyDown('p') || KeyBuffer::instance()->isKeyDown('P')) {
-        mat4 temp = projectionMatrix;
-        projectionMatrix = otherProjectionMatrix;
-        otherProjectionMatrix = temp;
-        camera->ProjectionMatrix(projectionMatrix);
-    }
-
     if (KeyBuffer::instance()->isKeyDown('f') || KeyBuffer::instance()->isKeyDown('F')) {
         if (freecam) {
             scene->setCamera(camera);
             deferredScene->setCamera( camera );
             particlesOne->camera = camera;
             deferredParticles->camera = camera;
-
         } else {
             scene->setCamera(freeCamera);
             deferredScene->setCamera( freeCamera );
@@ -190,8 +181,6 @@ void keyRelease(unsigned char key, int x, int y) {
         }
         freecam = !freecam;
     }
-    if (KeyBuffer::instance()->isKeyDown('r')) scene->actOnAnimator();
-    if (KeyBuffer::instance()->isKeyDown('R')) scene->actOnAnimator();
 
     if (KeyBuffer::instance()->isKeyDown('b')) deferred = !deferred;
     if (KeyBuffer::instance()->isKeyDown('B')) deferred = !deferred;
@@ -206,29 +195,29 @@ void keyRelease(unsigned char key, int x, int y) {
     if( KeyBuffer::instance()->isKeyDown( 'm' ) || KeyBuffer::instance()->isKeyDown( 'M' ) 
         || KeyBuffer::instance()->isKeyDown( 'n' ) || KeyBuffer::instance()->isKeyDown( 'N' ) ){
         switch( mode ){
-            case 0: std::cout << "Mode " << mode << ": Normal" << std::endl;
+            case 0: std::cout << "Mode " << mode << ": Normal mode with blured occlusion" << std::endl;
                 break;
-            case 1: std::cout << "Mode " << mode << ": Position in ViewSpace" << std::endl;
+            case 1: std::cout << "Mode " << mode << ": Stored Position in ViewSpace" << std::endl;
                 break;
-            case 2: std::cout << "Mode " << mode << ": Normals in ViewSpace" << std::endl;
+            case 2: std::cout << "Mode " << mode << ": Stored Normals in ViewSpace" << std::endl;
                 break;
             case 3: std::cout << "Mode " << mode << ": Basic Object Color" << std::endl;
                 break;
-            case 4: std::cout << "Mode " << mode << ": Brightness Unblurred" << std::endl;
+            case 4: std::cout << "Mode " << mode << ": Only Brightness Unblurred" << std::endl;
                 break;
-            case 5: std::cout << "Mode " << mode << ": Brightness Blurred" << std::endl;
+            case 5: std::cout << "Mode " << mode << ": Only Brightness Blurred" << std::endl;
                 break;
-            case 6: std::cout << "Mode " << mode << ": Occlusion" << std::endl;
+            case 6: std::cout << "Mode " << mode << ": Only Occlusion" << std::endl;
                 break;
-            case 7: std::cout << "Mode " << mode << ": Occlusion Blurred" << std::endl;
+            case 7: std::cout << "Mode " << mode << ": Only Occlusion Blurred" << std::endl;
                 break;
-            case 8: std::cout << "Mode " << mode << ": Position in WorldSpace" << std::endl;
+            case 8: std::cout << "Mode " << mode << ": Stored Position in WorldSpace" << std::endl;
                 break;
-            case 9: std::cout << "Mode " << mode << ": Normals in WorldSpace" << std::endl;
+            case 9: std::cout << "Mode " << mode << ": Stored Normals in WorldSpace" << std::endl;
                 break;
-            case 10: std::cout << "Mode " << mode << ": Normal but unblurred occlusion" << std::endl;
+            case 10: std::cout << "Mode " << mode << ": Normal but no occlusion" << std::endl;
                 break;
-            case 11: std::cout << "Mode " << mode << ": Normal but no occlusion" << std::endl;
+            case 11: std::cout << "Mode " << mode << ": Normal mode but unblurred occlusion" << std::endl;
                 break;
         }
     }
@@ -1262,10 +1251,10 @@ void setupLight() {
     float beginX = -0.3f;
     float offset = (endX - beginX) / (NR_POINT_LIGHTS - 1);
     pos = vec3(beginX, 0.7f, 0.0f);
-    vec3 dropoff = vec3(0.0f, 10.0f, 200.0f);
+    vec3 dropoff = vec3(1.0f, 5.0f, 50.0f);
 
-    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 10.0f );
-
+    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 100.0f );
+    color = vec3( 139.0f, 0.0f, 139.0f )*( 1 / 10.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3(0.1f, 0.1f, 0.1f);
@@ -1442,7 +1431,7 @@ void init(int argc, char* argv[]) {
     setupLight();
     activateLights();
 
-    std::cout << "Mode Normal" << std::endl;
+    std::cout << "Mode " << mode << ": Normal mode with blured occlusion" << std::endl;
 }
 
 int main(int argc, char* argv[]) {
