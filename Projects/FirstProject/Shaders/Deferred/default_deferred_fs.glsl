@@ -10,6 +10,8 @@ uniform sampler2D gAlbedoSpec;
 uniform sampler2D gBright;
 uniform sampler2D gSSAO;
 uniform sampler2D gSSAOBlur;
+uniform sampler2D gPositionViewSpace;
+uniform sampler2D gNormalViewSpace;
 
 uniform SharedMatrices
 {
@@ -89,13 +91,13 @@ void main()
 				BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 			}
 		}
-	}else // Position in ViewSpace the one used for calculating the lights
+	}else // Position in ViewSpace
 	if(mode > 0.9f && mode < 1.9f){
-		FragColor = vec4(texture(gPosition, TexCoords).rgb,1.0f);
+		FragColor = vec4(texture(gPositionViewSpace, TexCoords).rgb,1.0f);
 		BrightColor = vec4(0.0f);
-	}else // Normals in ViewSpace the one used for calculating the lights
+	}else // Normals in ViewSpace
 	if(mode > 1.9f && mode < 2.9f){
-		FragColor = vec4(texture(gNormal, TexCoords).rgb,1.0f);
+		FragColor = vec4(texture(gNormalViewSpace, TexCoords).rgb,1.0f);
 		BrightColor = vec4(0.0f);
 	}else // Basic Color
 	if(mode > 2.9f && mode < 3.9f){
@@ -143,11 +145,11 @@ void main()
 		BrightColor = vec4(0.0f);
 	}else // Position in WorldSpace for being cool
 	if(mode > 7.9f && mode < 8.9f){
-		FragColor = inverse(ViewMatrix) * vec4(texture(gPosition, TexCoords).rgb,1.0f);
+		FragColor = normalize(vec4(texture(gPosition, TexCoords).rgb,1.0f));
 		BrightColor = vec4(0.0f);
 	}else // Normals in WorldSpace for being cool
 	if(mode > 8.9f && mode < 9.9f){
-		FragColor = inverse(ViewMatrix) * vec4(texture(gNormal, TexCoords).rgb,1.0f);
+		FragColor = normalize(vec4(texture(gNormal, TexCoords).rgb,1.0f));
 		BrightColor = vec4(0.0f);
 	}
 	//This way we can force anything that has gBright to be bloomed

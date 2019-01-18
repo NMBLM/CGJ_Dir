@@ -13,13 +13,17 @@ uniform SharedMatrices
 
 out vec2 TexCoords;
 out vec3 PassNormal;
+out vec3 PassNormalViewSpace;
 out vec3 WorldPos;
 
 
 void main(void){
-    mat4 normalMatrix = transpose(inverse(ViewMatrix * ModelMatrix));
+    mat4 normalMatrix = transpose(inverse( ModelMatrix));
     gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(inPosition,1.0f);
-    TexCoords = inTexcoord;
     PassNormal = (normalMatrix * vec4(inNormal, 0.0)).xyz;
+	normalMatrix = transpose(inverse(ViewMatrix * ModelMatrix));
+	PassNormalViewSpace = (normalMatrix * vec4(inNormal, 0.0)).xyz;
     WorldPos = (ModelMatrix * vec4(inPosition, 1.0)).xyz;
+	TexCoords = inTexcoord;
+
 }
