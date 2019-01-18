@@ -4,15 +4,15 @@ in vec3 vertex;
 in vec3 normal;
 in vec2 texCoord;
 
-out vec3 gPosition;
-out vec3 gNormal;
+out vec4 gPosition;
+out vec4 gNormal;
 out vec4 gAlbedoSpec;
-
 
 void main()
 {	
-	gPosition = vertex;	//WorldSpace
-	gNormal = normal;
+	gPosition = vec4(vertex,1.0f);	//WorldSpace
+	gNormal = vec4(normalize(normal),1.0f);
 	gAlbedoSpec.rgb = vec3(0.57735f,0.57735f,0.57735f);//General Color
 	gAlbedoSpec.a = 0.57735f;//Specular
+
 }

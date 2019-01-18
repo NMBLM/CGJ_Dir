@@ -48,6 +48,7 @@ Scene* scene;
 Scene* deferredScene;
 
 ParticleSystemTransform* particlesOne;
+ParticleSystemTransform* deferredParticles;
 
 float lastFrame = 0.0f;
 float delta = 0.0f;
@@ -441,7 +442,7 @@ void createDeferredShaderProgram(){
     ShaderProgram *temp;
 
 
-    temp = new ShaderProgram();
+    temp = new ShaderProgram();// Calculates Light
     temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/default_deferred_vs.glsl" );
     temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/default_deferred_fs.glsl" );
 
@@ -456,7 +457,7 @@ void createDeferredShaderProgram(){
 
     shaderProgramManager->insert( "DeferredSceneRender", temp );
 
-    temp = new ShaderProgram();
+    temp = new ShaderProgram();// Generates the lightboxes that represent where the lights are
     temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/lightbox_deferred_vs.glsl" );
     temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/lightbox_deferred_fs.glsl" );
 
@@ -471,7 +472,7 @@ void createDeferredShaderProgram(){
 
     shaderProgramManager->insert( "DeferredLightBox", temp );
 
-    temp = new ShaderProgram();//5
+    temp = new ShaderProgram();// For the noodles
     temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/bloom_deferred_vs.glsl" );
     temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/bloom_deferred_fs.glsl" );
 
@@ -485,6 +486,20 @@ void createDeferredShaderProgram(){
     temp->detachShader( "fragment" );
 
     shaderProgramManager->insert( "DeferredBloom", temp );
+
+    temp = new ShaderProgram();// for the particles
+    temp->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/Deferred/tfb_billboard_deferred_gs.glsl" );
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/tfb_billboard_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/tfb_billboard_deferred_fs.glsl" );
+
+    temp->link();
+
+    temp->detachShader( "geometry" );
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredTFBDraw", temp );
+
 }
 
 void destroyShaderProgram(){
@@ -509,8 +524,9 @@ void destroyTextures(){
 }
 
 /////////////////////////////////////////////////////////////////////// DEFERRED
-unsigned int gBuffer;
+unsigned int gBuffer,gDepthBuffer;
 unsigned int gPosition, gNormal, gAlbedoSpec;
+
 void createGBuffer(){
     glGenFramebuffers( 1, &gBuffer );
     glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
@@ -519,7 +535,7 @@ void createGBuffer(){
     // - position color buffer
     glGenTextures( 1, &gPosition );
     glBindTexture( GL_TEXTURE_2D, gPosition );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, gPosition, 0 );
@@ -527,7 +543,7 @@ void createGBuffer(){
     // - normal color buffer
     glGenTextures( 1, &gNormal );
     glBindTexture( GL_TEXTURE_2D, gNormal );
-    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGB, GL_FLOAT, NULL );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, gNormal, 0 );
@@ -540,9 +556,20 @@ void createGBuffer(){
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0 );
 
+
+    glGenRenderbuffers( 1, &gDepthBuffer );
+    glBindRenderbuffer( GL_RENDERBUFFER, gDepthBuffer );
+    glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
+    glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, gDepthBuffer );
+
     // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
     unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
     glDrawBuffers( 3, attachments );
+
+    // - Finally check if framebuffer is complete
+    if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
+        std::cout << "Framebuffer not complete!" << std::endl;
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
@@ -631,7 +658,10 @@ void drawDeferredScene(){
     glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
     glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
     deferredScene->draw();
+    deferredParticles->draw();
+
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
 
     ShaderProgram* renderShader = shaderProgramManager->get( "DeferredSceneRender" );
@@ -717,6 +747,8 @@ void idle(){
     lastFrame = ( float )currentFrame;
     scene->update( delta );
     particlesOne->update( delta );
+    deferredParticles->update( delta );
+
     glutPostRedisplay();
 }
 
@@ -878,6 +910,11 @@ void createDeferredScene(){
     deferredScene->addNode( noodles );
     sceneNodeManager->insert( "DEFERRED_NOODLES", noodles );
 
+    deferredParticles = new ParticleSystemTransform( shaderProgramManager->get( "DeferredTFBDraw" ),
+        shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
+    deferredParticles->InitParticleSystem();
+
+    checkOpenGLError( "ERROR: Could not create ParticleSystemTwo." );
 }
 
 void createSceneMapping(){
@@ -1066,8 +1103,8 @@ void init( int argc, char* argv[] ){
     setupCamera();
     setupCallbacks();
 
-    loadMeshes();
     loadTextures();
+    loadMeshes();
 
     setupHDR();
     createShaderProgram();

@@ -32,19 +32,19 @@ void build_quad(vec4 pos)
 	//normal = normalize(vec3(mvp* vec4(E,1.0f)));
 	normal = E;
 	vertex = pos.xyz + side* POINT - up* POINT;
-    gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-left
+    gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-right
 	texCoord = vec2(1,0);
     EmitVertex();   
 	vertex = pos.xyz - side* POINT - up* POINT;
-    gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-left
+    gl_Position = mvp * vec4(vertex,1.0f);    // 2:bottom-left
 	texCoord = vec2(0,0);
     EmitVertex();
 	vertex = pos.xyz + side* POINT + up* POINT;
-    gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-left
+    gl_Position = mvp * vec4(vertex,1.0f);    // 3:top-right
 	texCoord = vec2(1,1);
     EmitVertex();
 	vertex = pos.xyz - side* POINT + up* POINT;
-    gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-left
+    gl_Position = mvp * vec4(vertex,1.0f);    // 4:top-left
 	texCoord = vec2(0,1);
     EmitVertex();
     EndPrimitive();

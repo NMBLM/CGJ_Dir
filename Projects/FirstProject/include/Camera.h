@@ -24,7 +24,7 @@ class Camera{
     vec3 eye;
     qtrn qPos;
     const float SPEED = 20.0f;
-    const float vSPEED = 10.0f;
+    const float vSPEED = 5.0f;
     float lastFrame = 0.0f;
 
     vec4 reflectionPlane;
