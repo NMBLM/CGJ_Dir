@@ -1,0 +1,40 @@
+Keybinds
+	f : change to and from freecam
+	b : change scenes, one with deferred and other without
+	m : change modes up
+	n : chane modes down
+
+	modes are:
+		00: Normal
+		01: Stored Position in ViewSpace
+		02: Stored Normals in ViewSpace
+		03: Basic Object Color
+		04: Only Brightness Unblurred
+		05: Only Brightness Blurred
+		06: Only Occlusion
+		07: Only Occlusion Blurred
+		08: Stored Position in WorldSpace
+		09: Stored Normals in WorldSpace
+		10: Normal but no occlusion
+		11: Normal mode but unblurred occlusion
+
+	a : move camera left
+	d : move camera right
+	s : move camera down in fixedcam and back in freecam
+	w : move camera up in fixedcam and forward in freecam
+	q : only in fixedcam, roll left
+	e : only in fixedcam, roll right
+	z : only in fixedcam, zoom in
+	x : only in fixedcam, zoom out
+	k : increase light exposure, used in hdr
+	l : decrease light exposure, used in hdr
+	h : increase gamma value, used in hdr
+	j : decrease gamma value, used in hdr
+
+Skybox name to side translation
+negx -> left
+negy -> bottom
+negz -> back
+posx -> right
+posy -> top
+posz -> front

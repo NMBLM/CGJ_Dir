@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{90560B47-DA3C-4EB1-8EF2-80751B9769F4}</ProjectGuid>
     <RootNamespace>Project1</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -89,7 +89,7 @@
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>$(SolutionDir)\..\dependecies\freeglut\lib\x64;$(SolutionDir)\..\dependecies\glew\lib\Release\x64;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -119,7 +119,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)\include;$(SolutionDir)\..\dependecies\glew\include;$(SolutionDir)\..\dependecies\freeglut\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -130,21 +130,113 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="2-Hello2dWorld.cpp" />
-    <ClCompile Include="matrix.cpp" />
-    <ClCompile Include="Shader.cpp" />
-    <ClCompile Include="test.cpp" />
-    <ClCompile Include="vector.cpp" />
-    <ClCompile Include="src\properties.cpp" />
+    <None Include="Shaders\bloom_cube_fs.glsl" />
+    <None Include="Shaders\bloom_final_fs.glsl" />
+    <None Include="Shaders\bloom_final_vs.glsl" />
+    <None Include="Shaders\bloom_fs.glsl" />
+    <None Include="Shaders\bloom_vs.glsl" />
+    <None Include="Shaders\blur_fs.glsl" />
+    <None Include="Shaders\blur_vs.glsl" />
+    <None Include="Shaders\cube_fs.glsl" />
+    <None Include="Shaders\cube_fs_extra.glsl" />
+    <None Include="Shaders\cube_vs.glsl" />
+    <None Include="Shaders\cube_vs_shared.glsl" />
+    <None Include="Shaders\default_fs.glsl" />
+    <None Include="Shaders\default_vs.glsl" />
+    <None Include="Shaders\Deferred\bloom_deferred_fs.glsl" />
+    <None Include="Shaders\Deferred\bloom_deferred_vs.glsl" />
+    <None Include="Shaders\Deferred\default_deferred_fs.glsl" />
+    <None Include="Shaders\Deferred\default_deferred_vs.glsl" />
+    <None Include="Shaders\Deferred\lightbox_deferred_fs.glsl" />
+    <None Include="Shaders\Deferred\lightbox_deferred_vs.glsl" />
+    <None Include="Shaders\Deferred\skybox_deferred_fs.glsl" />
+    <None Include="Shaders\Deferred\skybox_deferred_vs.glsl" />
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_fs.glsl" />
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_gs.glsl" />
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_vs.glsl" />
+    <None Include="Shaders\force_color_fs.glsl" />
+    <None Include="Shaders\force_color_rcv_fs.glsl" />
+    <None Include="Shaders\force_color_vs.glsl" />
+    <None Include="Shaders\FragmentShader.glsl" />
+    <None Include="Shaders\FragmentShaderCamera.glsl" />
+    <None Include="Shaders\glow_fs.glsl" />
+    <None Include="Shaders\glow_mapping_fs.glsl" />
+    <None Include="Shaders\glow_mapping_vs.glsl" />
+    <None Include="Shaders\glow_vs.glsl" />
+    <None Include="Shaders\hdr_fs.glsl" />
+    <None Include="Shaders\hdr_vs.glsl" />
+    <None Include="Shaders\lightbox_fs.glsl" />
+    <None Include="Shaders\lightbox_vs.glsl" />
+    <None Include="shaders\mapping_fs.glsl" />
+    <None Include="Shaders\mapping_vs.glsl" />
+    <None Include="Shaders\particle_light_fs.glsl" />
+    <None Include="Shaders\particle_light_proper_fs.glsl" />
+    <None Include="Shaders\particle_withgs_vs.glsl" />
+    <None Include="Shaders\particle_fs.glsl" />
+    <None Include="Shaders\particle_gs.glsl" />
+    <None Include="Shaders\particle_vs.glsl" />
+    <None Include="shaders\reflection_fs.glsl" />
+    <None Include="shaders\reflection_vs.glsl" />
+    <None Include="Shaders\skybox_fs.glsl" />
+    <None Include="Shaders\skybox_vs.glsl" />
+    <None Include="Shaders\ssao_blur_fs.glsl" />
+    <None Include="Shaders\ssao_fs.glsl" />
+    <None Include="Shaders\ssao_test_fs.glsl" />
+    <None Include="Shaders\ssao_vs.glsl" />
+    <None Include="Shaders\texShader_color_fs.glsl" />
+    <None Include="Shaders\texShader_color_vs.glsl" />
+    <None Include="Shaders\texShader_fs.glsl" />
+    <None Include="Shaders\texShader_vs.glsl" />
+    <None Include="Shaders\tfb_billboard_fs.glsl" />
+    <None Include="Shaders\tfb_billboard_gs.glsl" />
+    <None Include="Shaders\tfb_billboard_vs.glsl" />
+    <None Include="Shaders\tfb_fs.glsl" />
+    <None Include="Shaders\tfb_gs.glsl" />
+    <None Include="Shaders\tfb_update_fs.glsl" />
+    <None Include="Shaders\tfb_update_gs.glsl" />
+    <None Include="Shaders\tfb_update_vs.glsl" />
+    <None Include="Shaders\tfb_vs.glsl" />
+    <None Include="Shaders\VertexShader.glsl" />
+    <None Include="Shaders\VertexShaderCamera.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="matrix.h" />
-    <ClInclude Include="Shader.h" />
-    <ClInclude Include="vector.h" />
+    <ClCompile Include="FrameBuffer.cpp" />
+    <ClCompile Include="src\LightSource.cpp" />
+    <ClCompile Include="src\Particle.cpp" />
+    <ClCompile Include="src\Anime.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\KeyBuffer.cpp" />
+    <ClCompile Include="src\Matrix.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
+    <ClCompile Include="src\MeshLoader.cpp" />
+    <ClCompile Include="src\Qtrn.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\ShaderProgram.cpp" />
+    <ClCompile Include="src\Texture.cpp" />
+    <ClCompile Include="src\TextureInfo.cpp" />
+    <ClCompile Include="src\TextureLoader.cpp" />
+    <ClCompile Include="src\Vector.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="FragmentShader.glsl" />
-    <None Include="VertexShader.glsl" />
+    <ClInclude Include="FrameBuffer.h" />
+    <ClInclude Include="include\Anime.h" />
+    <ClInclude Include="include\Camera.h" />
+    <ClInclude Include="include\Catalog.h" />
+    <ClInclude Include="include\KeyBuffer.h" />
+    <ClInclude Include="include\LightSource.h" />
+    <ClInclude Include="include\Matrix.h" />
+    <ClInclude Include="include\Mesh.h" />
+    <ClInclude Include="include\MeshLoader.h" />
+    <ClInclude Include="include\Particle.h" />
+    <ClInclude Include="include\Qtrn.h" />
+    <ClInclude Include="include\Scene.h" />
+    <ClInclude Include="include\ShaderProgram.h" />
+    <ClInclude Include="include\stb_image.h" />
+    <ClInclude Include="include\Texture.h" />
+    <ClInclude Include="include\TextureInfo.h" />
+    <ClInclude Include="include\Vector.h" />
+    <ClInclude Include="src\Engine.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

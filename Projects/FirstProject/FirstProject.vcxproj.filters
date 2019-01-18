@@ -16,44 +16,341 @@
     <Filter Include="Shader Files">
       <UniqueIdentifier>{9973ed50-5a7e-479d-9f5f-f475e7fed323}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader Files\OldShaders">
+      <UniqueIdentifier>{649ebaee-9296-42a4-8a0b-df264ce01c69}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Particles">
+      <UniqueIdentifier>{c1999c9c-718f-4909-be85-e9ef9a7980fa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Bloom">
+      <UniqueIdentifier>{37b63d0f-c547-4f11-97fb-34fcb67d4d12}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Bloom\Blur">
+      <UniqueIdentifier>{ba317882-58a4-418a-abd7-f86358234b59}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\ZZZZZ">
+      <UniqueIdentifier>{552f8476-0478-4f1a-99b6-48b23e14183c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\Deferred">
+      <UniqueIdentifier>{40e9b812-7777-4379-b83f-ee347f713c28}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shader Files\SSAO">
+      <UniqueIdentifier>{ca34a3e3-6225-48bf-bca1-f864fcad7c25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="vector.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="matrix.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\properties.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="2-Hello2dWorld.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="test.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Shader.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="vector.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Shader.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="VertexShader.glsl">
-      <Filter>Shader Files</Filter>
+    <None Include="Shaders\cube_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
     </None>
-    <None Include="FragmentShader.glsl">
-      <Filter>Shader Files</Filter>
+    <None Include="Shaders\cube_fs_extra.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
     </None>
+    <None Include="Shaders\cube_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\cube_vs_shared.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\force_color_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\force_color_rcv_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\force_color_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\FragmentShader.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\FragmentShaderCamera.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\particle_withgs_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\particle_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\particle_gs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\particle_light_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\particle_light_proper_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\particle_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\texShader_color_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\texShader_color_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\texShader_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\texShader_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\VertexShader.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\VertexShaderCamera.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_fs.glsl">
+      <Filter>Shader Files\Particles</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_gs.glsl">
+      <Filter>Shader Files\Particles</Filter>
+    </None>
+    <None Include="Shaders\tfb_billboard_vs.glsl">
+      <Filter>Shader Files\Particles</Filter>
+    </None>
+    <None Include="Shaders\tfb_fs.glsl">
+      <Filter>Shader Files\Particles</Filter>
+    </None>
+    <None Include="Shaders\tfb_gs.glsl">
+      <Filter>Shader Files\Particles</Filter>
+    </None>
+    <None Include="Shaders\tfb_vs.glsl">
+      <Filter>Shader Files\Particles</Filter>
+    </None>
+    <None Include="Shaders\glow_fs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\glow_mapping_fs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\glow_mapping_vs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\glow_vs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\hdr_fs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\hdr_vs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\lightbox_fs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\lightbox_vs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\bloom_fs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\bloom_vs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\blur_fs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\blur_vs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\bloom_final_fs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\bloom_final_vs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_fs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_gs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\tfb_update_vs.glsl">
+      <Filter>Shader Files\OldShaders</Filter>
+    </None>
+    <None Include="Shaders\bloom_cube_fs.glsl">
+      <Filter>Shader Files\Bloom\Blur</Filter>
+    </None>
+    <None Include="Shaders\skybox_fs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\skybox_vs.glsl">
+      <Filter>Shader Files\Bloom</Filter>
+    </None>
+    <None Include="Shaders\default_fs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="Shaders\default_vs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="shaders\mapping_fs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="Shaders\mapping_vs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="shaders\reflection_fs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="shaders\reflection_vs.glsl">
+      <Filter>Shader Files\ZZZZZ</Filter>
+    </None>
+    <None Include="Shaders\Deferred\default_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\default_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\lightbox_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\lightbox_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\skybox_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\skybox_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_gs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\tfb_billboard_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\bloom_deferred_vs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\Deferred\bloom_deferred_fs.glsl">
+      <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\ssao_vs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
+    <None Include="Shaders\ssao_fs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
+    <None Include="Shaders\ssao_test_fs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
+    <None Include="Shaders\ssao_blur_fs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\Anime.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\KeyBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\MeshLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ShaderProgram.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Texture.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Engine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Qtrn.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Vector.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Particle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LightSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\TextureInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="FrameBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Anime.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Catalog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\KeyBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Mesh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MeshLoader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Scene.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\ShaderProgram.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\stb_image.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Texture.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Qtrn.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Camera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Vector.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Particle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\LightSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\TextureInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Engine.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameBuffer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
