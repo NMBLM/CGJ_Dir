@@ -293,7 +293,7 @@
     <ClCompile Include="src\TextureInfo.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="FrameBuffer.cpp">
+    <ClCompile Include="src\FrameBuffer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -349,7 +349,7 @@
     <ClInclude Include="src\Engine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="FrameBuffer.h">
+    <ClInclude Include="include\FrameBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

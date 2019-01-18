@@ -11,7 +11,6 @@ namespace engine{
     struct vec3;
     struct vec4;
 
-
     struct vec2{
         float x, y;
         // Constructor

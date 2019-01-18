@@ -1,92 +1,4 @@
-#include <iostream>
-#include <sstream>
-#include <string>
-#include <map>
-
-
-#include "vector.h"
-#include "Matrix.h"
-#include "ShaderProgram.h"
-#include "Camera.h"
-#include "KeyBuffer.h"
-#include "Mesh.h"
-#include "MeshLoader.h"
-#include "Scene.h"
-#include "Catalog.h"
-#include "Texture.h"
-#include "Particle.h"
-#include  "TextureInfo.h"
-#include "LightSource.h"
-
-#include "GL/glew.h"
-#include "GL/freeglut.h"
-#include "../FrameBuffer.h"
-#include <random>
-
-#define CAPTION "CyberNoodles"
-#define NR_POINT_LIGHTS 11
-#define MODES_NUM 12
-
-using namespace engine;
-
-int WinX = 640, WinY = 640;
-int lastWinX = WinX, lastWinY = WinY;
-int WindowHandle = 0;
-unsigned int FrameCount = 0;
-
-const GLuint UBO_BP = 0;
-
-const float PI = 3.14159265f;
-
-FixedCamera* camera;
-Camera* freeCamera;
-
-MeshLoader meshLoader;
-
-PointLight pointLights[NR_POINT_LIGHTS];
-Scene* scene;
-
-Scene* deferredScene;
-
-ParticleSystemTransform* particlesOne;
-ParticleSystemTransform* deferredParticles;
-
-float lastFrame = 0.0f;
-float delta = 0.0f;
-int lastMouseY = WinX / 2;
-int lastMouseX = WinY / 2;
-float k = 0.0f;
-
-bool freecam = false;
-bool deferred = true;
-
-float exposure = 1.0f;
-float gamma = 2.2f;
-
-int mode = 0;
-
-mat4 projectionMatrix = MatrixFactory::createPerspectiveProjectionMatrix(30, (float)WinX / (float)WinY, 1, 30);
-mat4 otherProjectionMatrix = MatrixFactory::createOrtographicProjectionMatrix(-2, 2, -2, 2, 1, 30);
-
-unsigned int hdrFBO;
-unsigned int colorBuffers[2];
-unsigned int colorBuffer;
-
-unsigned int pingpongFBO[2];
-unsigned int pingpongColorbuffers[2];
-
-unsigned int rboDepth;
-
-unsigned int reflectionBuffer;
-
-vec4 reflectionPlane;
-
-
-unsigned int ssaoFBO, ssaoBlurFBO;
-unsigned int ssaoColorBuffer, ssaoColorBufferBlur;
-
-unsigned int noiseTexture;
-std::vector<vec3> ssaoKernel;
+#include "Engine.h"
 
 /////////////////////////////////////////////////////////////////////// ERRORS
 
@@ -625,9 +537,6 @@ void destroyTextures() {
 }
 
 /////////////////////////////////////////////////////////////////////// DEFERRED
-unsigned int gBuffer, gDepthBuffer;
-unsigned int gPosition, gNormal, gAlbedoSpec, gBright;
-
 
 void createGBuffer() {
     glGenFramebuffers(1, &gBuffer);
@@ -682,8 +591,7 @@ void createGBuffer() {
 }
 
 /////////////////////////////////////////////////////////////////////// SCENE
-unsigned int quadVAO = 0;
-unsigned int quadVBO;
+
 void renderQuad() {
     if (quadVAO == 0) {
         float quadVertices[] = {
@@ -759,7 +667,6 @@ void drawQuadWithScene() {
     renderQuad();
     bloomFinal->stop();
 }
-
 
 float lerp(float a, float b, float f) {
     return a + f * (b - a);
@@ -1096,7 +1003,6 @@ void loadTextures() {
 
 }
 
-
 void createFrameBuffers() {
     FRAME_BUFFER_MANAGER->insert(FrameBuffer::REFLECTION, new FrameBuffer(Texture::REFLECTION_RENDER_TEXTURE, GL_TEXTURE_2D));
     glGenFramebuffers(1, &ssaoFBO);  glGenFramebuffers(1, &ssaoBlurFBO);
@@ -1122,9 +1028,6 @@ void createFrameBuffers() {
         std::cout << "SSAO Blur Framebuffer not complete!" << std::endl;
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
-
-vec4 YY = vec4(0, 1, 0, 1);
-vec4 ZZ = vec4(0, 0, 1, 1);
 
 void createDeferredScene() {
     Catalog<SceneNode*>* sceneNodeManager = Catalog<SceneNode*>::instance();
@@ -1441,74 +1344,3 @@ int main(int argc, char* argv[]) {
     exit(EXIT_SUCCESS);
 
 }
-
-///////////////////////////////////////////////////////////////////////
- //Render Table Reflection
-    // Calculate Table Camera Position
-    // Render scene into floating point framebuffer with table camera
-    // Blur Bright Fragments
-    // Render final scene from camera perspective into a framebuffer
-
-    // Use that framebuffer as texture for table in the next parts.
-    // something like
-    /** /
-    // Need to create new class that is a Texture that goes and grabs from GL_TEXTUREX and not from
-    // a file, goes and grabs from a framebuffer.
-    Catalog<Texture*>::instance()->insert( "TEMP", new TextureCube( "placeholder",".jpg"));
-    TextureInfo* tableRef = new TextureInfo( "reflection", "reflection", GL_TEXTURE10, 10 );
-    /**/
-
-    /*
-    HOW TO DRAW INTO FRAMEBUFFER AND MAKE THAT A TEXTURE
-    1. CREATE FRAMEBUFFER
-    1.1 Generate it and bind it so we can attach to it
-        glGenFramebuffers( 1, &bufferId );
-        glBindFramebuffer( GL_FRAMEBUFFER, bufferId );
-    1.2 Generate the Texture
-        glGenTextures( 1, &textureId );
-        glBindTexture( GL_TEXTURE_2D, textureId );
-    1.2.1 define it to be 16F so we can have hdr
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
-    1.2.2 Define its normal parameters
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-    1.3 Attach it to the framebuffer( doesnt mention buffer because it has already been bound)
-        glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, textureId, 0 );
-    1.4 create depth buffer
-        glGenRenderbuffers( 1, &depthBuffer );
-        glBindRenderbuffer( GL_RENDERBUFFER, depthBuffer );
-    1.4.1 define its parameters
-        glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
-    1.4.2 attach it
-        glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthBuffer );
-    1.5 specify the buffers into which fragment colors or data values will be written
-    // - Tell OpenGL which color attachments we'll use (of this framebuffer) for rendering
-        unsigned int attachments[2] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1 };
-        glDrawBuffers( 2, attachments );
-    1.6 Finally check if framebuffer is complete
-        if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
-            std::cout << "Framebuffer not complete!" << std::endl;
-        glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-    2. Draw to framebuffer (each time you want to draw to it do this)
-    2.1 Bind it and clean it
-        glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
-        glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
-        glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-    2.2 Do Normal draws of what you want it to keep
-        scene->draw();
-        particlesOne->draw();
-    2.3 Unbind it so next draw goes to basic buffer that is used for pc screen
-        glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-    3 Now to use the texure on specific shaders
-    3.1 Get the shader
-        Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-        ShaderProgram* relevantShader = shaderProgramManager->get( "Relevant" );
-    3.2 Add the uniform texture to the shader
-        relevantShader->use();
-        glActiveTexture( GL_TEXTUREX ); // use one that isnt being used for anything else and be consistent
-        glBindTexture( GL_TEXTURE_2D, textureId ); // id of the texture you drew into
-        relevantShader->addUniform( "TextureNameInShader", x ); //  x because GL_TEXTUREX
-    4. Draw with that shader normaly
-    */
