@@ -1088,7 +1088,7 @@ void loadTextures() {
     //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
     //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
     /**/
-    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/night-skyboxes/SwedishRoyalCastle/", ".jpg", false, true ) );
+    textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/kitchen/", ".png", true, true ) );
 
 
     textureCatalog->insert(Texture::REFLECTION_RENDER_TEXTURE, new RenderTexture(WinX, WinY));
