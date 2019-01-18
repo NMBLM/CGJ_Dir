@@ -1043,7 +1043,7 @@ void createDeferredScene() {
 
     TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6 );
     SceneNode  *skyboxers = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "DeferredSkybox" ),
-        MatrixFactory::createScaleMatrix4( 5.0f, 5.0f, 5.0f ) );
+        MatrixFactory::createScaleMatrix4( 7.0f, 7.0f, 7.0f ) );
     skyboxers->addTexture( skyboxTexture );
     deferredScene->addNode( skyboxers );
     sceneNodeManager->insert( "DEFERRED_SKYBOX", skyboxers );

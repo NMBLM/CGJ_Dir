@@ -22,5 +22,5 @@ void main()
 	gNormal = vec4(normalize(PassNormal),1.0f);
 	gAlbedoSpec.rgb = texture(skybox,TexCoord).rgb;
 	gAlbedoSpec.a = texture(skybox,TexCoord).x;
-	gBright = vec4(-1.0f);
+	gBright = vec4(-10.0f);
 }
