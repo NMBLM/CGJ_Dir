@@ -1,30 +1,26 @@
-
 #version 330 core
-in vec3 Postion;
-in vec2 Texcoord;
-in vec3 Normal;
 
-out vec3 FragPos;
-out vec3 TexCoords;
-out vec3 aNormal;
+in vec3 inPosition;
+in vec2 inTexcoord;
+in vec3 inNormal;
+
 
 uniform mat4 ModelMatrix;
-
 uniform SharedMatrices
 {
     mat4 ViewMatrix;
     mat4 ProjectionMatrix;
 };
 
-void main()
-{
-    vec4 worldPos = ModelMatrix * vec4(Postion, 1.0);
-	//World Coordinates
-    FragPos = worldPos.xyz; 
-	
-    mat3 normalMatrix = transpose(inverse(mat3(ModelMatrix)));
-    aNormal = normalMatrix * aNormal;
-	TexCoords = Postion;
+out vec3 TexCoords;
+out vec3 PassNormal;
+out vec3 WorldPos;
 
-    gl_Position = ProjectionMatrix * ViewMatrix * worldPos;
+void main(void){
+    mat4 normalMatrix = transpose(inverse(ModelMatrix));
+    gl_Position = ProjectionMatrix * ViewMatrix * ModelMatrix * vec4(inPosition,1.0f);
+	TexCoords = inPosition;
+    PassNormal = (normalMatrix * vec4(inNormal, 0.0)).xyz;
+    WorldPos = (ModelMatrix * vec4(inPosition, 1.0)).xyz;
+
 }

@@ -7,6 +7,7 @@ in vec2 texCoord;
 out vec4 gPosition;
 out vec4 gNormal;
 out vec4 gAlbedoSpec;
+out vec4 gBright;
 
 void main()
 {	
@@ -14,5 +15,5 @@ void main()
 	gNormal = vec4(normalize(normal),1.0f);
 	gAlbedoSpec.rgb = vec3(0.57735f,0.57735f,0.57735f);//General Color
 	gAlbedoSpec.a = 0.57735f;//Specular
-
+	gBright = vec4(0.0f);
 }

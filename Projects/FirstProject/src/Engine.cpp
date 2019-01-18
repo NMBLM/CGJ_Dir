@@ -24,7 +24,7 @@
 
 #define CAPTION "CyberNoodles"
 #define NR_POINT_LIGHTS 11
-
+#define MODES_NUM 6
 
 using namespace engine;
 
@@ -185,8 +185,8 @@ void keyRelease( unsigned char key, int x, int y ){
     if( KeyBuffer::instance()->isKeyDown( 'n' ) ) deferred = !deferred;
     if( KeyBuffer::instance()->isKeyDown( 'N' ) ) deferred = !deferred;
 
-    if( KeyBuffer::instance()->isKeyDown( 'm' ) ) mode = ( mode + 1 ) % 4;
-    if( KeyBuffer::instance()->isKeyDown( 'M' ) ) mode = ( mode + 1 ) % 4;
+    if( KeyBuffer::instance()->isKeyDown( 'm' ) ) mode = ( mode + 1 ) % MODES_NUM;
+    if( KeyBuffer::instance()->isKeyDown( 'M' ) ) mode = ( mode + 1 ) % MODES_NUM;
 
     KeyBuffer::instance()->releaseKey( key );
 
@@ -389,9 +389,11 @@ void createShaderProgram(){
     prog->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/bloom_vs.glsl" );
     prog->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/bloom_fs.glsl" );
 
-    prog->bindAttribLocation( VERTICES, "Position" );
-    prog->bindAttribLocation( TEXCOORDS, "Texcoord" );
-    prog->bindAttribLocation( NORMALS, "Normal" );
+    prog->bindAttribLocation( VERTICES, "inPosition" );
+    prog->bindAttribLocation( TEXCOORDS, "inTexcoord" );
+    prog->bindAttribLocation( NORMALS, "inNormal" );
+    prog->bindAttribLocation( TANGENTS, "inTangent" );
+    prog->bindAttribLocation( BI_TANGENTS, "inBiTangent" );
 
     prog->link();
 
@@ -476,6 +478,23 @@ void createDeferredShaderProgram(){
     temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/bloom_deferred_vs.glsl" );
     temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/bloom_deferred_fs.glsl" );
 
+    temp->bindAttribLocation( VERTICES, "inPosition" );
+    temp->bindAttribLocation( TEXCOORDS, "inTexcoord" );
+    temp->bindAttribLocation( NORMALS, "inNormal" );
+    temp->bindAttribLocation( TANGENTS, "inTangent" );
+    temp->bindAttribLocation( BI_TANGENTS, "inBiTangent" );
+
+    temp->link();
+
+    temp->detachShader( "vertex" );
+    temp->detachShader( "fragment" );
+
+    shaderProgramManager->insert( "DeferredBloom", temp );
+
+    temp = new ShaderProgram();// For the skybox
+    temp->attachShader( GL_VERTEX_SHADER, "vertex", "Shaders/Deferred/skybox_deferred_vs.glsl" );
+    temp->attachShader( GL_FRAGMENT_SHADER, "fragment", "Shaders/Deferred/skybox_deferred_fs.glsl" );
+
     temp->bindAttribLocation( VERTICES, "Position" );
     temp->bindAttribLocation( TEXCOORDS, "Texcoord" );
     temp->bindAttribLocation( NORMALS, "Normal" );
@@ -485,7 +504,7 @@ void createDeferredShaderProgram(){
     temp->detachShader( "vertex" );
     temp->detachShader( "fragment" );
 
-    shaderProgramManager->insert( "DeferredBloom", temp );
+    shaderProgramManager->insert( "DeferredSkybox", temp );
 
     temp = new ShaderProgram();// for the particles
     temp->attachShader( GL_GEOMETRY_SHADER, "geometry", "Shaders/Deferred/tfb_billboard_deferred_gs.glsl" );
@@ -524,13 +543,12 @@ void destroyTextures(){
 }
 
 /////////////////////////////////////////////////////////////////////// DEFERRED
-unsigned int gBuffer,gDepthBuffer;
-unsigned int gPosition, gNormal, gAlbedoSpec;
+unsigned int gBuffer, gDepthBuffer;
+unsigned int gPosition, gNormal, gAlbedoSpec, gBright;
 
 void createGBuffer(){
     glGenFramebuffers( 1, &gBuffer );
     glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
-
 
     // - position color buffer
     glGenTextures( 1, &gPosition );
@@ -556,15 +574,22 @@ void createGBuffer(){
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
     glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT2, GL_TEXTURE_2D, gAlbedoSpec, 0 );
 
+    glGenTextures( 1, &gBright );
+    glBindTexture( GL_TEXTURE_2D, gBright );
+    glTexImage2D( GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST );
+    glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST );
+    glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT3, GL_TEXTURE_2D, gBright, 0 );
 
     glGenRenderbuffers( 1, &gDepthBuffer );
     glBindRenderbuffer( GL_RENDERBUFFER, gDepthBuffer );
     glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH_COMPONENT, WinX, WinY );
     glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, gDepthBuffer );
 
+
     // - tell OpenGL which color attachments we'll use (of this framebuffer) for rendering 
-    unsigned int attachments[3] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2 };
-    glDrawBuffers( 3, attachments );
+    unsigned int attachments[4] = { GL_COLOR_ATTACHMENT0, GL_COLOR_ATTACHMENT1, GL_COLOR_ATTACHMENT2, GL_COLOR_ATTACHMENT3 };
+    glDrawBuffers( 4, attachments );
 
     // - Finally check if framebuffer is complete
     if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )
@@ -651,42 +676,6 @@ void drawQuadWithScene(){
     bloomFinal->stop();
 }
 
-void drawDeferredScene(){
-    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
-
-
-    glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
-    glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-    deferredScene->draw();
-    deferredParticles->draw();
-
-    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
-
-    ShaderProgram* renderShader = shaderProgramManager->get( "DeferredSceneRender" );
-    renderShader->use();
-
-    renderShader->addUniform( "mode",(float) mode );
-
-    glActiveTexture( GL_TEXTURE10 );
-    glBindTexture( GL_TEXTURE_2D, gPosition );
-    renderShader->addUniform( "gPosition", 10 );
-
-    glActiveTexture( GL_TEXTURE11 );
-    glBindTexture( GL_TEXTURE_2D, gNormal );
-    renderShader->addUniform( "gNormal", 11 );
-
-    glActiveTexture( GL_TEXTURE12 );
-    glBindTexture( GL_TEXTURE_2D, gAlbedoSpec );
-    renderShader->addUniform( "gAlbedoSpec", 12 );
-
-
-    renderQuad();
-    renderShader->stop();
-
-}
-
 void drawScene(){
     // 1. render scene into floating point framebuffer
     /**/
@@ -719,6 +708,54 @@ void drawScene(){
     // 3. now render floating point color buffer to 2D quad and tonemap HDR colors to default framebuffer's (clamped) color range
     drawQuadWithScene();
     checkOpenGLError( "ERROR: Could not draw scene." );
+}
+
+void drawDeferredScene(){
+    Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
+
+
+    glBindFramebuffer( GL_FRAMEBUFFER, gBuffer );
+    glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    deferredScene->draw();
+    deferredParticles->draw();
+
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    ShaderProgram* renderShader = shaderProgramManager->get( "DeferredSceneRender" );
+    renderShader->use();
+
+    renderShader->addUniform( "mode", ( float )mode );
+
+    glActiveTexture( GL_TEXTURE10 );
+    glBindTexture( GL_TEXTURE_2D, gPosition );
+    renderShader->addUniform( "gPosition", 10 );
+
+    glActiveTexture( GL_TEXTURE11 );
+    glBindTexture( GL_TEXTURE_2D, gNormal );
+    renderShader->addUniform( "gNormal", 11 );
+
+    glActiveTexture( GL_TEXTURE12 );
+    glBindTexture( GL_TEXTURE_2D, gAlbedoSpec );
+    renderShader->addUniform( "gAlbedoSpec", 12 );
+
+    glActiveTexture( GL_TEXTURE13 );
+    glBindTexture( GL_TEXTURE_2D, gBright );
+    renderShader->addUniform( "gBright", 13 );
+
+    glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
+    glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
+    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
+    renderQuad();
+    renderShader->stop();
+    glBindFramebuffer( GL_FRAMEBUFFER, 0 );
+
+    blurBrightScene();
+
+    drawQuadWithScene();
+
 }
 
 /////////////////////////////////////////////////////////////////////// CALLBACKS
@@ -910,6 +947,14 @@ void createDeferredScene(){
     deferredScene->addNode( noodles );
     sceneNodeManager->insert( "DEFERRED_NOODLES", noodles );
 
+    TextureInfo* skyboxTexture = new TextureInfo( Texture::BEACH_BOX, "skybox", GL_TEXTURE6, 6 );
+    SceneNode  *skybox = new SceneNode( meshManager->get( Mesh::SPHERE_SKYBOX ), shaderProgramManager->get( "DeferredSkybox" ),
+        MatrixFactory::createScaleMatrix4( 5.0f, 5.0f, 5.0f ) );
+    skybox->addTexture( skyboxTexture );
+    deferredScene->addNode( skybox );
+    sceneNodeManager->insert( "DEFERRED_SKYBOX", skybox );
+    skybox->disable();
+
     deferredParticles = new ParticleSystemTransform( shaderProgramManager->get( "DeferredTFBDraw" ),
         shaderProgramManager->get( "TFBUpdate" ), camera, vec3( 0.0f, 0.0f, 0.0f ) );
     deferredParticles->InitParticleSystem();
@@ -980,7 +1025,8 @@ void setupLight(){
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     Catalog<ShaderProgram*> *shaderProgramManager = Catalog<ShaderProgram*>::instance();
     SceneNode* lights = new SceneNode( nullptr, shaderProgramManager->get( "default" ) );
-    SceneNode* temp;
+    SceneNode* deferredLights = new SceneNode( nullptr, shaderProgramManager->get( "default" ) );
+    SceneNode* temp, *deferredTemp;
     vec3 pos;
     vec3 color;
     int i = 0;
@@ -990,8 +1036,7 @@ void setupLight(){
     pos = vec3( beginX, 0.7f, 0.0f );
     vec3 dropoff = vec3( 0.0f, 10.0f, 200.0f );
 
-
-    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 100.0f );
+    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 10.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3( 0.1f, 0.1f, 0.1f );
@@ -1003,10 +1048,17 @@ void setupLight(){
         pos.x += offset;
         temp->setColor( vec4( color, 1.0f ) );
         lights->addNode( temp );
+        deferredTemp = new SceneNode( meshManager->get( Mesh::SPHERE ), shaderProgramManager->get( "DeferredLightBox" ),
+            MatrixFactory::createTranslationMatrix( pos ) * boxScale );
+        deferredTemp->setColor( vec4( color, 1.0f ) );
+        deferredLights->addNode( deferredTemp );
     }
     /**/
     scene->addNode( lights );
+    deferredScene->addNode( deferredLights );
     SCENE_NODE_MANAGER->insert( SceneNode::LIGHTS, lights );
+    SCENE_NODE_MANAGER->insert( "DEFERRED_LIGHTS_BOXES", lights );
+
     //SCENE_NODE_MANAGER->get( SceneNode::LIGHTS )->disable();
 }
 

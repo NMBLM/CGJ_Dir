@@ -18,6 +18,7 @@ uniform sampler2D noodleSpec;
 out vec4 gPosition;
 out vec4 gNormal;
 out vec4 gAlbedoSpec;
+out vec4 gBright;
 
 vec3 CalcBumpedNormal(){
     vec3 Normal = normalize(PassNormal);
@@ -41,5 +42,5 @@ void main()
 	//gNormal = normalize(PassNormal);
 	gAlbedoSpec.rgb = texture(noodleTex,TexCoord).rgb;
 	gAlbedoSpec.a = texture(noodleSpec,TexCoord).x;
-
+	gBright = vec4(0.0f);
 }
