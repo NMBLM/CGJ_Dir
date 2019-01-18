@@ -70,6 +70,7 @@ void engine::SceneNode::draw( mat4 fm ){
         for( auto& tex : textures ){
             tex->Activate( shaderProgram );
         }
+
         mesh->draw();
         shaderProgram->stop();
     }

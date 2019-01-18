@@ -11,7 +11,6 @@ uniform SharedMatrices
 };
 
 out vec3 vertex;
-out vec3 normalViewSpace;
 out vec3 normal;
 out vec2 texCoord;
 
@@ -30,22 +29,26 @@ void build_quad(vec4 pos)
     vec3 side = normalize(cross(E,Worldup)) ;
     vec3 up = normalize(cross(side,E)) ;
 
-    normal = E;
-	normalViewSpace = vec3(transpose(inverse(ViewMatrix)) * vec4(E,1.0f));
+    //normal = normalize(vec3(mvp* vec4(E,1.0f)));
+    normal = (transpose(inverse(ViewMatrix)) * vec4(E,1.0f)).xyz;
     vertex = pos.xyz + side* POINT - up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-right
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
     texCoord = vec2(1,0);
     EmitVertex();   
     vertex = pos.xyz - side* POINT - up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 2:bottom-left
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
     texCoord = vec2(0,0);
     EmitVertex();
     vertex = pos.xyz + side* POINT + up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 3:top-right
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
     texCoord = vec2(1,1);
     EmitVertex();
     vertex = pos.xyz - side* POINT + up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 4:top-left
+    vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;
     texCoord = vec2(0,1);
     EmitVertex();
     EndPrimitive();

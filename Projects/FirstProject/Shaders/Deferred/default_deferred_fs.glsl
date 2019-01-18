@@ -10,8 +10,6 @@ uniform sampler2D gAlbedoSpec;
 uniform sampler2D gBright;
 uniform sampler2D gSSAO;
 uniform sampler2D gSSAOBlur;
-uniform sampler2D gPositionViewSpace;
-uniform sampler2D gNormalViewSpace;
 
 uniform SharedMatrices
 {
@@ -48,15 +46,15 @@ void main()
 	viewPos = (ViewMatrix * vec4(viewPos,1.0f)).xyz; // now in ViewSpace
 
     // then calculate lighting as usual
-	vec3 lighting  = vec3(0.3 * Diffuse * texture(gSSAOBlur , TexCoords).r);
-	if(mode > 0.9f ){
-	    lighting  = vec3(0.3 * Diffuse * texture(gSSAOBlur , TexCoords).r);
+	vec3 lighting  = vec3(0.3f * Diffuse * texture(gSSAOBlur , TexCoords).r);
+	if(mode < 0.9f ){
+	    lighting  = vec3( 0.3f * Diffuse * texture(gSSAOBlur , TexCoords).r);
 	}else
 	if( mode > 9.9f && mode < 10.9f){
-		lighting  = vec3(0.3 * Diffuse * texture(gSSAO , TexCoords).r);
+		lighting  = Diffuse * 0.3f;
 	}else
 	if( mode > 10.9f && mode < 11.9f){
-		lighting  = Diffuse * 0.1f;
+		lighting  = vec3( 0.3f * Diffuse * texture(gSSAO , TexCoords).r);
 	}
 	vec3 viewDir  = normalize(viewPos - FragPos);
     for(int i = 0; i < NR_POINT_LIGHTS; ++i)
@@ -78,10 +76,11 @@ void main()
     }
 
 	//Normal Mode
+	FragColor = vec4(lighting, 1.0);
 	if(mode < 0.9f || (mode > 9.9f && mode < 10.9f) || (mode > 10.9f && mode < 11.9f)){
-		FragColor = vec4(lighting, 1.0);
 		vec4 bright = texture(gBright, TexCoords).rgba;
 		if(bright.r > 0.0f || bright.g > 0.0f || bright.b > 0.0f){
+			FragColor = bright;
 			BrightColor = bright;
 		}else{
 			float brightness = dot(FragColor.xyz, vec3(0.2126, 0.7152, 0.0722));
@@ -91,13 +90,13 @@ void main()
 				BrightColor = vec4(0.0, 0.0, 0.0, 1.0);
 			}
 		}
-	}else // Position in ViewSpace
+	}else // Position in ViewSpace the one used for calculating the lights
 	if(mode > 0.9f && mode < 1.9f){
-		FragColor = vec4(texture(gPositionViewSpace, TexCoords).rgb,1.0f);
+		FragColor = vec4(texture(gPosition, TexCoords).rgb,1.0f);
 		BrightColor = vec4(0.0f);
-	}else // Normals in ViewSpace
+	}else // Normals in ViewSpace the one used for calculating the lights
 	if(mode > 1.9f && mode < 2.9f){
-		FragColor = vec4(texture(gNormalViewSpace, TexCoords).rgb,1.0f);
+		FragColor = vec4(texture(gNormal, TexCoords).rgb,1.0f);
 		BrightColor = vec4(0.0f);
 	}else // Basic Color
 	if(mode > 2.9f && mode < 3.9f){
@@ -145,11 +144,11 @@ void main()
 		BrightColor = vec4(0.0f);
 	}else // Position in WorldSpace for being cool
 	if(mode > 7.9f && mode < 8.9f){
-		FragColor = normalize(vec4(texture(gPosition, TexCoords).rgb,1.0f));
+		FragColor = inverse(ViewMatrix) * vec4(texture(gPosition, TexCoords).rgb,1.0f);
 		BrightColor = vec4(0.0f);
 	}else // Normals in WorldSpace for being cool
 	if(mode > 8.9f && mode < 9.9f){
-		FragColor = normalize(vec4(texture(gNormal, TexCoords).rgb,1.0f));
+		FragColor = inverse(transpose(inverse(ViewMatrix))) * vec4(texture(gNormal, TexCoords).rgb,1.0f);
 		BrightColor = vec4(0.0f);
 	}
 	//This way we can force anything that has gBright to be bloomed

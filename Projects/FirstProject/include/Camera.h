@@ -27,7 +27,7 @@ class Camera{
  
 
     const float SPEED = 20.0f;
-    const float vSPEED = 5.0f;
+    const float vSPEED = 1.0f;
     float lastFrame = 0.0f;
 
     vec4 reflectionPlane;
