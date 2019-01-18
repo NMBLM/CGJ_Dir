@@ -179,6 +179,10 @@
     <None Include="shaders\reflection_vs.glsl" />
     <None Include="Shaders\skybox_fs.glsl" />
     <None Include="Shaders\skybox_vs.glsl" />
+    <None Include="Shaders\ssao_blur_fs.glsl" />
+    <None Include="Shaders\ssao_fs.glsl" />
+    <None Include="Shaders\ssao_test_fs.glsl" />
+    <None Include="Shaders\ssao_vs.glsl" />
     <None Include="Shaders\texShader_color_fs.glsl" />
     <None Include="Shaders\texShader_color_vs.glsl" />
     <None Include="Shaders\texShader_fs.glsl" />

@@ -34,6 +34,9 @@
     <Filter Include="Shader Files\Deferred">
       <UniqueIdentifier>{40e9b812-7777-4379-b83f-ee347f713c28}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shader Files\SSAO">
+      <UniqueIdentifier>{ca34a3e3-6225-48bf-bca1-f864fcad7c25}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="Shaders\cube_fs.glsl">
@@ -227,6 +230,18 @@
     </None>
     <None Include="Shaders\Deferred\bloom_deferred_fs.glsl">
       <Filter>Shader Files\Deferred</Filter>
+    </None>
+    <None Include="Shaders\ssao_vs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
+    <None Include="Shaders\ssao_fs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
+    <None Include="Shaders\ssao_test_fs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
+    </None>
+    <None Include="Shaders\ssao_blur_fs.glsl">
+      <Filter>Shader Files\SSAO</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
