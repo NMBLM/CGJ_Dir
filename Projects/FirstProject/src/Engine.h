@@ -29,7 +29,7 @@
 
 using namespace engine;
 
-int WinX = 640, WinY = 640;
+int WinX = 1280, WinY = 720;
 int lastWinX = WinX, lastWinY = WinY;
 int WindowHandle = 0;
 unsigned int FrameCount = 0;

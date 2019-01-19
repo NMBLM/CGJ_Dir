@@ -40,7 +40,7 @@ void main()
 	gPosition = vec4(WorldPos,1.0f);
 	gNormal = vec4(CalcBumpedNormal(),1.0f);
 	//gNormal = normalize(PassNormal);
-	gAlbedoSpec.rgb = texture(noodleTex,TexCoord).rgb;
+	gAlbedoSpec.rgb = texture(noodleTex,TexCoord).rgb / 2.0f;
 	gAlbedoSpec.a = texture(noodleSpec,TexCoord).x;
     gPosition = ViewMatrix * vec4(WorldPos,1.0f);
     gNormal = vec4(CalcBumpedNormal(),1.0f);

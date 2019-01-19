@@ -24,9 +24,9 @@ namespace engine {
         int nrChannels{};
 
         static constexpr const char* const WOOD = "WOOD";
-        static constexpr const char* const BRICK = "BRICK";
-        static constexpr const char* const BRICK_SPECULAR = "BRICK_SPECULAR";
-        static constexpr const char* const BRICK_NORMAL = "BRICK_NORMAL";
+        static constexpr const char* const TABLE = "TABLE";
+        static constexpr const char* const TABLE_SPECULAR = "TABLE_SPECULAR";
+        static constexpr const char* const TABLE_NORMAL = "TABLE_NORMAL";
 
         static constexpr const char* const WORLD_CUBE = "WORLD_CUBE";
         static constexpr const char* const BEACH_BOX = "BEACH_BOX";

@@ -968,12 +968,7 @@ void setupCamera() {
 
 void loadMeshes() {
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
-    //meshManager->insert(Mesh::TRIANGLE, meshLoader.createMesh(std::string("Mesh/Triangle.obj")));
-    //meshManager->insert(Mesh::SQUARE, meshLoader.createMesh(std::string("Mesh/Square.obj")));
-    //meshManager->insert(Mesh::PARALLELOGRAM, meshLoader.createMesh(std::string("Mesh/Parallelogram.obj")));
-    //meshManager->insert(Mesh::TABLE, meshLoader.createMesh(std::string("Mesh/Table.obj")));
     meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
-    meshManager->insert(Mesh::CUBE, meshLoader.createMesh(std::string("Mesh/Cube.obj")));
     meshManager->insert(Mesh::SPHERE, meshLoader.createMesh(std::string("Mesh/Sphere.obj")));
     meshManager->insert(Mesh::CUBE_SKYBOX, meshLoader.createMesh(std::string("Mesh/skybox.obj")));
     meshManager->insert(Mesh::SPHERE_SKYBOX, meshLoader.createMesh(std::string("Mesh/sphereSkybox.obj")));
@@ -983,23 +978,17 @@ void loadMeshes() {
 void loadTextures() {
 
     Catalog<Texture*>* textureCatalog = Catalog<Texture*>::instance();
-    textureCatalog->insert(Texture::WOOD, new Texture("Textures/wood.jpg"));
-    //textureCatalog->insert( Texture::DEFAULT, new Texture( "Textures/errorTexture.jpg" ) );
-    /**/
     textureCatalog->insert( Texture::NOODLE_TEXTURE, new Texture( "Textures/noodle_texture_simple.jpg" ) );
-    textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal_map.jpg" ) );
-    textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular_map.jpg" ) );
-    textureCatalog->insert( Texture::BRICK, new Texture( "Textures/bricks.jpg" ) );
-    textureCatalog->insert( Texture::BRICK_NORMAL, new Texture( "Textures/bricks_normal.jpg" ) );
-    textureCatalog->insert( Texture::BRICK_SPECULAR, new Texture( "Textures/bricks_disp.jpg" ) );
-    //textureCatalog->insert(Texture::NOODLE_MAP_DISPLACEMENT, new Texture("Textures/noodle_displacement_map.jpg"));
-    //textureCatalog->insert(Texture::NOODLE_MAP_AO, new Texture("Textures/noodle_ao_map.jpg"));
-    /**/
+    textureCatalog->insert( Texture::NOODLE_MAP_NORMAL, new Texture( "Textures/noodle_normal.jpg" ) );
+    textureCatalog->insert( Texture::NOODLE_MAP_SPECULAR, new Texture( "Textures/noodle_specular.jpg" ) );
+
+    textureCatalog->insert( Texture::TABLE, new Texture( "Textures/wood.jpg" ) );
+    textureCatalog->insert( Texture::TABLE_NORMAL, new Texture( "Textures/wood_normal.jpg" ) );
+    textureCatalog->insert( Texture::TABLE_SPECULAR, new Texture( "Textures/wood_specular.jpg" ) );
+
     textureCatalog->insert( Texture::BEACH_BOX, new TextureCube( "Textures/skybox/kitchen/", ".png", true, true ) );
 
-
     textureCatalog->insert(Texture::REFLECTION_RENDER_TEXTURE, new RenderTexture(WinX, WinY));
-
 
 }
 
@@ -1056,17 +1045,17 @@ void createDeferredScene() {
     deferredScene->addNode( noodles );
     sceneNodeManager->insert( "DEFERRED_NOODLES", noodles );
 
-    TextureInfo* bricksTextureInfo = new TextureInfo( Texture::BRICK, "noodleTex", GL_TEXTURE2, 2 );
-    TextureInfo* bricksNormalInfo = new TextureInfo( Texture::BRICK_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
-    TextureInfo* bricksSpecularInfo = new TextureInfo( Texture::BRICK_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
+    TextureInfo* tableTextureInfo = new TextureInfo( Texture::TABLE, "noodleTex", GL_TEXTURE2, 2 );
+    TextureInfo* tableNormalInfo = new TextureInfo( Texture::TABLE_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
+    TextureInfo* tableSpecularInfo = new TextureInfo( Texture::TABLE_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
     SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), shaderProgramManager->get( "DeferredBloom" ),
         MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.1f, 0.0f ) ) * 
         MatrixFactory::createScaleMatrix4( 1.0f, 1.0f, 1.0f ) *
         MatrixFactory::createRotationMatrix4(90 ,ZZ));
-    table->addTexture( bricksTextureInfo );
-    table->addTexture( bricksNormalInfo );
-    table->addTexture( bricksSpecularInfo );
+    table->addTexture( tableTextureInfo );
+    table->addTexture( tableNormalInfo );
+    table->addTexture( tableSpecularInfo );
     deferredScene->addNode( table );
     sceneNodeManager->insert( "DEFERRED_TABLE", table );
 
@@ -1154,10 +1143,10 @@ void setupLight() {
     float beginX = -0.3f;
     float offset = (endX - beginX) / (NR_POINT_LIGHTS - 1);
     pos = vec3(beginX, 0.7f, 0.0f);
-    vec3 dropoff = vec3(1.0f, 5.0f, 50.0f);
+    vec3 dropoff = vec3(10.0f, 5.0f, 50.0f);
 
-    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 100.0f );
-    color = vec3( 139.0f, 0.0f, 139.0f )*( 1 / 10.0f );
+    color = vec3( 186.0f, 85.0f, 211.0f )*( 1 / 50.0f );
+    //color = vec3( 148.0f, 0.0f, 211.0f)*( 1 / 15.0f );
     vec3 ambient = color;
     vec3 diffuse = color;
     vec3 specular = vec3(0.1f, 0.1f, 0.1f);
