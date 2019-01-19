@@ -95,3 +95,8 @@ unsigned int quadVBO;
 
 vec4 YY = vec4( 0, 1, 0, 1 );
 vec4 ZZ = vec4( 0, 0, 1, 1 );
+
+//CATALOGS
+Catalog<Texture*>* TextureCat = Catalog<Texture*>::instance();
+Catalog<ShaderProgram*> *ShaderProgramCat = Catalog<ShaderProgram*>::instance();
+

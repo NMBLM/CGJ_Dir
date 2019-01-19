@@ -96,25 +96,6 @@ void ShaderProgram::addUniform( const char * name, mat4 m ){
 
 void ShaderProgram::use(){
     glUseProgram( id );
-    //for (auto& m : unimat4) {
-    //	glUniformMatrix4fv(UniformId(m.first.c_str()), 1, GL_FALSE, m.second.data());
-    //}
-
-    //for (auto& m : univec4) {
-    //	glUniform4fv(UniformId(m.first.c_str()), 1, m.second.data());
-    //}
-
-    //for (auto& m : univec3) {
-    //	glUniform3fv(UniformId(m.first.c_str()), 1,  m.second.data());
-    //}
-
-    //for (auto& m : univec2) {
-    //	glUniform2fv(UniformId(m.first.c_str()), 1, m.second.data());
-    //}
-
-    //for (auto& m : unifloat) {
-    //	glUniform1f(UniformId(m.first.c_str()), m.second);
-    //}
 }
 
 void ShaderProgram::stop(){

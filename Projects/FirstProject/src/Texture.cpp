@@ -1,30 +1,28 @@
 #include "Texture.h"
 namespace engine{
-    unsigned int Texture::unit = GL_TEXTURE0;
 
     Texture::Texture(){
-        unit++;
         std::cout << "empty" << std::endl;
     }
 
-    Texture::Texture( const char* filename ){
-
+    Texture::Texture( GLint textureType ){
         glGenTextures( 1, &textureId );
-        glBindTexture( GL_TEXTURE_2D, textureId );
-        // set the texture wrapping/filtering options (on the currently bound texture object)
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        // load and generate the texture
+        target = textureType;
+    }
+
+    void Texture::LoadTexture(const char* filename,GLint level, GLint internalFormat, GLenum format) {
         int width, height, nrChannels;
+
+        glBindTexture( GL_TEXTURE_2D, textureId );
+
         unsigned char *data = stbi_load( filename, &width, &height, &nrChannels, 0 );
         if( data ){
-            unit++;
-            thisUnit = int( unit );
+
             std::cout << filename << " Width " << width << " height " << height << std::endl;
-            glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
-            glGenerateMipmap( GL_TEXTURE_2D );
+            glTexImage2D( target, level , internalFormat, width, height, 0, format, GL_UNSIGNED_BYTE, data );
+            if( target == GL_TEXTURE_2D ){
+                glGenerateMipmap( target );
+            }
         } else{
             std::cout << "Failed to load texture in " << filename << std::endl;
             LoadDefault();
@@ -33,6 +31,7 @@ namespace engine{
     }
 
     void Texture::LoadDefault(){
+        int width, height, nrChannels;
         unsigned char *data = stbi_load( DEFAULT_TEXTURE, &width, &height, &nrChannels, 0 );
         std::cout << "Width " << width << " Height" << height << std::endl;
         if( data ){
@@ -44,19 +43,43 @@ namespace engine{
         }
         stbi_image_free( data );
     }
-    unsigned int Texture::getId(){
+    unsigned int Texture::GetId() const{
         return textureId;
     }
 
-    GLuint Texture::getType(){
-        return GL_TEXTURE_2D;
+    GLuint Texture::GetType() const {
+        return target;
+    }
+
+    void Texture::SetTextureWrapS( const unsigned option ) const{
+        glBindTexture( target, textureId );
+        glTexParameteri( target, GL_TEXTURE_WRAP_S, option );
+    }
+    void Texture::SetTextureWrapT( const unsigned option ) const{
+        glBindTexture( target, textureId );
+        glTexParameteri( target, GL_TEXTURE_WRAP_T, option );
+    }
+    void Texture::SetTextureWrapR( const unsigned option ) const{
+        glBindTexture( target, textureId );
+        glTexParameteri( target, GL_TEXTURE_WRAP_R, option );
+    }
+    void Texture::SetTextureMinFilter( const unsigned option ) const{
+        glBindTexture( target, textureId );
+        glTexParameteri( target, GL_TEXTURE_MIN_FILTER, option );
+    }
+    void Texture::SetTextureMagFilter( const unsigned option ) const{
+        glBindTexture( target, textureId );
+        glTexParameteri( target, GL_TEXTURE_MAG_FILTER, option );
     }
 
     TextureCube::TextureCube() = default;
 
     TextureCube::TextureCube( const char* filename, const char* filetype, bool bigRGB, bool fixed ){
+        int width, height, nrChannels;
+
         glGenTextures( 1, &textureId );
-        glBindTexture( GL_TEXTURE_CUBE_MAP, textureId );
+        target = GL_TEXTURE_CUBE_MAP;
+        glBindTexture( target, textureId );
         std::cout << "CUBE TEXTURE " << textureId;
         // set the texture wrapping/filtering options (on the currently bound texture object)
         glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -110,11 +133,11 @@ namespace engine{
             if( data ){
                 if( bigRGB ){
                     glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-                        width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+                                  width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
                 }
                 if( !bigRGB ){
                     glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
-                        width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+                                  width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
                 }
             } else{
                 std::cout << "Failed to load cubemap texture" << std::endl;
@@ -124,8 +147,11 @@ namespace engine{
         stbi_image_free( data );
     }
     TextureCube::TextureCube( const char* filename, const char* filetype, bool bigRGB ){
+        int width, height, nrChannels;
+
         glGenTextures( 1, &textureId );
-        glBindTexture( GL_TEXTURE_CUBE_MAP, textureId );
+        target = GL_TEXTURE_CUBE_MAP;
+        glBindTexture( target, textureId );
         std::cout << "CUBE TEXTURE " << textureId;
         // set the texture wrapping/filtering options (on the currently bound texture object)
         glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
@@ -169,11 +195,11 @@ namespace engine{
             if( data ){
                 if( temp == std::string( ".png" ) ){
                     glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-                        width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
+                                  width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data );
                 }
                 if( temp == std::string( ".jpg" ) ){
                     glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB,
-                        width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
+                                  width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data );
                 }
             } else{
                 std::cout << "Failed to load cubemap texture" << std::endl;
@@ -182,50 +208,25 @@ namespace engine{
         }
         stbi_image_free( data );
     }
-    GLuint TextureCube::getType(){
-        return GL_TEXTURE_CUBE_MAP;
-    }
 
     RenderTexture::RenderTexture() = default;
 
-    RenderTexture::RenderTexture( int width, int height ){
+    RenderTexture::RenderTexture(const unsigned int textureType){
+        target = textureType;
         glGenTextures( 1, &textureId );
-        glBindTexture( GL_TEXTURE_2D, textureId );
-        // set the texture wrapping/filtering options (on the currently bound texture object)
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        //generate the texture
-        unit++;
-        thisUnit = int( unit );
-        glTexImage2D( GL_TEXTURE_2D, 0, GL_RGB16F, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-        glGenerateMipmap( GL_TEXTURE_2D );
     }
 
-    GLuint RenderTexture::getType(){
-        return GL_TEXTURE_2D;
+    void RenderTexture::LoadTexture( const int width, const int height, GLint level, GLint internalFormat, GLenum format, GLenum type ) {
+        glBindTexture( target, textureId );
+        glTexImage2D( target, level, internalFormat, width, height, 0, format, type, NULL );
+        if(target == GL_TEXTURE_2D)glGenerateMipmap( target );
     }
 
-    RenderCubeTexture::RenderCubeTexture() = default;
-
-    RenderCubeTexture::RenderCubeTexture( int width, int height ){
-        glGenTextures( 1, &textureId );
-        glBindTexture( GL_TEXTURE_CUBE_MAP, textureId );
-        // set the texture wrapping/filtering options (on the currently bound texture object)
-        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
-        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE );
-        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE );
-        glTexParameteri( GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE );
-        for( GLuint i = 0; i < 6; i++ ){
-                    glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F,
-                        width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL );
-        }
-    }
-
-    GLuint RenderCubeTexture::getType(){
-        return GL_TEXTURE_CUBE_MAP;
+    void RenderTexture::LoadTexture(const int width, const int height, GLint level, GLint internalFormat, GLenum format,
+        GLenum type, std::vector<vec3>::pointer data) {
+        glBindTexture( target, textureId );
+        glTexImage2D( target, level, internalFormat, width, height, 0, format, type, data );
+        if( target == GL_TEXTURE_2D )glGenerateMipmap( target );
     }
 
 }

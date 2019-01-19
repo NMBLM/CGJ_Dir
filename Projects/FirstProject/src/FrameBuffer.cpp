@@ -18,7 +18,7 @@ namespace engine{
         glBindFramebuffer( GL_FRAMEBUFFER, bufferId );
 
         glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, textureType,
-                                textureCatalog->get( textureName )->getId(), 0 );
+                                textureCatalog->get( textureName )->GetId(), 0 );
 
         //1.6 Finally check if frameBuffer is complete
         if( glCheckFramebufferStatus( GL_FRAMEBUFFER ) != GL_FRAMEBUFFER_COMPLETE )

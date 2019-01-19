@@ -11,6 +11,7 @@ namespace engine{
     }
 
     Mesh* MeshLoader::createMesh( const std::string& filename ){
+        std::cout << "Loading Mesh: " << filename << std::endl;
         loadMeshData( filename );
         Mesh* m = processMeshData();
         freeMeshData();
