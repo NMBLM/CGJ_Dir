@@ -991,6 +991,7 @@ void setupCamera() {
 void loadMeshes() {
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
     meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
+    meshManager->insert(Mesh::TABLE, meshLoader.createMesh( std::string( "Mesh/Table.obj" ) ) );
     meshManager->insert(Mesh::SPHERE, meshLoader.createMesh(std::string("Mesh/Sphere.obj")));
     meshManager->insert(Mesh::CUBE_SKYBOX, meshLoader.createMesh(std::string("Mesh/skybox.obj")));
     meshManager->insert(Mesh::SPHERE_SKYBOX, meshLoader.createMesh(std::string("Mesh/sphereSkybox.obj")));
@@ -1071,10 +1072,9 @@ void createDeferredScene() {
     TextureInfo* tableNormalInfo = new TextureInfo( Texture::TABLE_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
     TextureInfo* tableSpecularInfo = new TextureInfo( Texture::TABLE_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
-    SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), shaderProgramManager->get( "DeferredBloom" ),
+    SceneNode  *table = new SceneNode( meshManager->get( Mesh::TABLE ), shaderProgramManager->get( "DeferredBloom" ),
         MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.1f, 0.0f ) ) * 
-        MatrixFactory::createScaleMatrix4( 1.0f, 1.0f, 1.0f ) *
-        MatrixFactory::createRotationMatrix4(90 ,ZZ));
+        MatrixFactory::createScaleMatrix4( 1.0f, 1.0f, 1.0f ) );// * MatrixFactory::createRotationMatrix4(90 ,ZZ));
     table->addTexture( tableTextureInfo );
     table->addTexture( tableNormalInfo );
     table->addTexture( tableSpecularInfo );
