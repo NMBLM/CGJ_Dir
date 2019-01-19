@@ -694,7 +694,7 @@ void renderOcclusion() {
     glClear(GL_COLOR_BUFFER_BIT);
     ssaoShader->use();
     // Send kernel + rotation 
-    for (unsigned int i = 0; i < occlusionSamples; ++i) {
+    for (int i = 0; i < occlusionSamples; ++i) {
         std::string s = "samples[" + std::to_string(i) + +"]";
         ssaoShader->addUniform(s.c_str(), ssaoKernel[i]);
     }
@@ -736,7 +736,7 @@ void drawDeferredScene() {
     glClear(GL_COLOR_BUFFER_BIT);
     ssaoShader->use();
     // Send kernel + rotation 
-    for (unsigned int i = 0; i < occlusionSamples; ++i) {
+    for (int i = 0; i < occlusionSamples; ++i) {
         std::string s = "samples[" + std::to_string(i) + +"]";
         ssaoShader->addUniform(s.c_str(), ssaoKernel[i]);
     }
@@ -1230,7 +1230,7 @@ void setupHDR() {
     glGenTextures(2, colorBuffers);
     for (unsigned int i = 0; i < 2; i++) {
         glBindTexture(GL_TEXTURE_2D, colorBuffers[i]);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA16F, WinX, WinY, 0, GL_RGBA, GL_FLOAT, NULL);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
@@ -1278,11 +1278,11 @@ void setUpSSAO() {
 // ----------------------
     std::uniform_real_distribution<GLfloat> randomFloats(0.0f, 1.0f); // generates random floats between 0.0 and 1.0
     std::default_random_engine generator;
-    for (unsigned int i = 0; i < 64; ++i) {
+    for (unsigned int i = 0; i < MAX_SAMPLES; ++i) {
         vec3 sample(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator));
         sample = normalize(sample);
         sample *= randomFloats(generator);
-        float scale = float(i) / 64.0f;
+        float scale = float(i) / MAX_SAMPLES;
 
         // scale samples s.t. they're more aligned to center of kernel
         scale = lerp(0.1f, 1.0f, scale * scale);
