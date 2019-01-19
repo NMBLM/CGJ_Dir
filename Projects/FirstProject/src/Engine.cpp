@@ -133,18 +133,6 @@ void keyRelease(unsigned char key, int x, int y) {
                 break;
         }
     }
-    if( KeyBuffer::instance()->isKeyDown( '+' ) ){
-        occlusionSamples += 1;
-        occlusionSamples = ( occlusionSamples > MAX_SAMPLES ) ? MAX_SAMPLES : occlusionSamples;
-        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
-    }
-
-    if( KeyBuffer::instance()->isKeyDown( '-' ) ){
-        occlusionSamples -= 1;
-        occlusionSamples = ( occlusionSamples < 0 )? 0 : occlusionSamples;
-        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
-    }
-
     KeyBuffer::instance()->releaseKey(key);
 }
 
@@ -222,6 +210,18 @@ void update() {
         gamma = (gamma > 0.0f) ? gamma : 0.0f;
         std::cout << "Gamma: " << gamma << std::endl;
     }
+    if( KeyBuffer::instance()->isKeyDown( '+' ) ){
+        occlusionSamples += 1;
+        occlusionSamples = ( occlusionSamples > MAX_SAMPLES ) ? MAX_SAMPLES : occlusionSamples;
+        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
+    }
+
+    if( KeyBuffer::instance()->isKeyDown( '-' ) ){
+        occlusionSamples -= 1;
+        occlusionSamples = ( occlusionSamples < 0 ) ? 0 : occlusionSamples;
+        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
+    }
+
 }
 
 static bool isOpenGLError() {
