@@ -81,8 +81,8 @@ void main()
 	if(mode < 0.9f || (mode > 9.9f && mode < 10.9f) || (mode > 10.9f && mode < 11.9f)){
 		vec4 bright = texture(gBright, TexCoords).rgba;
 		if(bright.r > 0.0f || bright.g > 0.0f || bright.b > 0.0f){
-			FragColor = bright;
-			BrightColor = bright;
+			FragColor = texture(gAlbedoSpec, TexCoords).rgba;
+			BrightColor = FragColor;
 		}else{
 			float brightness = dot(FragColor.xyz, vec3(0.2126, 0.7152, 0.0722));
 			if(brightness > 1.0){
