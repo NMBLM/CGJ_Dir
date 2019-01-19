@@ -95,3 +95,6 @@ unsigned int quadVBO;
 
 vec4 YY = vec4( 0, 1, 0, 1 );
 vec4 ZZ = vec4( 0, 0, 1, 1 );
+
+const int MAX_SAMPLES = 128;
+int occlusionSamples = 64;

@@ -3,15 +3,20 @@ out float FragColor;
   
 in vec2 TexCoords;
 
+
 uniform sampler2D gPosition;
 uniform sampler2D gNormal;
 uniform sampler2D texNoise;
 
-const int sampleNumber = 64;
+uniform float sampleNumber;
+
+
+//const int sampleNumber = 64;
 const float radius = 1.0f;
 const float bias = 0.025f;
 
-uniform vec3 samples[64];
+const int MAX_SAMPLES = 128;
+uniform vec3 samples[MAX_SAMPLES];
 
 uniform SharedMatrices
 {
@@ -31,6 +36,8 @@ void main(){
     vec3 tangent = normalize(randomVec - normal * dot(randomVec, normal));
     vec3 bitangent = cross(normal, tangent);
     mat3 TBN = mat3(tangent, bitangent, normal);
+	// can only pass float uniform so have to turn it into an int
+
     // iterate over the sample kernel and calculate occlusion factor
     float occlusion = 0.0;
     for(int i = 0; i < sampleNumber; ++i){

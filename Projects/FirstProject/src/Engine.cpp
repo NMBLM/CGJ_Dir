@@ -133,6 +133,18 @@ void keyRelease(unsigned char key, int x, int y) {
                 break;
         }
     }
+    if( KeyBuffer::instance()->isKeyDown( '+' ) ){
+        occlusionSamples += 1;
+        occlusionSamples = ( occlusionSamples > MAX_SAMPLES ) ? MAX_SAMPLES : occlusionSamples;
+        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
+    }
+
+    if( KeyBuffer::instance()->isKeyDown( '-' ) ){
+        occlusionSamples -= 1;
+        occlusionSamples = ( occlusionSamples < 0 )? 0 : occlusionSamples;
+        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
+    }
+
     KeyBuffer::instance()->releaseKey(key);
 }
 
@@ -682,16 +694,24 @@ void renderOcclusion() {
     glClear(GL_COLOR_BUFFER_BIT);
     ssaoShader->use();
     // Send kernel + rotation 
-    for (unsigned int i = 0; i < 64; ++i) {
+    for (unsigned int i = 0; i < occlusionSamples; ++i) {
         std::string s = "samples[" + std::to_string(i) + +"]";
         ssaoShader->addUniform(s.c_str(), ssaoKernel[i]);
     }
     glActiveTexture(GL_TEXTURE10);
     glBindTexture(GL_TEXTURE_2D, gPosition);
+    ssaoShader->addUniform( "gPosition", 10 );
+
     glActiveTexture(GL_TEXTURE11);
     glBindTexture(GL_TEXTURE_2D, gNormal);
+    ssaoShader->addUniform( "gNormal", 11 );
+
     glActiveTexture(GL_TEXTURE12);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
+    ssaoShader->addUniform( "noiseTexture", 12 );
+
+    ssaoShader->addUniform( "sampleNumber",(float) occlusionSamples );
+
     renderQuad();
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
@@ -716,7 +736,7 @@ void drawDeferredScene() {
     glClear(GL_COLOR_BUFFER_BIT);
     ssaoShader->use();
     // Send kernel + rotation 
-    for (unsigned int i = 0; i < 64; ++i) {
+    for (unsigned int i = 0; i < occlusionSamples; ++i) {
         std::string s = "samples[" + std::to_string(i) + +"]";
         ssaoShader->addUniform(s.c_str(), ssaoKernel[i]);
     }
@@ -730,6 +750,8 @@ void drawDeferredScene() {
     glActiveTexture(GL_TEXTURE12);
     glBindTexture(GL_TEXTURE_2D, noiseTexture);
     ssaoShader->addUniform("texNoise", 12);
+
+    ssaoShader->addUniform( "sampleNumber",(float) occlusionSamples );
 
     renderQuad();
 
