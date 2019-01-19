@@ -16,9 +16,6 @@
     <Filter Include="Shader Files">
       <UniqueIdentifier>{9973ed50-5a7e-479d-9f5f-f475e7fed323}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Shader Files\OldShaders">
-      <UniqueIdentifier>{649ebaee-9296-42a4-8a0b-df264ce01c69}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Shader Files\Particles">
       <UniqueIdentifier>{c1999c9c-718f-4909-be85-e9ef9a7980fa}</UniqueIdentifier>
     </Filter>
@@ -39,69 +36,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\cube_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\cube_fs_extra.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\cube_vs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\cube_vs_shared.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\force_color_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\force_color_rcv_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\force_color_vs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\FragmentShader.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\FragmentShaderCamera.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\particle_withgs_vs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\particle_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\particle_gs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\particle_light_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\particle_light_proper_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\particle_vs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\texShader_color_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\texShader_color_vs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\texShader_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\texShader_vs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\VertexShader.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\VertexShaderCamera.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
     <None Include="Shaders\tfb_billboard_fs.glsl">
       <Filter>Shader Files\Particles</Filter>
     </None>
@@ -161,15 +95,6 @@
     </None>
     <None Include="Shaders\bloom_final_vs.glsl">
       <Filter>Shader Files\Bloom\Blur</Filter>
-    </None>
-    <None Include="Shaders\tfb_update_fs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\tfb_update_gs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
-    </None>
-    <None Include="Shaders\tfb_update_vs.glsl">
-      <Filter>Shader Files\OldShaders</Filter>
     </None>
     <None Include="Shaders\bloom_cube_fs.glsl">
       <Filter>Shader Files\Bloom\Blur</Filter>

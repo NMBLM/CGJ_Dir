@@ -29,8 +29,7 @@ void build_quad(vec4 pos)
     vec3 side = normalize(cross(E,Worldup)) ;
     vec3 up = normalize(cross(side,E)) ;
 
-    //normal = normalize(vec3(mvp* vec4(E,1.0f)));
-    normal = (transpose(inverse(ViewMatrix)) * vec4(E,1.0f)).xyz;
+    normal = normalize((transpose(inverse(ViewMatrix)) * vec4(E,1.0f)).xyz);
     vertex = pos.xyz + side* POINT - up* POINT;
     gl_Position = mvp * vec4(vertex,1.0f);    // 1:bottom-right
     vertex = (ViewMatrix * vec4(vertex,1.0f)).xyz;

@@ -11,7 +11,7 @@ out vec4 gBright;
 
 void main()
 {	
-	gPosition = vec4(vertex,1.0f);	//WorldSpace
+	gPosition = vec4(vertex,1.0f);	
 	gNormal = vec4(normalize(normal),1.0f);
 	gAlbedoSpec.rgb = vec3(0.57735f,0.57735f,0.57735f);//General Color
 	gAlbedoSpec.a = 0.57735f;//Specular

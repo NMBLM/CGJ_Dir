@@ -100,3 +100,5 @@ vec4 ZZ = vec4( 0, 0, 1, 1 );
 Catalog<Texture*>* TextureCat = Catalog<Texture*>::instance();
 Catalog<ShaderProgram*> *ShaderProgramCat = Catalog<ShaderProgram*>::instance();
 
+const int MAX_SAMPLES = 128;
+int occlusionSamples = 64;

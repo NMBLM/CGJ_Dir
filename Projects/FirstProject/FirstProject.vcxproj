@@ -137,10 +137,6 @@
     <None Include="Shaders\bloom_vs.glsl" />
     <None Include="Shaders\blur_fs.glsl" />
     <None Include="Shaders\blur_vs.glsl" />
-    <None Include="Shaders\cube_fs.glsl" />
-    <None Include="Shaders\cube_fs_extra.glsl" />
-    <None Include="Shaders\cube_vs.glsl" />
-    <None Include="Shaders\cube_vs_shared.glsl" />
     <None Include="Shaders\default_fs.glsl" />
     <None Include="Shaders\default_vs.glsl" />
     <None Include="Shaders\Deferred\bloom_deferred_fs.glsl" />
@@ -154,11 +150,6 @@
     <None Include="Shaders\Deferred\tfb_billboard_deferred_fs.glsl" />
     <None Include="Shaders\Deferred\tfb_billboard_deferred_gs.glsl" />
     <None Include="Shaders\Deferred\tfb_billboard_deferred_vs.glsl" />
-    <None Include="Shaders\force_color_fs.glsl" />
-    <None Include="Shaders\force_color_rcv_fs.glsl" />
-    <None Include="Shaders\force_color_vs.glsl" />
-    <None Include="Shaders\FragmentShader.glsl" />
-    <None Include="Shaders\FragmentShaderCamera.glsl" />
     <None Include="Shaders\glow_fs.glsl" />
     <None Include="Shaders\glow_mapping_fs.glsl" />
     <None Include="Shaders\glow_mapping_vs.glsl" />
@@ -169,12 +160,6 @@
     <None Include="Shaders\lightbox_vs.glsl" />
     <None Include="shaders\mapping_fs.glsl" />
     <None Include="Shaders\mapping_vs.glsl" />
-    <None Include="Shaders\particle_light_fs.glsl" />
-    <None Include="Shaders\particle_light_proper_fs.glsl" />
-    <None Include="Shaders\particle_withgs_vs.glsl" />
-    <None Include="Shaders\particle_fs.glsl" />
-    <None Include="Shaders\particle_gs.glsl" />
-    <None Include="Shaders\particle_vs.glsl" />
     <None Include="shaders\reflection_fs.glsl" />
     <None Include="shaders\reflection_vs.glsl" />
     <None Include="Shaders\skybox_fs.glsl" />
@@ -183,21 +168,12 @@
     <None Include="Shaders\ssao_fs.glsl" />
     <None Include="Shaders\ssao_test_fs.glsl" />
     <None Include="Shaders\ssao_vs.glsl" />
-    <None Include="Shaders\texShader_color_fs.glsl" />
-    <None Include="Shaders\texShader_color_vs.glsl" />
-    <None Include="Shaders\texShader_fs.glsl" />
-    <None Include="Shaders\texShader_vs.glsl" />
     <None Include="Shaders\tfb_billboard_fs.glsl" />
     <None Include="Shaders\tfb_billboard_gs.glsl" />
     <None Include="Shaders\tfb_billboard_vs.glsl" />
     <None Include="Shaders\tfb_fs.glsl" />
     <None Include="Shaders\tfb_gs.glsl" />
-    <None Include="Shaders\tfb_update_fs.glsl" />
-    <None Include="Shaders\tfb_update_gs.glsl" />
-    <None Include="Shaders\tfb_update_vs.glsl" />
     <None Include="Shaders\tfb_vs.glsl" />
-    <None Include="Shaders\VertexShader.glsl" />
-    <None Include="Shaders\VertexShaderCamera.glsl" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\FrameBuffer.cpp" />

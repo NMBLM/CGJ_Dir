@@ -210,6 +210,18 @@ void update(){
         gamma = ( gamma > 0.0f ) ? gamma : 0.0f;
         std::cout << "Gamma: " << gamma << std::endl;
     }
+    if( KeyBuffer::instance()->isKeyDown( '+' ) ){
+        occlusionSamples += 1;
+        occlusionSamples = ( occlusionSamples > MAX_SAMPLES ) ? MAX_SAMPLES : occlusionSamples;
+        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
+    }
+
+    if( KeyBuffer::instance()->isKeyDown( '-' ) ){
+        occlusionSamples -= 1;
+        occlusionSamples = ( occlusionSamples < 0 ) ? 0 : occlusionSamples;
+        std::cout << "Occlusion Samples number: " << occlusionSamples << std::endl;
+    }
+
 }
 
 static bool isOpenGLError(){
@@ -693,7 +705,6 @@ void lightPass(){
     TextureInfo* ssao = new TextureInfo( Texture::SSAO_TEXTURE, "gSSAO", GL_TEXTURE14, 14 );
     TextureInfo* ssaoBlur = new TextureInfo( Texture::SSAO_BLUR_TEXTURE, "gSSAOBlur", GL_TEXTURE15, 15 );
 
-
     renderShader->use();
 
     position->Activate( renderShader );
@@ -708,6 +719,7 @@ void lightPass(){
     glBindFramebuffer( GL_FRAMEBUFFER, hdrFBO );
     glClearColor( 0, 0, 0, 0 ); // make the background black and not the default grey
     glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+
     renderQuad();
     glBindFramebuffer( GL_FRAMEBUFFER, 0 );
     renderShader->stop();
@@ -734,14 +746,16 @@ void drawDeferredScene(){
     glClear( GL_COLOR_BUFFER_BIT );
     ssaoShader->use();
     // Send kernel + rotation 
-    for( unsigned int i = 0; i < 64; ++i ){
-        std::string s = "samples[" + std::to_string( i ) + +"]";
-        ssaoShader->addUniform( s.c_str(), ssaoKernel[i] );
+    for (int i = 0; i < occlusionSamples; ++i) {
+        std::string s = "samples[" + std::to_string(i) + +"]";
+        ssaoShader->addUniform(s.c_str(), ssaoKernel[i]);
     }
 
     position->Activate( ssaoShader );
     normal->Activate( ssaoShader );
     texNoise->Activate( ssaoShader );
+
+    ssaoShader->addUniform( "sampleNumber",(float) occlusionSamples );
 
     renderQuad();
 
@@ -949,11 +963,12 @@ void loadMeshes(){
     std::cout << "Loading Meshes" << std::endl;
 
     Catalog<Mesh*>* meshManager = Catalog<Mesh*>::instance();
-    meshManager->insert( Mesh::QUAD, meshLoader.createMesh( std::string( "Mesh/Quad.obj" ) ) );
-    meshManager->insert( Mesh::SPHERE, meshLoader.createMesh( std::string( "Mesh/Sphere.obj" ) ) );
-    meshManager->insert( Mesh::CUBE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/skybox.obj" ) ) );
-    meshManager->insert( Mesh::SPHERE_SKYBOX, meshLoader.createMesh( std::string( "Mesh/sphereSkybox.obj" ) ) );
-    meshManager->insert( Mesh::NOODLES, meshLoader.createMesh( std::string( "Mesh/Noodles_mesh.obj" ) ) );
+    meshManager->insert(Mesh::QUAD, meshLoader.createMesh(std::string("Mesh/Quad.obj")));
+    meshManager->insert(Mesh::TABLE, meshLoader.createMesh( std::string( "Mesh/Table.obj" ) ) );
+    meshManager->insert(Mesh::SPHERE, meshLoader.createMesh(std::string("Mesh/Sphere.obj")));
+    meshManager->insert(Mesh::CUBE_SKYBOX, meshLoader.createMesh(std::string("Mesh/skybox.obj")));
+    meshManager->insert(Mesh::SPHERE_SKYBOX, meshLoader.createMesh(std::string("Mesh/sphereSkybox.obj")));
+    meshManager->insert(Mesh::NOODLES, meshLoader.createMesh(std::string("Mesh/Noodles_mesh.obj")));
 }
 
 void loadTextures(){
@@ -1094,10 +1109,9 @@ void createDeferredScene(){
     TextureInfo* tableNormalInfo = new TextureInfo( Texture::TABLE_NORMAL, "noodleNormal", GL_TEXTURE3, 3 );
     TextureInfo* tableSpecularInfo = new TextureInfo( Texture::TABLE_SPECULAR, "noodleSpec", GL_TEXTURE4, 4 );
 
-    SceneNode  *table = new SceneNode( meshManager->get( Mesh::QUAD ), ShaderProgramCat->get( "DeferredBloom" ),
-                                       MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.1f, 0.0f ) ) *
-                                       MatrixFactory::createScaleMatrix4( 1.0f, 1.0f, 1.0f ) *
-                                       MatrixFactory::createRotationMatrix4( 90, ZZ ) );
+    SceneNode  *table = new SceneNode( meshManager->get( Mesh::TABLE ), shaderProgramManager->get( "DeferredBloom" ),
+        MatrixFactory::createTranslationMatrix( vec3( 0.0f, -0.1f, 0.0f ) ) * 
+        MatrixFactory::createScaleMatrix4( 1.0f, 1.0f, 1.0f ) );// * MatrixFactory::createRotationMatrix4(90 ,ZZ));
     table->addTexture( tableTextureInfo );
     table->addTexture( tableNormalInfo );
     table->addTexture( tableSpecularInfo );
@@ -1315,11 +1329,11 @@ void setUpSSAO(){
 // ----------------------
     std::uniform_real_distribution<GLfloat> randomFloats( 0.0f, 1.0f ); // generates random floats between 0.0 and 1.0
     std::default_random_engine generator;
-    for( unsigned int i = 0; i < 64; ++i ){
-        vec3 sample( randomFloats( generator ) * 2.0f - 1.0f, randomFloats( generator ) * 2.0f - 1.0f, randomFloats( generator ) );
-        sample = normalize( sample );
-        sample *= randomFloats( generator );
-        float scale = float( i ) / 64.0f;
+    for (unsigned int i = 0; i < MAX_SAMPLES; ++i) {
+        vec3 sample(randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator) * 2.0f - 1.0f, randomFloats(generator));
+        sample = normalize(sample);
+        sample *= randomFloats(generator);
+        float scale = float(i) / MAX_SAMPLES;
 
         // scale samples s.t. they're more aligned to center of kernel
         scale = lerp( 0.1f, 1.0f, scale * scale );

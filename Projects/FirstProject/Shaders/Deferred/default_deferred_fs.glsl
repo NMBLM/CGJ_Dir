@@ -43,6 +43,7 @@ void main()
     vec3 Diffuse = texture(gAlbedoSpec, TexCoords).rgb;
     float Specular = texture(gAlbedoSpec, TexCoords).a;
     mat4 invView = inverse(ViewMatrix);
+	vec4 bright = texture(gBright, TexCoords).rgba;
     vec3 viewPos = vec3(invView[3])/invView[3][3]; // in WorldSpace
 	viewPos = (ViewMatrix * vec4(viewPos,1.0f)).xyz; // now in ViewSpace
 
@@ -66,7 +67,7 @@ void main()
         vec3 diffuse = max(dot(Normal, lightDir), 0.0) * Diffuse * pointLights[i].diffuse;
         // specular
         vec3 halfwayDir = normalize(lightDir + viewDir);  
-        float spec = pow(max(dot(Normal, halfwayDir), 0.0), 16.0);
+        float spec = pow(max(dot(Normal, halfwayDir), 0.0), 0.8f);
         vec3 specular = pointLights[i].diffuse * spec * Specular;
         // attenuation
         float distance = length(lightPos - FragPos);
@@ -79,10 +80,9 @@ void main()
 	//Normal Mode
 	FragColor = vec4(lighting, 1.0);
 	if(mode < 0.9f || (mode > 9.9f && mode < 10.9f) || (mode > 10.9f && mode < 11.9f)){
-		vec4 bright = texture(gBright, TexCoords).rgba;
 		if(bright.r > 0.0f || bright.g > 0.0f || bright.b > 0.0f){
-			FragColor = bright;
-			BrightColor = bright;
+			FragColor = texture(gAlbedoSpec, TexCoords).rgba;
+			BrightColor = FragColor;
 		}else{
 			float brightness = dot(FragColor.xyz, vec3(0.2126, 0.7152, 0.0722));
 			if(brightness > 1.0){
@@ -106,7 +106,6 @@ void main()
 	}else // Brightness Unblurred
 	if(mode > 3.9f && mode < 4.9f){
 		FragColor = vec4(lighting, 1.0);
-		vec4 bright = texture(gBright, TexCoords).rgba;
 		if(bright.r > 0.0f || bright.g > 0.0f || bright.b > 0.0f){
 			FragColor = bright;
 		}else{
@@ -121,7 +120,6 @@ void main()
 	}else // Brightness Blurred
 	if(mode > 4.9f && mode < 5.9f){
 		FragColor = vec4(lighting, 1.0);
-		vec4 bright = texture(gBright, TexCoords).rgba;
 		if(bright.r > 0.0f || bright.g > 0.0f || bright.b > 0.0f){
 			FragColor = bright;
 			BrightColor  = FragColor;
